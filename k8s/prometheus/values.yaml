@@ -1,0 +1,10 @@
+prometheus-stack:
+  namespaceOverride: "monitoring"
+  commonLabels:
+    homelab: "middle-earth-cluster"
+  prometheus:
+    prometheusSpec:
+      maximumStartupDurationSeconds: 60
+  kubeEtcd:
+    serviceMonitor:
+      enabled: false
