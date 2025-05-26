@@ -1,0 +1,32 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: longhorn-release
+  namespace: flux-system
+spec:
+  interval: 1h # for drifting resources
+  releaseName: longhorn
+  targetNamespace: longhorn-system
+  chart:
+    spec:
+      chart: longhorn
+      version: 1.8.x
+      reconcileStrategy: ChartVersion
+      interval: 12h # for checking of a new chart
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+  values:
+    longhornUI:
+      replicas: 1
+    defaultBackupStore:
+      backupTarget: "nfs://192.168.68.120:/backups"
+      pollInterval: 500
+    persistence:
+      defaultClass: "longhorn-default-sc"
+      defaultFsType: "xfs"
+      defaultClassReplicaCount: 4
+      defaultDiskSelector:
+        enable: true
+        selector: "default-storage"
