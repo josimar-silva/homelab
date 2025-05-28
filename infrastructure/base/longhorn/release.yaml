@@ -12,7 +12,6 @@ spec:
     spec:
       chart: longhorn
       version: 1.8.x
-      reconcileStrategy: ChartVersion
       interval: 12h # for checking of a new chart
       sourceRef:
         kind: HelmRepository
