@@ -25,4 +25,7 @@ spec:
       pollInterval: 500
     persistence:
       defaultClass: "longhorn-default-sc"
-
+    preUpgradeChecker:
+      # Disabling it since upgrades are done by fluxcd as per:
+      # "Disable this setting when installing Longhorn using Argo CD or other GitOps solutions."
+      jobEnabled: false
