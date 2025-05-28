@@ -5,4 +5,4 @@ resources:
  - "repository.yaml"
  - "release.yaml"
  - "storage-classes.yaml"
-#  - "daily-snapshot.yaml"
+ - "daily-snapshot.yaml"
