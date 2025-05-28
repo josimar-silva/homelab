@@ -6,3 +6,4 @@ resources:
  - "release.yaml"
  - "storage-classes.yaml"
  - "daily-snapshot.yaml"
+ - "weekly-backup.yaml"
