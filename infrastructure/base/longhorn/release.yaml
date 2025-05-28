@@ -20,3 +20,7 @@ spec:
   values:
     longhornUI:
       replicas: 1
+    defaultBackupStore:
+      backupTarget: "nfs://192.168.68.120:/backups"
+      pollInterval: 500
+
