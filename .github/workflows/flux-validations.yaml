@@ -1,0 +1,24 @@
+name: Validate Flux Kustomizations
+
+on:
+  pull_request:
+    paths:
+      - 'clusters/**'
+      - 'infrastructure/**'
+      - 'apps/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Kustomize
+        run: |
+          curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash
+          sudo mv kustomize /usr/local/bin
+
+      - name: Validate Rivendell infrastructure
+        run: |
+          kustomize build infrastructure/rivendell
