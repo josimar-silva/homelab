@@ -23,4 +23,6 @@ spec:
     defaultBackupStore:
       backupTarget: "nfs://192.168.68.120:/backups"
       pollInterval: 500
+    persistence:
+      defaultClass: "longhorn-default-sc"
 
