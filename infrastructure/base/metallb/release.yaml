@@ -11,7 +11,7 @@ spec:
     spec:
       chart: metallb
       version: "0.14.9"
-      interval: 5h # for checking of a new chart
+      interval: 12h # for checking of a new chart
       sourceRef:
         kind: HelmRepository
         name: metallb
