@@ -10,6 +10,7 @@ spec:
   - default
   labels:
     backup-frequence: daily
+    category: apps
   name: daily-snapshot
   parameters: {}
   retain: 1
