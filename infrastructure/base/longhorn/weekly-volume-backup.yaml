@@ -1,0 +1,18 @@
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: weekly-volume-backup
+  namespace: longhorn-system
+spec:
+  concurrency: 1
+  cron: 30 06 * * SUN
+  groups:
+    - default
+  labels:
+    backup-frequence: weekly
+    category: apps
+  name: weekly-volume-backup
+  parameters:
+    full-backup-interval: '1'
+  retain: 1
+  task: backup

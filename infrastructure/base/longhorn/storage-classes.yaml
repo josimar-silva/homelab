@@ -12,3 +12,13 @@ parameters:
   fromBackup: ""
   fsType: "xfs"
   diskSelector: "default-storage" 
+  recurringJobSelector: '[
+      {
+        "name": "daily-snapshot",
+        "isGroup": false
+      },
+      {
+        "name": "weekly-volume-backup",
+        "isGroup": false
+      }
+    ]'

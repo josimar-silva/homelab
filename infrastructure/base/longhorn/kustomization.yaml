@@ -7,3 +7,4 @@ resources:
  - "storage-classes.yaml"
  - "daily-snapshot.yaml"
  - "weekly-backup.yaml"
+ - "weekly-volume-backup.yaml"
