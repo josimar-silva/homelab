@@ -28,6 +28,9 @@ spec:
       enabled: true
       storageClass: "longhorn-default-sc"
 
+    nodeSelector:
+      middle-earth-cluster.homelab/category: hobbit-sm-i3
+
     resources:
       limits:
         cpu: 600m
@@ -66,10 +69,6 @@ spec:
       - address=/minas-tirith.homelab.lan/192.168.68.120
       - address=/pihole.homelab.lan/192.168.68.201
       
-      additionalHostsEntries:
-        - 192.168.68.120    minas-tirith.homelab.lan     minas-tirith
-        - 192.168.68.201    pihole.homelab.lan           pihole
-
     adlists:
       - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/light.txt
       - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/fake.txt
