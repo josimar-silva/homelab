@@ -16,6 +16,9 @@ spec:
         kind: HelmRepository
         name: external-dns
         namespace: flux-system
+  values:
+    image:
+      tag: "v0.17.0"
 
   valuesFrom:
     - kind: ConfigMap
