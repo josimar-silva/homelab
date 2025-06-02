@@ -1,0 +1,22 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: internal-dns-release
+  namespace: internal-dns
+spec:
+  interval: 1h # for drifting resources
+  releaseName: internal-dns
+  targetNamespace: internal-dns
+  chart:
+    spec:
+      chart: external-dns
+      version: 1.16.x
+      interval: 12h # for checking of a new chart
+      sourceRef:
+        kind: HelmRepository
+        name: external-dns
+        namespace: flux-system
+
+  valuesFrom:
+    - kind: ConfigMap
+      name: internal-dns-values
