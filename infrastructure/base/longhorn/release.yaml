@@ -21,7 +21,12 @@ spec:
   postRenderers:
     - kustomize:
         patches:
-          - patch: add-svc-annotations.patch.yaml
+          - patch: |-
+              metadata:
+                annotations:
+                  external-dns.alpha.kubernetes.io/hostname: longhorn.homelab.lan
+                  metallb.io/ip-allocated-from-pool: homelab-local-pool
+                  metallb.universe.tf/allow-shared-ip: longhorn-svc
             target:
               kind: Service
               namespace: longhorn-system
