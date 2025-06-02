@@ -21,15 +21,11 @@ spec:
   postRenderers:
     - kustomize:
         patches:
-          - patch: |-
-              apiVersion: v1
+          - patch: add-svc-annotations.patch.yaml
+            target:
               kind: Service
-              metadata:
-                name: longhorn-frontend
-                annotations:
-                  external-dns.alpha.kubernetes.io/hostname: longhorn.homelab.lan
-                  metallb.io/ip-allocated-from-pool: homelab-local-pool
-                  metallb.universe.tf/allow-shared-ip: longhorn-svc
+              namespace: longhorn-system
+              labelSelector: "app=longhorn-ui"
 
   values:
     longhornUI:
