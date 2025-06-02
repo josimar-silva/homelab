@@ -17,9 +17,27 @@ spec:
         kind: HelmRepository
         name: longhorn
         namespace: flux-system
+
+  postRenderers:
+    - kustomize:
+        patches:
+          - patch: |-
+              apiVersion: v1
+              kind: Service
+              metadata:
+                name: longhorn-frontend
+                annotations:
+                  external-dns.alpha.kubernetes.io/hostname: longhorn.homelab.lan
+                  metallb.io/ip-allocated-from-pool: homelab-local-pool
+                  metallb.universe.tf/allow-shared-ip: longhorn-svc
+
   values:
     longhornUI:
       replicas: 1
+    service:
+      ui:
+        type: "LoadBalancer"
+        loadBalancerIP: 192.168.68.202
     defaultSettings:
       defaultDataPath: "/var/mnt/storage"
     defaultBackupStore:
