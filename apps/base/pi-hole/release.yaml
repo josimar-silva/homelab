@@ -22,7 +22,10 @@ spec:
 
     image:
       repository: "pihole/pihole"
-      tag: "2025.04.0"
+      tag: "2025.05.1"
+
+    extraEnvVars:
+      TZ: "Europe/Berlin"
 
     persistentVolumeClaim:
       enabled: true
