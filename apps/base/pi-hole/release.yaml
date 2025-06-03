@@ -26,6 +26,8 @@ spec:
 
     extraEnvVars:
       TZ: "Europe/Berlin"
+      FTLCONF_dns_revServers: "true,192.168.68.0/24,192.168.68.1,lan"
+      
 
     persistentVolumeClaim:
       enabled: true
@@ -72,6 +74,7 @@ spec:
       customDnsEntries:
       - address=/minas-tirith.homelab.lan/192.168.68.120
       - address=/pihole.homelab.lan/192.168.68.201
+      - address=/pihole.from-gondor.com/192.168.68.201
       
     adlists:
       - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/light.txt
