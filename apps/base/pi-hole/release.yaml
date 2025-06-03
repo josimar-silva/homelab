@@ -23,24 +23,13 @@ spec:
     - kustomize:
         patches:
           - target:
-              version: apps/v1
               kind: Deployment
               namespace: pihole
               labelSelector: "app=pihole"
             patch: |-
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: pihole
-                namespace: pihole
-              spec:
-                template:
-                  spec:
-                    containers:
-                      - name: pihole
-                        env:
-                          - name: FTLCONF_webserver_port
-                            value: "80,443s"  
+              - op: replace
+                path: /spec/template/spec/containers/0/env/0/value
+                value: "80,443s" 
 
   values:
     replicaCount: 1
