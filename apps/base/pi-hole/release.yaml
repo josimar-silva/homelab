@@ -8,6 +8,7 @@ spec:
   interval: 1h # for drifting resources
   releaseName: pihole
   targetNamespace: pihole
+
   chart:
     spec:
       chart: pihole
@@ -17,6 +18,30 @@ spec:
         kind: HelmRepository
         name: pihole
         namespace: flux-system
+
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              version: apps/v1
+              kind: Deployment
+              namespace: pihole
+              labelSelector: "app=pihole"
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: pihole
+                namespace: pihole
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: pihole
+                        env:
+                          - name: FTLCONF_webserver_port
+                            value: "80,443s"  
+
   values:
     replicaCount: 1
 
@@ -27,7 +52,6 @@ spec:
     extraEnvVars:
       TZ: "Europe/Berlin"
       FTLCONF_dns_revServers: "true,192.168.68.0/24,192.168.68.1,lan"
-      
 
     persistentVolumeClaim:
       enabled: true
