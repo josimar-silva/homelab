@@ -27,16 +27,17 @@ spec:
     persistentVolumeClaim:
       enabled: true
       storageClass: "longhorn-default-sc"
+      size: "1Gi"
 
     nodeSelector:
       middle-earth-cluster.homelab/category: hobbit-sm-i3
 
     resources:
       limits:
-        cpu: 600m
+        cpu: 900m
         memory: 512Mi
       requests:
-        cpu: 300m
+        cpu: 600m
         memory: 256Mi
 
     serviceDhcp:
