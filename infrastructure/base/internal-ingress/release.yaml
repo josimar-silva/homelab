@@ -19,7 +19,11 @@ spec:
   values:
     namespaceOverride: "ingress-nginx"
     controller:
+      replicaCount: 4
+      minAvailable: 2
       ingressClass: nginx-internal
       ingressClassResource:
         name: nginx-internal
-
+    defaultBackend:
+      enabled: true
+      replicaCount: 1
