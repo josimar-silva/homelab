@@ -3,5 +3,7 @@ kind: Kustomization
 resources:
   - metallb
   - longhorn
-  - internal-dns
   - cert-manager
+  - ingress-nginx
+  - internal-dns
+  - internal-ingress
