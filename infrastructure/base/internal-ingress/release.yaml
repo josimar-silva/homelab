@@ -21,9 +21,9 @@ spec:
     controller:
       replicaCount: 4
       minAvailable: 2
-      ingressClass: nginx-internal
+      ingressClass: internal-ingress
       ingressClassResource:
-        name: nginx-internal
+        name: internal-ingress
     defaultBackend:
       enabled: true
       replicaCount: 1

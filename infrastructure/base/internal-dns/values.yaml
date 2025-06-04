@@ -13,6 +13,9 @@ sources:
   - service
   - ingress
 
+ingress:
+  class: internal-ingress
+
 provider:
   name: pihole
 
