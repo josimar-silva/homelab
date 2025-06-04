@@ -25,3 +25,4 @@ spec:
     podDisruptionBudget:
       enabled: true
       minAvailable: 2
+    enableCertificateOwnerRef: true
