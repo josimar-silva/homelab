@@ -9,9 +9,9 @@ policy: upsert-only
 
 namespaced: false
 
-# Only want to expose services.
 sources:
   - service
+  - ingress
 
 provider:
   name: pihole
