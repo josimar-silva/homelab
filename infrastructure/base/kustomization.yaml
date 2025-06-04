@@ -4,3 +4,4 @@ resources:
   - metallb
   - longhorn
   - internal-dns
+  - cert-manager
