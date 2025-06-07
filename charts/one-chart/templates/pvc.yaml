@@ -1,0 +1,17 @@
+{{- if .Values.persistentVolume.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "one-chart.fullname" . }}
+  labels: 
+    {{- include "one-chart.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- range .Values.persistentVolume.accessModes }}
+    - {{ . }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolume.size | default "1Gi" }}
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
+{{- end }}

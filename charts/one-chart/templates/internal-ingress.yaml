@@ -1,0 +1,45 @@
+{{- if .Values.internalIngress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "one-chart.fullname" . }}
+  labels:
+    {{- include "one-chart.labels" . | nindent 4 }}
+  {{- $hasAnnotations := or .Values.internalIngress.annotations .Values.internalIngress.tls }}
+  {{- if $hasAnnotations }}
+  annotations:
+    {{- with .Values.internalIngress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.internalIngress.tls }}
+    cert-manager.io/cluster-issuer: {{ .clusterIssuer | default "letsencrypt-staging" }}
+    {{- end }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.internalIngress.className | default "internal-ingress" }}
+  {{- if .Values.internalIngress.tls }}
+  tls:
+    - hosts:
+        {{- range .Values.internalIngress.tls.hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .Values.internalIngress.tls.secretName }}
+  {{- end }}
+  rules:
+    {{- range .Values.internalIngress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- with .pathType }}
+            pathType: {{ . }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ include "one-chart.fullname" $ }}
+                port:
+                  number: {{ $.Values.service.port }}
+          {{- end }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,200 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Deployment template tests
+templates:
+  - ../templates/deployment.yaml
+release:
+  name: test-release
+  namespace: TEST_NAMESPACE
+
+
+tests:
+  - it: should render a Deployment with correct name
+    set:
+      image.tag: "1.16.0"
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: test-release-one-chart
+
+  - it: should render a Deployment with default labels
+    set:
+      homelab:
+        category: microservices
+        realm: playground
+      image.tag: "1.16.0"
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.labels["helm.sh/chart"]
+          value: "one-chart-0.1.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/version"]
+          value: "1.16.0"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: "Helm"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: "one-chart"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/instance"]
+          value: "test-release"
+      - equal:
+          path: metadata.labels["middle-earth-cluster.homelab/category"]
+          value: "microservices"
+      - equal:
+          path: metadata.labels["middle-earth-cluster.homelab/realm"]
+          value: "playground"
+
+
+  - it: should set the replica count from values.yaml
+    set:
+      replicaCount: 2
+      image.tag: "1.16.0"
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2
+
+  - it: should set the container image and pull policy
+    set:
+      image.tag: "1.16.0"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "nginx:1.16.0"
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: "IfNotPresent"
+
+  - it: should expose the correct container port
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 80
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: http
+  
+  - it: should set the security context for the container
+    set:
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  - it: should render custom volumes when .Values.volumes is set
+    set:
+      image.tag: "1.16.0"
+      volumes:
+        - name: custom-volume
+          emptyDir: {}
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: custom-volume
+            emptyDir: {}
+
+  - it: should render only PVC volume when .Values.volumes is not set and persistentVolume.enabled is true
+    set:
+      image.tag: "1.16.0"
+      persistentVolume:
+        enabled: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: test-release-one-chart
+            persistentVolumeClaim:
+              claimName: test-release-one-chart
+
+  - it: should render both custom volumes and PVC when both are set
+    set:
+      image.tag: "1.16.0"
+      volumes:
+        - name: custom-volume
+          emptyDir: {}
+      persistentVolume:
+        enabled: true
+        mountPath: /myData
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: custom-volume
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: test-release-one-chart
+            persistentVolumeClaim:
+              claimName: test-release-one-chart
+
+  - it: should render custom volumeMounts when .Values.volumeMounts is set
+    set:
+      image.tag: "1.16.0"
+      volumeMounts:
+        - name: custom-volume
+          mountPath: /custom
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: custom-volume
+            mountPath: /custom
+
+  - it: should render both custom volumeMounts and PVC mount when both are set
+    set:
+      image.tag: "1.16.0"
+      volumeMounts:
+        - name: custom-volume
+          mountPath: /custom
+      persistentVolume:
+        enabled: true
+        mountPath: /myData
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: custom-volume
+            mountPath: /custom
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: test-release-one-chart
+            mountPath: /myData
+
+  - it: should render only PVC volumeMount when .Values.volumeMounts is not set and persistentVolume.enabled is true
+    set:
+      image.tag: "1.16.0"
+      persistentVolume:
+        enabled: true
+        mountPath: /data
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: test-release-one-chart
+            mountPath: /data

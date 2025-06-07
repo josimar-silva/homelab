@@ -1,0 +1,36 @@
+name: Helm Chart Release
+
+on:
+    push:
+        branches:
+        - main
+        paths:
+        - 'charts/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Helm 
+        uses: d3adb5/helm-unittest-action@v2
+        with:
+          helm_version: '3.10.0'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - run: helm lint charts/one-chart
+      - run: helm unittest charts/one-chart
+
+      - name: Push Chart | homelab/one-chart
+        uses: appany/helm-oci-chart-releaser@v0.4.2
+        with:
+          name: one-chart
+          repository: josimar-silva/homelab
+          tag: 0.1.0
+          chart_path: charts/one-chart
+          registry: ghcr.io
+          registry_username: ${{ secrets.REGISTRY_USERNAME }}
+          registry_password: ${{ secrets.REGISTRY_PASSWORD }}
+          update_dependencies: 'false'

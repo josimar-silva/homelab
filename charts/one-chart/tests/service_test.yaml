@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Service template tests
+templates:
+  - ../templates/service.yaml
+release:
+  name: test-release
+  namespace: test-namespace
+
+tests:
+  - it: should render a ClusterIP Service by default
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+      - equal:
+          path: spec.ports[0].name
+          value: http
+
+  - it: should render a LoadBalancer Service with Metallb annotations and ipPool
+    set:
+      service:
+        type: LoadBalancer
+        ipPool: metallb-pool
+        port: 8080
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+      - equal:
+          path: metadata.annotations["metallb.universe.tf/allow-shared-ip"]
+          value: test-release-one-chart
+      - equal:
+          path: metadata.annotations["metallb.io/ip-allocated-from-pool"]
+          value: metallb-pool
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+
+  - it: should set loadBalancerIP if provided
+    set:
+      service:
+        type: LoadBalancer
+        loadBalancerIP: 192.168.1.100
+    asserts:
+      - equal:
+          path: spec.loadBalancerIP
+          value: 192.168.1.100
+
+  - it: should render custom annotations if provided
+    set:
+      service:
+        annotations:
+          foo: bar
+    asserts:
+      - equal:
+          path: metadata.annotations.foo
+          value: bar
+
+  - it: should use custom port if provided
+    set:
+      service:
+        port: 1234
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 1234

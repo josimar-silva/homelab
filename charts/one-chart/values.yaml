@@ -1,0 +1,137 @@
+# -- Homelab settings
+homelab:
+  # -- Homelab category label. Defaults to "apps".
+  category: apps
+  # -- Homelab realm label. Defaults to "playground".
+  realm: playground
+
+# -- Number of replicas for the deployment
+replicaCount: 1
+
+image:
+  # -- Container image repository
+  repository: nginx
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# -- Image pull secrets for private registries
+imagePullSecrets: []
+
+# -- Override the chart name
+nameOverride: ""
+
+# -- Override the full resource name
+fullnameOverride: ""
+
+# -- Annotations for the pod
+podAnnotations: {}
+
+# -- Additional labels for the pod
+podLabels: {}
+
+# -- Pod-level security context
+podSecurityContext: {}
+  # -- fsGroup: 2000
+
+# -- Container-level security context
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  # -- Kubernetes service type. Defaults to ClusterIP.
+  type: ClusterIP
+  # -- LoadBalancer IP (for MetalLB or cloud LB)
+  # loadBalancerIP: ""
+  # -- MetalLB IP pool name
+  # ipPool: ""
+  # -- Service port. Defaults to 80.
+  port: 80
+  # -- Annotations for the service
+  annotations: {}
+
+internalIngress:
+  # -- Enable internal ingress
+  enabled: false
+  # -- Ingress class name. Defaults to "internal-ingress"
+  className: internal-ingress
+  # -- Annotations for the ingress
+  annotations: {}
+    # -- kubernetes.io/tls-acme: "true"
+  # -- Ingress hosts and paths
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- TLS configuration for ingress
+  # -- tls:
+    # -- Secret name for TLS certificate
+    # secretName: chart-example-tls
+    # -- cert-manager ClusterIssuer
+    # clusterIssuer: letsencrypt-staging
+    # -- Hosts for the TLS certificate
+    # hosts:
+    #   - chart-example.local
+
+# -- Resource requests and limits
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Liveness probe configuration
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# -- Readiness probe configuration
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# -- Additional volumes for the pod
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# -- Additional volume mounts for the container
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+persistentVolume:
+  # -- Enable persistent volume claim
+  enabled: false
+  # -- Storage class for PVC. Defaults to "longhorn-default-sc"
+  storageClass: "longhorn-default-sc"
+  # -- Access modes for PVC. Defaults to ReadWriteOnce
+  accessModes:
+    - ReadWriteOnce
+  # -- Size of the persistent volume. Defaults to 1Gi
+  size: 1Gi
+  # -- Mount path for the persistent volume. Defaults to /data
+  mountPath: /data
+
+# -- Node selector for pod scheduling
+nodeSelector: {}
+
+# -- Tolerations for pod scheduling
+tolerations: []
+
+# -- Affinity rules for pod scheduling
+affinity: {}
