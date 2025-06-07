@@ -1,0 +1,256 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Internal Ingress template tests
+templates:
+  - ../templates/internal-ingress.yaml
+release:
+  name: test-release
+  namespace: test-namespace
+
+tests:
+  - it: should not render anything if internalIngress.enabled is false
+    set:
+      internalIngress:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should render an Ingress with default className and one host/path
+    set:
+      internalIngress:
+        enabled: true
+        hosts:
+          - host: "test.local"
+            paths:
+              - path: /
+                pathType: Prefix
+      service:
+        port: 80
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.ingressClassName
+          value: internal-ingress
+      - equal:
+          path: spec.rules[0].host
+          value: test.local
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /
+      - equal:
+          path: spec.rules[0].http.paths[0].pathType
+          value: Prefix
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: test-release-one-chart
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 80
+
+  - it: should render with custom ingressClassName
+    set:
+      internalIngress:
+        enabled: true
+        className: custom-class
+        hosts:
+          - host: "custom.local"
+            paths:
+              - path: /custom
+                pathType: ImplementationSpecific
+      service:
+        port: 8080
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: custom-class
+      - equal:
+          path: spec.rules[0].host
+          value: custom.local
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /custom
+      - equal:
+          path: spec.rules[0].http.paths[0].pathType
+          value: ImplementationSpecific
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 8080
+
+  - it: should render TLS block with clusterIssuer and multiple hosts
+    set:
+      internalIngress:
+        enabled: true
+        className: internal-ingrexx
+        tls:
+          secretName: tls-secret
+          clusterIssuer: letsencrypt-prod
+          hosts:
+            - "tls1.local"
+            - "tls2.local"
+        hosts:
+          - host: "tls1.local"
+            paths:
+              - path: /
+                pathType: Prefix
+          - host: "tls2.local"
+            paths:
+              - path: /foo
+                pathType: Prefix
+      service:
+        port: 443
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: letsencrypt-prod
+      - equal:
+          path: spec.tls[0].hosts[0]
+          value: tls1.local
+      - equal:
+          path: spec.tls[0].hosts[1]
+          value: tls2.local
+      - equal:
+          path: spec.tls[0].secretName
+          value: tls-secret
+      - equal:
+          path: spec.rules[0].host
+          value: tls1.local
+      - equal:
+          path: spec.rules[1].host
+          value: tls2.local
+
+  - it: should render service annotations if provided
+    set:
+      internalIngress:
+        enabled: true
+        annotations:
+          foo: bar
+        hosts:
+          - host: "anno.local"
+            paths:
+              - path: /
+                pathType: Prefix
+    asserts:
+      - equal:
+          path: metadata.annotations.foo
+          value: bar
+
+  - it: should render Ingress without TLS block if tls is not set
+    set:
+      internalIngress:
+        enabled: true
+        hosts:
+          - host: "no-tls.local"
+            paths:
+              - path: /
+                pathType: Prefix
+    asserts:
+      - isKind:
+          of: Ingress
+      - notExists:
+          path: spec.tls
+
+  - it: should render Ingress with only one host and multiple paths
+    set:
+      internalIngress:
+        enabled: true
+        hosts:
+          - host: "multi-path.local"
+            paths:
+              - path: /foo
+                pathType: Prefix
+              - path: /bar
+                pathType: ImplementationSpecific
+      service:
+        port: 8081
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.rules[0].host
+          value: multi-path.local
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /foo
+      - equal:
+          path: spec.rules[0].http.paths[0].pathType
+          value: Prefix
+      - equal:
+          path: spec.rules[0].http.paths[1].path
+          value: /bar
+      - equal:
+          path: spec.rules[0].http.paths[1].pathType
+          value: ImplementationSpecific
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 8081
+
+  - it: should render Ingress with custom service port
+    set:
+      internalIngress:
+        enabled: true
+        hosts:
+          - host: "custom-port.local"
+            paths:
+              - path: /
+                pathType: Prefix
+      service:
+        port: 9090
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 9090
+
+  - it: should render Ingress with custom annotation and TLS
+    set:
+      internalIngress:
+        enabled: true
+        annotations:
+          foo: bar
+        tls:
+          secretName: custom-tls
+          clusterIssuer: custom-issuer
+          hosts:
+            - "custom-anno.local"
+        hosts:
+          - host: "custom-anno.local"
+            paths:
+              - path: /
+                pathType: Prefix
+      service:
+        port: 443
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: metadata.annotations.foo
+          value: bar
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: custom-issuer
+      - equal:
+          path: spec.tls[0].secretName
+          value: custom-tls
+      - equal:
+          path: spec.tls[0].hosts[0]
+          value: custom-anno.local
+
+  - it: should render Ingress with default className if not set
+    set:
+      internalIngress:
+        enabled: true
+        hosts:
+          - host: "default-class.local"
+            paths:
+              - path: /
+                pathType: Prefix
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.ingressClassName
+          value: internal-ingress

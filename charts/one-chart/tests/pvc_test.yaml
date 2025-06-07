@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: PVC template tests
+templates:
+  - ../templates/pvc.yaml
+release:
+  name: pvc-release
+  namespace: pvc-namespace
+
+
+tests:
+
+  - it: should render a PersistentVolumeClaim with default values when only enabled is true
+    set:
+      persistentVolume:
+        enabled: true
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: pvc-release-one-chart
+      - equal:
+          path: spec.resources.requests.storage
+          value: 1Gi
+      - equal:
+          path: spec.storageClassName
+          value: longhorn-default-sc
+
+  - it: should set the storageClassName if provided
+    set:
+      persistentVolume:
+        enabled: true
+        storageClass: fast
+    asserts:
+      - equal:
+          path: spec.storageClassName
+          value: fast
+
+  - it: should set the accessModes from values
+    set:
+      persistentVolume:
+        enabled: true
+        accessModes:
+          - ReadWriteOnce
+          - ReadOnlyMany
+    asserts:
+      - equal:
+          path: spec.accessModes
+          value:
+            - ReadWriteOnce
+            - ReadOnlyMany
+
+  - it: should set the requested storage size from values
+    set:
+      persistentVolume:
+        enabled: true
+        size: 10Gi
+    asserts:
+      - equal:
+          path: spec.resources.requests.storage
+          value: 10Gi

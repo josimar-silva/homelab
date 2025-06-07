@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "one-chart.fullname" . }}
+  labels:
+    {{- include "one-chart.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- if and (.Values.service.type) (eq .Values.service.type "LoadBalancer") }}
+    metallb.universe.tf/allow-shared-ip: {{ include "one-chart.fullname" . }}
+    metallb.io/ip-allocated-from-pool: {{ .Values.service.ipPool | default "homelab-local-pool" }}
+    {{- end }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  {{- if .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.service.port | default 80 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "one-chart.selectorLabels" . | nindent 4 }}
