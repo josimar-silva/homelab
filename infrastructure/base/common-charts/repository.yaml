@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: homelab
+  namespace: flux-system
+spec:
+  type: "oci"
+  url: oci://ghcr.io/josimar-silva/homelab
+  interval: 24h
+  timeout: 5m
+  secretRef:
+    name: homelab-oci
