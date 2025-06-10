@@ -1,0 +1,179 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: speedtest-tracker-db-release
+  namespace: speedtest-tracker
+spec:
+  interval: 1h # for drifting resources
+  releaseName: speedtest-tracker-db
+  targetNamespace: speedtest-tracker
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+    version: '0.3.x'
+    interval: 12h # for checking of a new chart
+  values:
+    homelab:
+      category: database
+      realm: storage
+    
+    nameOverride: speedtest-tracker-db
+
+    image:
+      repository: "postgres"
+      tag: "15.1"
+
+    replicaCount: 1
+
+    strategy:
+      type: RollingUpdate
+
+    nodeSelector:
+      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
+
+    persistentVolume:
+      enabled: true
+      storageClass: "longhorn-default-sc"
+      size: "10Gi"
+      mountPath: /var/lib/postgresql/data
+      accessModes:
+        - ReadWriteOnce
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: POSTGRES_DB
+            value: "speedtest_tracker"
+          - name: POSTGRES_USER
+            value: "speedy"
+      fromSecret:
+        enabled: true
+        secrets:
+          - speedtest-tracker-secret
+
+    service:
+      type: ClusterIP
+      port: 5432
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500Mi
+      requests:
+        cpu: 300m
+        memory: 256Mi
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: speedtest-tracker-release
+  namespace: speedtest-tracker
+spec:
+  interval: 1h # for drifting resources
+  releaseName: speedtest-tracker
+  targetNamespace: speedtest-tracker
+  dependsOn:
+    - name: speedtest-tracker-db-release
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+    version: '0.3.x'
+  values:
+    homelab:
+      category: apps
+      realm: network
+
+    nameOverride: speedtest-tracker
+
+    image:
+      repository: "lscr.io/linuxserver/speedtest-tracker"
+      tag: "1.6.0"
+
+    replicaCount: 1
+
+    strategy:
+      type: Recreate
+
+    nodeSelector:
+      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
+
+    persistentVolume:
+      enabled: true
+      storageClass: "longhorn-default-sc"
+      size: "5Gi"
+      mountPath: /config
+      accessModes:
+        - ReadWriteOnce
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: DB_CONNECTION
+            value: pgsql
+          - name: DB_HOST
+            value: speedtest-tracker-db.speedtest-tracker.svc.cluster.local
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_DATABASE
+            value: speedtest_tracker
+          - name: DB_USERNAME
+            value: speedy
+          - name: SPEEDTEST_SCHEDULE
+            value: "6 */2 * * *"
+          - name: SPEEDTEST_SERVERS
+            value: "49459,48042,8198,70395"
+          - name: APP_URL
+            value: "https://speedtest.from-gondor.com"
+      fromSecret:
+        enabled: true
+        secrets:
+          - speedtest-tracker-secret
+
+    dns:
+      enabled: true
+      policy: None
+      config:
+        nameservers:
+          - 10.96.0.10
+          - 8.8.8.8
+        searches:
+          - speedtest-tracker.speedtest-tracker.svc.cluster.local
+        options:
+          - name: ndots
+            value: '5'
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    internalIngress:
+      enabled: true
+      className: internal-ingress
+      annotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: true
+      hosts:
+        - host: speedtest.from-gondor.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        secretName: speedtest-tracker-tls
+        clusterIssuer: letsencrypt-production
+        hosts:
+          - speedtest.from-gondor.com
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500Mi
+      requests:
+        cpu: 300m
+        memory: 256Mi
