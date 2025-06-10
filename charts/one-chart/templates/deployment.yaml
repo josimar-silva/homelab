@@ -116,3 +116,32 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if and .Values.dns .Values.dns.enabled }}
+      {{ if .Values.dns.enabled }}
+      {{- with .Values.dns.policy }}
+      dnsPolicy: {{ . }}
+      {{- end }}
+      {{- with .Values.dns.config }}
+      dnsConfig:
+        {{- if .nameservers }}
+        nameservers:
+          {{- range .nameservers }}
+          - {{ . }}
+          {{- end }}
+        {{- end }}
+        {{- if .options }}
+        options:
+          {{- range .options }}
+          - name: {{ .name }}
+            value: {{ .value | quote }}
+          {{- end }}
+        {{- end }}
+        {{- if .searches }}
+        searches:
+          {{- range .searches }}
+          - {{ . }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- end }}

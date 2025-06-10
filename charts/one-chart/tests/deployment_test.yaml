@@ -349,3 +349,50 @@ tests:
           content:
             configMapRef:
               name: my-configmap
+
+  - it: should render DNS configuration when dns.enabled is true
+    set:
+      dns:
+        enabled: true
+        policy: "ClusterFirst"
+        config:
+          nameservers:
+            - "8.8.8.8"
+            - "8.8.4.4"
+          searches:
+            - "default.svc.cluster.local"
+          options:
+            - name: "ndots"
+              value: "5"
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: "ClusterFirst"
+      - contains:
+          path: spec.template.spec.dnsConfig.nameservers
+          content: "8.8.8.8"
+      - contains:
+          path: spec.template.spec.dnsConfig.nameservers
+          content: "8.8.4.4"
+      - contains:
+          path: spec.template.spec.dnsConfig.searches
+          content: "default.svc.cluster.local"
+      - contains:
+          path: spec.template.spec.dnsConfig.options
+          content:
+            name: "ndots"
+            value: "5"
+
+  - it: should not render DNS configuration when dns.enabled is false
+    set:
+      dns:
+        enabled: false
+    asserts:
+      - isKind:
+          of: Deployment
+      - notExists:
+          path: spec.template.spec.dnsPolicy
+      - notExists:
+          path: spec.template.spec.dnsConfig

@@ -107,6 +107,23 @@ internalIngress:
     # hosts:
     #   - chart-example.local
 
+# -- DNS configuration for the application
+dns:
+  #   -- Enable DNS configuration
+  enabled: false
+  #   -- DNS policy. Defaults to ClusterFirst
+  #   policy: ClusterFirst
+  #   -- DNS configuration
+  # config:
+  #   nameservers:
+  #     - 8.8.8.8
+  #     - 8.8.4.4
+  #   searches:
+  #     - my-svc.namespace.svc.cluster.local
+  #   options:
+  #     - name: ndots
+  #       value: '5'
+
 # -- Resource requests and limits
 resources: {}
   # limits:
