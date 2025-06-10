@@ -11,3 +11,15 @@ spec:
     kind: HelmRepository
     name: homelab
 ---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
+  name: postgresql
+  namespace: flux-system
+spec:
+  interval: 12h
+  chart: postgresql
+  version: '16.7.x'
+  sourceRef:
+    kind: HelmRepository
+    name: bitnami
