@@ -25,6 +25,33 @@ nameOverride: ""
 # -- Override the full resource name
 fullnameOverride: ""
 
+# -- Environment variables for the deployment
+environmentVariables:
+#   -- Container environment variables
+  container:
+#     -- Enabled environment variables at the container level
+    enabled: false
+#     -- Environment variables to set in the container
+#     variables:
+#       - name: AN_ENVIRONMENT_VARIABLE
+#         value: "potato"
+#       - name: ANOTHER_ENVIRONMENT_VARIABLE 
+#         value: "other potato"
+#   -- Environment variables from secrets
+  fromSecret:
+#     -- Enabled environment variables from secrets
+    enabled: false
+#     -- List with the name of the secrets to mount as environment variables
+#     secrets:
+#       - some-secret
+#   -- Environment variables from config maps
+  fromConfigMap:
+#     -- Enabled environment variables from config maps
+    enabled: false
+#     -- List with the name of the config maps to mount as environment variables
+#     configMaps: 
+#       - some-configmap
+
 # -- Annotations for the pod
 podAnnotations: {}
 

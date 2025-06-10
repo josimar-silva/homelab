@@ -1,14 +1,23 @@
 # one-chart
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
+
+**Homepage:** <https://github.com/josimar-silva/homelab/tree/main/charts/one-chart>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Josimar Silva | <josimar-silva@from-gondor.com> |  |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
+| environmentVariables | object | `{"container":{"enabled":false},"fromConfigMap":{"enabled":false},"fromSecret":{"enabled":false}}` | Environment variables for the deployment |
 | fullnameOverride | string | `""` | Override the full resource name |
 | homelab | object | `{"category":"apps","realm":"playground"}` | Homelab settings |
 | homelab.category | string | `"apps"` | Homelab category label. Defaults to "apps". |
