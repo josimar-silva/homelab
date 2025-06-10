@@ -155,7 +155,7 @@ spec:
       enabled: true
       className: internal-ingress
       annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: true
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
       hosts:
         - host: speedtest.from-gondor.com
           paths:
