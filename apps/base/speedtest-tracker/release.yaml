@@ -11,7 +11,6 @@ spec:
     kind: HelmChart
     name: one-chart
     namespace: flux-system
-    version: '0.3.x'
   values:
     homelab:
       category: database
@@ -26,7 +25,7 @@ spec:
     replicaCount: 1
 
     strategy:
-      type: RollingUpdate
+      type: Recreate
 
     nodeSelector:
       middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
@@ -79,7 +78,6 @@ spec:
     kind: HelmChart
     name: one-chart
     namespace: flux-system
-    version: '0.3.x'
   values:
     homelab:
       category: apps
