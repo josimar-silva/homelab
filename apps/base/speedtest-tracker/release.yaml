@@ -12,7 +12,6 @@ spec:
     name: one-chart
     namespace: flux-system
     version: '0.3.x'
-    interval: 12h # for checking of a new chart
   values:
     homelab:
       category: database
