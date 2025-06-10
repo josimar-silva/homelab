@@ -22,3 +22,7 @@ jobs:
       - name: Validate Rivendell infrastructure
         run: |
           kustomize build infrastructure/rivendell
+
+      - name: Validate Rivendell apps
+        run: |
+          kustomize build apps/rivendell
