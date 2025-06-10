@@ -98,7 +98,7 @@ spec:
       type: Recreate
 
     nodeSelector:
-      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
+      middle-earth-cluster.from-gondor.com/category: hobbit-md-i5
 
     persistentVolume:
       enabled: true
