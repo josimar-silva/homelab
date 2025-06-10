@@ -29,7 +29,7 @@ tests:
           of: Deployment
       - equal:
           path: metadata.labels["helm.sh/chart"]
-          value: "one-chart-0.1.0"
+          value: "one-chart-0.2.0"
       - equal:
           path: metadata.labels["app.kubernetes.io/version"]
           value: "1.16.0"
@@ -198,3 +198,154 @@ tests:
           content:
             name: test-release-one-chart
             mountPath: /data
+
+  - it: should render env when environmentVariables.container.enabled is true
+    set:
+      image.tag: "1.16.0"
+      environmentVariables:
+        container:
+          enabled: true
+          variables:
+            - name: FOO
+              value: bar
+            - name: BAR
+              value: baz
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: FOO
+            value: bar
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: BAR
+            value: baz
+
+  - it: should render envFrom with only secretRefs when only fromSecret.enabled is true
+    set:
+      image.tag: "1.16.0"
+      environmentVariables:
+        fromSecret:
+          enabled: true
+          secrets:
+            - my-secret
+            - another-secret
+        fromConfigMap:
+          enabled: false
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-secret
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: another-secret
+
+  - it: should render envFrom with only configMapRefs when only fromConfigMap.enabled is true
+    set:
+      image.tag: "1.16.0"
+      environmentVariables:
+        fromSecret:
+          enabled: false
+        fromConfigMap:
+          enabled: true
+          configMaps:
+            - my-configmap
+            - another-configmap
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: my-configmap
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: another-configmap
+
+  - it: should render envFrom with both secretRefs and configMapRefs when both are enabled
+    set:
+      image.tag: "1.16.0"
+      environmentVariables:
+        fromSecret:
+          enabled: true
+          secrets:
+            - my-secret
+        fromConfigMap:
+          enabled: true
+          configMaps:
+            - my-configmap
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-secret
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: my-configmap
+
+  - it: should not render envFrom when neither fromSecret.enabled nor fromConfigMap.enabled is true
+    set:
+      image.tag: "1.16.0"
+      environmentVariables:
+        fromSecret:
+          enabled: false
+        fromConfigMap:
+          enabled: false
+    asserts:
+      - isKind:
+          of: Deployment
+      - notExists:
+          path: spec.template.spec.containers[0].envFrom
+
+  - it: should render both env and envFrom when both container.enabled and fromSecret/fromConfigMap.enabled are true
+    set:
+      image.tag: "1.16.0"
+      environmentVariables:
+        container:
+          enabled: true
+          variables:
+            - name: FOO
+              value: bar
+        fromSecret:
+          enabled: true
+          secrets:
+            - my-secret
+        fromConfigMap:
+          enabled: true
+          configMaps:
+            - my-configmap
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: FOO
+            value: bar
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-secret
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: my-configmap

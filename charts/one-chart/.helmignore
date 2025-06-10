@@ -21,3 +21,6 @@
 .idea/
 *.tmproj
 .vscode/
+
+# Helm unit test files
+tests/__snapshot__
