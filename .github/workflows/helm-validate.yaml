@@ -9,10 +9,10 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: "🔄 Checkout repo"
         uses: actions/checkout@v3
 
-      - name: Set up Helm 
+      - name: "⎈ Set up Helm"
         uses: d3adb5/helm-unittest-action@v2
         with:
           helm-version: '3.10.0'
@@ -21,12 +21,12 @@ jobs:
       - name: Lint all charts
         run: |
             for chart in charts/*/; do
-            echo "Linting chart: $chart"
+            echo "🔍 Linting chart: $chart"
             helm lint "$chart"
             done
       - name: Run helm unittest on all charts
         run: |
             for chart in charts/*/; do
-            echo "Running unittest on chart: $chart"
+            echo "🧪 Running unittest on chart: $chart"
             helm unittest "$chart"
             done

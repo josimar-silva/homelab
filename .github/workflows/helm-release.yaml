@@ -11,24 +11,39 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: "🔄 Checkout repo"
         uses: actions/checkout@v3
 
-      - name: Set up Helm 
+      - name: "⎈ Set up Helm"
         uses: d3adb5/helm-unittest-action@v2
         with:
           helm_version: '3.10.0'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - run: helm lint charts/one-chart
-      - run: helm unittest charts/one-chart
+    
+      - name: "🔍 Lint all charts"
+        run: |
+            for chart in charts/*/; do
+            echo "🔍 Linting | homelab/$chart"
+            helm lint "$chart"
+            done
 
-      - name: Push Chart | homelab/one-chart
+      - name: "🧪 Run helm unittest on all charts"
+        run: |
+            for chart in charts/*/; do
+            echo "🧪 Running unittest | homelab/$chart"
+            helm unittest "$chart"
+            done
+      
+      - name: "🏷️ Chart Version | homelab/one-chart"
+        id: chart_version
+        run: echo "version=$(helm show chart charts/one-chart | grep '^version:' | awk '{print $2}')" >> $GITHUB_ENV
+
+      - name: "🚀 Push Chart | homelab/one-chart"
         uses: appany/helm-oci-chart-releaser@v0.4.2
         with:
           name: one-chart
           repository: josimar-silva/homelab
-          tag: 0.1.0
+          tag: ${{ env.version }}
           path: charts/one-chart
           registry: ghcr.io
           registry_username: ${{ secrets.REGISTRY_USERNAME }}
