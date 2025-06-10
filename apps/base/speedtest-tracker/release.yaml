@@ -9,59 +9,27 @@ spec:
   targetNamespace: speedtest-tracker
   chartRef:
     kind: HelmChart
-    name: one-chart
+    name: postgresql
     namespace: flux-system
   values:
-    homelab:
-      category: database
-      realm: storage
-    
-    nameOverride: speedtest-tracker-db
+    global:
+      defaultStorageClass: "longhorn-default-sc"
 
-    image:
-      repository: "postgres"
-      tag: "15.1"
+      postgresql:
+        auth:
+          database: speedtest_tracker
+          username: speedy
+          existingSecret: speedtest-tracker-secret
+          secretKeys:
+            adminPasswordKey: "DB_PASSWORD"
+            userPasswordKey: "DB_PASSWORD"
+            replicationPasswordKey: "DB_PASSWORD"
 
-    replicaCount: 1
+    primary:
+      podLabels:
+        homelab.category: database
+        homelab.realm: storage
 
-    strategy:
-      type: Recreate
-
-    nodeSelector:
-      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
-
-    persistentVolume:
-      enabled: true
-      storageClass: "longhorn-default-sc"
-      size: "10Gi"
-      mountPath: /var/lib/postgresql/data
-      accessModes:
-        - ReadWriteOnce
-
-    environmentVariables:
-      container:
-        enabled: true
-        variables:
-          - name: POSTGRES_DB
-            value: "speedtest_tracker"
-          - name: POSTGRES_USER
-            value: "speedy"
-      fromSecret:
-        enabled: true
-        secrets:
-          - speedtest-tracker-secret
-
-    service:
-      type: ClusterIP
-      port: 5432
-
-    resources:
-      limits:
-        cpu: 500m
-        memory: 500Mi
-      requests:
-        cpu: 300m
-        memory: 256Mi
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -116,7 +84,7 @@ spec:
           - name: DB_CONNECTION
             value: pgsql
           - name: DB_HOST
-            value: speedtest-tracker-db.speedtest-tracker.svc.cluster.local
+            value: speedtest-tracker-db-postgresql.speedtest-tracker.svc.cluster.local
           - name: DB_PORT
             value: "5432"
           - name: DB_DATABASE
