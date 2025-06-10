@@ -2,6 +2,11 @@ apiVersion: v2
 name: one-chart
 description: One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 type: application
+home: https://github.com/josimar-silva/homelab/tree/main/charts/one-chart
+icon: https://github.com/josimar-silva/homelab/tree/main/charts/one-chart/icon.png
+maintainers:
+  - name: Josimar Silva
+    email: josimar-silva@from-gondor.com
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
