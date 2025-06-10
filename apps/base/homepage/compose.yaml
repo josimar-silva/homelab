@@ -1,0 +1,13 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports:
+      - 3000:3000
+    volumes:
+      - /home/silva/projects/homelab/apps/base/homepage/config:/app/config # Make sure your local config directory exists
+      - /home/silva/projects/homelab/apps/base/homepage/images:/app/public/images # Make sure your local static directory exists
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: gethomepage.dev # required, may need port. See gethomepage.dev/installation/#homepage_allowed_hosts
+      PUID: 1000
+      PGID: 1000

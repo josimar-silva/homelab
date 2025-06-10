@@ -1,0 +1,17 @@
+title: Welcome to Middle Earth Cluster
+
+description: |
+  This is the homepage of the Middle Earth Cluster, a platform for running distributed applications.
+  You can find more information about the cluster and how to use it in the documentation.
+
+startUrl: https://custom.url
+
+logo: /static/logo.png
+
+theme: dark
+
+headerStyle: boxedWidgets
+base: http://host.local/homepage
+
+language: en
+

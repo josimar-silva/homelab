@@ -1,0 +1,23 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/info-widgets/
+# https://technotim.live/posts/homepage-dashboard/
+
+- resources:
+    cpu: true
+    memory: true
+    disk: /
+
+# - search:
+#     provider: duckduckgo
+#     target: _blank
+
+- search:
+    provider: google
+    target: _blank
+
+- weather:
+    provider: open-meteo
+    location: "Berlin,DE"
+    units: metric
+    target: _blank

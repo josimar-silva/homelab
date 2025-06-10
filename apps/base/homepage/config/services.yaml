@@ -1,0 +1,18 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services/
+
+- Media:
+    - Plex:
+        href: http://localhost/
+        description: Homepage is awesome
+
+- Network:
+    - PiHole:
+        href: https://pihole.from-gondor.com
+        description: PiHole is a DNS sinkhole that protects your network from unwanted content
+
+- IoT:
+    - HomeAssistant:
+        href: http://localhost/
+        description: Homepage is 😎
