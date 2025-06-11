@@ -8,3 +8,4 @@ resources:
   - ingress-nginx
   - internal-dns
   - internal-ingress
+  - renovate

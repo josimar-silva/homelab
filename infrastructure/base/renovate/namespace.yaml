@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: renovate
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: monitoring
