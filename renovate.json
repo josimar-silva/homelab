@@ -1,8 +1,23 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "flux": {
+    "managerFilePatterns": ["/\\.yaml$/"]
+  },
   "kubernetes": {
     "fileMatch": [
       "\\.yaml$"
     ]
-  }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/)release\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "registryUrl:\\s+(?<registryUrl>[^\\s]*?)\\s+chart:\\s+(?<depName>[^\\s]*?)\\s+version:\\s+\"(?<currentValue>[^\"]*?)\""
+      ],
+      "datasourceTemplate": "helm"
+    }
+  ]
 }
