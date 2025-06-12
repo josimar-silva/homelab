@@ -4,9 +4,10 @@ metadata:
   name: one-chart
   namespace: flux-system
 spec:
-  interval: 12h
+  #renovate: registryUrl=oci://ghcr.io/josimar-silva/homelab
   chart: one-chart
-  version: '0.3.x'
+  version: 0.3.x
+  interval: 12h
   sourceRef:
     kind: HelmRepository
     name: homelab
@@ -17,9 +18,10 @@ metadata:
   name: postgresql
   namespace: flux-system
 spec:
-  interval: 12h
+  #renovate: registryUrl=oci://registry-1.docker.io/bitnamicharts
   chart: postgresql
   version: '16.7.x'
+  interval: 12h
   sourceRef:
     kind: HelmRepository
     name: bitnami

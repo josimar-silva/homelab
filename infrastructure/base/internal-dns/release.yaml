@@ -9,6 +9,7 @@ spec:
   targetNamespace: internal-dns
   chart:
     spec:
+      #renovate: registryUrl=https://kubernetes-sigs.github.io/external-dns
       chart: external-dns
       version: 1.16.x
       interval: 12h # for checking of a new chart

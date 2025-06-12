@@ -10,6 +10,7 @@ spec:
   targetNamespace: longhorn-system
   chart:
     spec:
+      #renovate: registryUrl=https://charts.longhorn.io
       chart: longhorn
       version: 1.9.x
       interval: 12h # for checking of a new chart

@@ -9,7 +9,7 @@ spec:
   targetNamespace: cert-manager
   chart:
     spec:
-      # renovate: registryUrl=https://charts.jetstack.io
+      #renovate: registryUrl=https://charts.jetstack.io
       chart: cert-manager
       version: v1.17.x
       interval: 12h # for checking of a new chart

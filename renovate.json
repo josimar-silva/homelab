@@ -1,10 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "flux": {
-    "managerFilePatterns": ["\\.yaml$"]
+    "managerFilePatterns": ["(^|/)\\.ya?ml$"]
   },
   "kubernetes": {
-    "fileMatch": ["\\.yaml$"]
+    "fileMatch": ["(^|/)\\.ya?ml$"]
   },
   "customManagers": [
     {
@@ -14,6 +14,24 @@
         "^\\s*#renovate:\\s*registryUrl=(?<registryUrl>[^\\s]*?)\\s+chart:\\s+(?<depName>[^\\s]*?)\\s+version:\\s+\"(?<currentValue>[^\"]*?)\""
       ],
       "datasourceTemplate": "helm"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)(release|chart)s?\\.ya?ml$"],
+      "matchStrings": [
+        "^\\s*#renovate:\\s*registryUrl=oci:\/\/(?<namespace>[^\\s]*?)\\s+chart:\\s+(?<depName>[^\\s]*?)\\s+version:\\s+\"(?<currentValue>[^'\"]*?)\""
+      ],
+      "packageNameTemplate": "{{namespace}}/{{depName}}",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)release\\.ya?ml$"],
+      "matchStrings": [
+        "repository:\\s*[\"']?(?<repository>[^\"'\\s]+)[\"']?\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ],
+      "packageNameTemplate": "{{repository}}",
+      "datasourceTemplate": "docker"
     }
   ]
 }
