@@ -4,25 +4,14 @@
     "managerFilePatterns": ["\\.yaml$"]
   },
   "kubernetes": {
-    "fileMatch": [ "\\.yaml$"]
+    "fileMatch": ["\\.yaml$"]
   },
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)release\\.ya?ml$"
-      ],
-      "matchStrings": [
-        "registryUrl:\\s+(?<registryUrl>[^\\s]*?)\\s+chart:\\s+(?<depName>[^\\s]*?)\\s+version:\\s+\"(?<currentValue>[^\"]*?)\""
-      ],
-      "datasourceTemplate": "helm"
-    }
-  ],
-  "regexManagers": [
-    {
       "fileMatch": ["(^|/)release\\.ya?ml$"],
       "matchStrings": [
-        "registryUrl=(?<registryUrl>.*?)\n *chart: (?<depName>.*?)\n *version: (?<currentValue>.*)\n"
+        "^\\s*#renovate:\\s*registryUrl=(?<registryUrl>[^\\s]*?)\\s+chart:\\s+(?<depName>[^\\s]*?)\\s+version:\\s+\"(?<currentValue>[^\"]*?)\""
       ],
       "datasourceTemplate": "helm"
     }

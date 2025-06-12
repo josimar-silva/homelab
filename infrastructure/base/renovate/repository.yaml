@@ -1,0 +1,9 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: mend-renovate
+  namespace: flux-system
+spec:
+  url: https://mend.github.io/renovate-ce-ee
+  interval: 24h
+  timeout: 5m

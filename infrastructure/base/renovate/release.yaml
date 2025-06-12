@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mend-renovate
+  namespace: renovate
+spec:
+  interval: 1h # for drifting resources
+  releaseName: mend-renovate-ce
+  targetNamespace: renovate
+  chart:
+    spec:
+      #renovate: registryUrl=https://mend.github.io/renovate-ce-ee
+      chart: mend-renovate-ce
+      version: 10.2.0
+      interval: 12h # for checking of a new chart
+      sourceRef:
+        kind: HelmRepository
+        name: mend-renovate
+        namespace: flux-system
+  values:
+    renovate:
+      mendRnvAcceptTos: y
+      mendRnvPlatform: github
+      mendRnvGithubBotUserId: "215854695"
+      existingSecret: mend-renovate
+      mendRnvAutoDiscoverFilter: "josimar-silva/homelab"
+      logLevel: debug
+      extraEnvVars:
+        - name: RENOVATE_AUTODISCOVER
+          value: "true"
+        - name: RENOVATE_GIT_AUTHOR
+          value: "Radagast Bot <215854695+radagastbot[bot]@users.noreply.github.com>"
+
+    cachePersistence:
+      enabled: true
+      storageClass: "longhorn-default-sc"
+      size: 5Gi
+    
+    ingress:
+      enabled: true
+      ingressClassName: internal-ingress
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: 100m
+        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+      hosts:
+        - host: renovate.from-gondor.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: renovate-tls
+          hosts:
+            - renovate.from-gondor.com
