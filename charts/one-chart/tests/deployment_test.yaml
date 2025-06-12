@@ -396,3 +396,13 @@ tests:
           path: spec.template.spec.dnsPolicy
       - notExists:
           path: spec.template.spec.dnsConfig
+
+  - it: should set the container name to the release name
+    set:
+      image.tag: "1.16.0"
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: test-release
