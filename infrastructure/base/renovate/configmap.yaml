@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: renovate-configmap
-  namespace: renovate
-data:
-  RENOVATE_AUTODISCOVER: "true"
-  RENOVATE_GIT_AUTHOR: "Radagast Bot <215854695+radagastbot[bot]@users.noreply.github.com>"
-  RENOVATE_PLATFORM: "github"
