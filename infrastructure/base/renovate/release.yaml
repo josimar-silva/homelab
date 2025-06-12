@@ -1,12 +1,47 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
+  name: mend-renovate-db-release
+  namespace: renovate
+spec:
+  interval: 1h # for drifting resources
+  releaseName: mend-renovate-db
+  targetNamespace: renovate
+  chartRef:
+    kind: HelmChart
+    name: postgresql
+    namespace: flux-system
+  values:
+    global:
+      defaultStorageClass: "longhorn-default-sc"
+
+      postgresql:
+        auth:
+          database: renovate
+          username: renovate
+          existingSecret: mend-renovate
+          secretKeys:
+            adminPasswordKey: "pgPassword"
+            userPasswordKey: "pgPassword"
+            replicationPasswordKey: "pgPassword"
+
+    primary:
+      podLabels:
+        homelab.category: database
+        homelab.realm: storage
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
   name: mend-renovate
   namespace: renovate
 spec:
   interval: 1h # for drifting resources
   releaseName: mend-renovate-ce
   targetNamespace: renovate
+  dependsOn:
+    - name: mend-renovate-db-release
   chart:
     spec:
       #renovate: registryUrl=https://mend.github.io/renovate-ce-ee
@@ -22,35 +57,43 @@ spec:
       mendRnvAcceptTos: y
       mendRnvPlatform: github
       mendRnvGithubBotUserId: "215854695"
-      existingSecret: mend-renovate
       mendRnvAutoDiscoverFilter: "josimar-silva/homelab"
+      existingSecret: mend-renovate
       logLevel: debug
       extraEnvVars:
+        - name: MEND_RNV_DEBUG_MODE
+          value: "true"
         - name: RENOVATE_AUTODISCOVER
           value: "true"
         - name: RENOVATE_GIT_AUTHOR
           value: "Radagast Bot <215854695+radagastbot[bot]@users.noreply.github.com>"
+        - name: MEND_RNV_GITHUB_PEM_FILE_PATH
+          value: "/usr/src/app/radagastbot/renovate.private-key.pem"
+      
+    podSecurityContext:
+      fsGroup: 1000
+
+    postgresql:
+      enabled: true
+      host: mend-renovate-db-postgresql.renovate.svc.cluster.local
+      port: 5432
+      database: renovate
+      user: renovate
 
     cachePersistence:
       enabled: true
       storageClass: "longhorn-default-sc"
-      size: 5Gi
+      size: 1Gi
     
     ingress:
-      enabled: true
-      ingressClassName: internal-ingress
-      annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/proxy-body-size: 100m
-        nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-        nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-      hosts:
-        - host: renovate.from-gondor.com
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-      tls:
-        - secretName: renovate-tls
-          hosts:
-            - renovate.from-gondor.com
+      enabled: false
+
+    extraVolumes:
+      - name: github-radagastbot-pem
+        secret:
+          secretName: github-renovate-private-key
+
+    extraVolumeMounts:
+      - name: github-radagastbot-pem
+        mountPath: /usr/src/app/radagastbot
+        readOnly: true
