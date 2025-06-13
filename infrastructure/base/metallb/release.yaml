@@ -7,6 +7,13 @@ spec:
   interval: 1h # for drifting resources
   releaseName: metallb
   targetNamespace: metallb
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
   chart:
     spec:
       #renovate: registryUrl=https://metallb.github.io/metallb
@@ -21,8 +28,6 @@ spec:
     controller:
       image:
         repository: quay.io/metallb/controller
-        tag: "v0.14.9"
     speaker:
       image:
         repository: quay.io/metallb/speaker
-        tag: "v0.14.9"
