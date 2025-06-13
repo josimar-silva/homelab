@@ -6,7 +6,7 @@ metadata:
 spec:
   #renovate: registryUrl=oci://ghcr.io/josimar-silva/homelab
   chart: one-chart
-  version: 0.3.x
+  version: 0.3.2
   interval: 12h
   sourceRef:
     kind: HelmRepository
@@ -20,7 +20,7 @@ metadata:
 spec:
   #renovate: registryUrl=oci://registry-1.docker.io/bitnamicharts
   chart: postgresql
-  version: '16.7.x'
+  version: 16.7.11
   interval: 12h
   sourceRef:
     kind: HelmRepository
