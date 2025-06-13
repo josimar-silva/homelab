@@ -12,7 +12,7 @@
       "customType": "regex",
       "fileMatch": ["(^|/)release\\.ya?ml$"],
       "matchStrings": [
-        "^\\s*#renovate:\\s*registryUrl=(?<registryUrl>[^\\s]*?)\\s+chart:\\s+(?<depName>[^\\s]*?)\\s+version:\\s+\"(?<currentValue>[^\"]*?)\""
+        "#renovate:\\s*registryUrl=(?<registryUrl>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
       ],
       "datasourceTemplate": "helm"
     },
@@ -20,7 +20,7 @@
       "customType": "regex",
       "fileMatch": ["(^|/)(release|chart)s?\\.ya?ml$"],
       "matchStrings": [
-        "^\\s*#renovate:\\s*registryUrl=oci:\/\/(?<namespace>[^\\s]*?)\\s+chart:\\s+(?<depName>[^\\s]*?)\\s+version:\\s+\"(?<currentValue>[^'\"]*?)\""
+        "#renovate:\\s*registryUrl=oci:\/\/(?<namespace>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
       ],
       "packageNameTemplate": "{{namespace}}/{{depName}}",
       "datasourceTemplate": "docker"
