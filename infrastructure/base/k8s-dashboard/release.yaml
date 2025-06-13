@@ -1,0 +1,33 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+spec:
+  interval: 1h # for drifting resources
+  releaseName: kubernetes-dashboard
+  targetNamespace: kubernetes-dashboard
+  chart:
+    spec:
+      #renovate: registryUrl=https://kubernetes.github.io/dashboard
+      chart: kubernetes-dashboard
+      version: 7.13.0
+      interval: 12h # for checking of a new chart
+      sourceRef:
+        kind: HelmRepository
+        name: kubernetes-dashboard
+        namespace: flux-system
+  values:
+    app:
+      ingress:
+        enabled: true
+        ingressClassName: internal-ingress
+        useDefaultAnnotations: true
+        hosts:
+          - k8s.from-gondor.com
+        issuer:
+          name: letsencrypt-production
+          scope: cluster
+        tls:
+          enabled: true
+          secretName: k8s-dashboard-tls

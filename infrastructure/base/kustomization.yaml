@@ -9,3 +9,4 @@ resources:
   - internal-dns
   - internal-ingress
   - renovate
+  - k8s-dashboard
