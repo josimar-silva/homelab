@@ -6,7 +6,7 @@ metadata:
 spec:
   #renovate: registryUrl=oci://ghcr.io/josimar-silva/homelab
   chart: one-chart
-  version: 0.3.2
+  version: 0.3.3
   interval: 12h
   sourceRef:
     kind: HelmRepository
