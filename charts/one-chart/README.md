@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -31,7 +31,6 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | internalIngress.className | string | `"internal-ingress"` | Ingress class name. Defaults to "internal-ingress" |
 | internalIngress.enabled | bool | `false` | Enable internal ingress |
 | internalIngress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts and paths |
-| livenessProbe | object | `{"httpGet":{"path":"/","port":"http"}}` | Liveness probe configuration |
 | nameOverride | string | `""` | Override the chart name |
 | nodeSelector | object | `{}` | Node selector for pod scheduling |
 | persistentVolume.accessModes | list | `["ReadWriteOnce"]` | Access modes for PVC. Defaults to ReadWriteOnce |
@@ -42,7 +41,6 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | podAnnotations | object | `{}` | Annotations for the pod |
 | podLabels | object | `{}` | Additional labels for the pod |
 | podSecurityContext | object | `{}` | Pod-level security context |
-| readinessProbe | object | `{"httpGet":{"path":"/","port":"http"}}` | Readiness probe configuration |
 | replicaCount | int | `1` | Number of replicas for the deployment |
 | resources | object | `{}` | Resource requests and limits |
 | securityContext | object | `{}` | Container-level security context |
