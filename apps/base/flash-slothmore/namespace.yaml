@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flash-slothmore
+  labels:
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: automation
