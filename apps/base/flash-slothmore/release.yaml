@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: "ghcr.io/josimar-silva/flash-slothmore"
-      tag: "0.2.2"
+      tag: "0.2.3"
 
     replicaCount: 1
 
@@ -35,7 +35,7 @@ spec:
       type: Recreate
 
     nodeSelector:
-      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
+      middle-earth-cluster.from-gondor.com/category: hobbit-md-i5
 
     service:
       type: ClusterIP
@@ -44,10 +44,10 @@ spec:
     resources:
       limits:
         cpu: 500m
-        memory: 300Mi
+        memory: 500Mi
       requests:
-        cpu: 200m
-        memory: 100Mi
+        cpu: 300m
+        memory: 300Mi
 
     livenessProbe:
       httpGet:
