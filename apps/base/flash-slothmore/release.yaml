@@ -35,7 +35,7 @@ spec:
       type: Recreate
 
     nodeSelector:
-      middle-earth-cluster.from-gondor.com/category: hobbit-sm-i3
+      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
 
     service:
       type: ClusterIP
