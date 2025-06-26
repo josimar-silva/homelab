@@ -406,3 +406,21 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].name
           value: test-release
+
+  - it: should render imagePullSecrets when set
+    set:
+      image.tag: "1.16.0"
+      imagePullSecrets:
+        - name: my-secret
+        - name: another-secret
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.imagePullSecrets
+          content:
+            name: my-secret
+      - contains:
+          path: spec.template.spec.imagePullSecrets
+          content:
+            name: another-secret
