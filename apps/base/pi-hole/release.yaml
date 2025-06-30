@@ -86,11 +86,19 @@ spec:
         image: ghcr.io/lovelaze/nebula-sync
         tag: "v0.11.0"
         imagePullPolicy: IfNotPresent
+        ports:
+          - name: http
+            containerPort: 8080
+            protocol: TCP
         envFrom:
           - secretRef:
               name: nebula-sync-credentials
           - configMapRef:
               name: nebula-sync-config
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
 
     DNS1: "1.1.1.1"
     DNS2: "8.8.8.8"
