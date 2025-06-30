@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nebula-sync-config
+  namespace: pihole
+data:
+  FULL_SYNC: "false"
+  RUN_GRAVITY: "false"
+  CRON: "*/10 * * * *"
+  CLIENT_SKIP_TLS_VERIFICATION: "true"
+  TZ: "Europe/Berlin"
+  SYNC_CONFIG_DNS: "true"
+  SYNC_CONFIG_DHCP: "false"
+  SYNC_CONFIG_NTP: "true"
+  SYNC_CONFIG_RESOLVER: "false"
+  SYNC_CONFIG_DATABASE: "false"
+  SYNC_CONFIG_MISC: "true"
+  SYNC_CONFIG_DEBUG: "true"
+  SYNC_GRAVITY_DHCP_LEASES: "false"
+  SYNC_GRAVITY_GROUP: "false"
+  SYNC_GRAVITY_AD_LIST: "true"
+  SYNC_GRAVITY_AD_LIST_BY_GROUP: "true"
+  SYNC_GRAVITY_DOMAIN_LIST: "true"
+  SYNC_GRAVITY_DOMAIN_LIST_BY_GROUP: "true"
+  SYNC_GRAVITY_CLIENT: "false"
+  SYNC_GRAVITY_CLIENT_BY_GROUP: "false"
+

@@ -81,6 +81,17 @@ spec:
         metallb.universe.tf/allow-shared-ip: pihole-svc
       type: LoadBalancer
 
+    extraContainers:
+      - name: nebula-sync
+        image: ghcr.io/lovelaze/nebula-sync
+        tag: "v0.11.0"
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - secretRef:
+              name: nebula-sync-credentials
+          - configMapRef:
+              name: nebula-sync-config
+
     DNS1: "8.8.8.8"
     DNS2: "8.8.4.4"
     privileged: true
