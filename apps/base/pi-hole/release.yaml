@@ -81,25 +81,6 @@ spec:
         metallb.universe.tf/allow-shared-ip: pihole-svc
       type: LoadBalancer
 
-    # extraContainers:
-    #   - name: nebula-sync
-    #     image: ghcr.io/lovelaze/nebula-sync
-    #     tag: "v0.11.0"
-    #     imagePullPolicy: IfNotPresent
-    #     ports:
-    #       - name: http
-    #         containerPort: 8080
-    #         protocol: TCP
-    #     envFrom:
-    #       - secretRef:
-    #           name: nebula-sync-credentials
-    #       - configMapRef:
-    #           name: nebula-sync-config
-    #     livenessProbe:
-    #       httpGet:
-    #         path: /health
-    #         port: http
-
     DNS1: "1.1.1.1"
     DNS2: "8.8.8.8"
     privileged: true
@@ -282,3 +263,56 @@ spec:
       - youtu.be
       - youtube-nocookie.com
       - yt3.ggpht.com
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nebula-sync-release
+  namespace: pihole
+spec:
+  dependsOn:
+    - name: pihole-release
+  interval: 1h
+  releaseName: nebula-sync
+  targetNamespace: pihole
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  values:
+    homelab:
+      category: apps
+      realm: network
+
+    image:
+      repository: ghcr.io/lovelaze/nebula-sync
+      tag: "v0.11.0"
+      pullPolicy: IfNotPresent
+    
+    strategy:
+      type: Recreate
+    
+    replicaCount: 1
+    
+    environmentVariables:
+      fromSecret:
+        enabled: true
+        secrets:
+          - nebula-sync-credentials
+      fromConfigMap:
+        enabled: true
+        configMaps:
+          - nebula-sync-config
+
+    service:
+      port: 8080
+
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http
+
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: http
