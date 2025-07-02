@@ -76,6 +76,32 @@ spec:
           value: "Radagast Bot <215854695+radagastbot[bot]@users.noreply.github.com>"
         - name: MEND_RNV_GITHUB_PEM_FILE_PATH
           value: "/usr/src/app/radagastbot/renovate.private-key.pem"
+        - name: GHCR_REGISTRY_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: ghcr-renovate-credentials
+              key: username
+        - name: GHCR_REGISTRY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ghcr-renovate-credentials
+              key: password
+      config: |
+        module.exports = {
+          secrets: {
+            GHCR_REGISTRY_USERNAME: process.env.GHCR_REGISTRY_USERNAME,
+            GHCR_REGISTRY_PASSWORD: process.env.GHCR_REGISTRY_PASSWORD,
+          },
+          "hostRules": [
+            {
+              "matchHost": "ghcr.io",
+              "encrypted": {
+                "username": "$GHCR_REGISTRY_USERNAME",
+                "password": "$GHCR_REGISTRY_PASSWORD"
+              }
+            }
+          ],
+        };
       
     podSecurityContext:
       fsGroup: 1000
