@@ -284,6 +284,8 @@ spec:
       category: apps
       realm: network
 
+    nameOverride: nebula-sync
+
     image:
       repository: ghcr.io/lovelaze/nebula-sync
       tag: "v0.11.0"
@@ -293,6 +295,12 @@ spec:
       type: Recreate
     
     replicaCount: 1
+
+    onepassword:
+      enabled: true
+      vault: "Homelab"
+      item: "Nebula Sync"
+      secretName: nebula-sync-credentials
     
     environmentVariables:
       fromSecret:
