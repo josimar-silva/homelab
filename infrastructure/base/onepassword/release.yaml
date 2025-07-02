@@ -17,6 +17,14 @@ spec:
         kind: HelmRepository
         name: onepassword
         namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+
   values:
     connect:
       applicationName: onepassword-connect
@@ -27,6 +35,7 @@ spec:
         homelab.realm: security
     operator:
       create: true
+      applicationName: onepassword-operator
       autoRestart: true
       serviceAccountToken:
         name: onepassword-credentials
