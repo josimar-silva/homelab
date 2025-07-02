@@ -88,14 +88,14 @@ spec:
 
     admin:
       enabled: true
-      existingSecret: pihole
+      existingSecret: pihole-credentials
       passwordKey: password
 
     dnsmasq:
       customDnsEntries:
-      - address=/minas-tirith.homelab.lan/192.168.68.120
-      - address=/pihole.homelab.lan/192.168.68.201
       - address=/pihole.from-gondor.com/192.168.68.201
+      - address=/pihole-replica-01.from-gondor.com/192.168.68.116
+      - address=/minas-tirith.from-gondor.com/192.168.68.120
       
     adlists:
       - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/light.txt
