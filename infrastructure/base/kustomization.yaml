@@ -10,3 +10,4 @@ resources:
   - internal-ingress
   - renovate
   - k8s-dashboard
+  - onepassword
