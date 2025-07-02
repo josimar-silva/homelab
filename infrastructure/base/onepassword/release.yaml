@@ -25,6 +25,14 @@ spec:
     remediation:
       retries: 3
 
+  # This is a workaround to set the operator service account token 
+  # from a Secret, as the Helm chart does not support it directly.
+  valuesFrom:
+    - kind: Secret
+      name: onepassword-credentials
+      valuesKey: 1password-service-account
+      targetPath: operator.serviceAccountToken.value
+
   values:
     connect:
       applicationName: onepassword-connect
@@ -37,9 +45,8 @@ spec:
       create: true
       applicationName: onepassword-operator
       autoRestart: true
-      serviceAccountToken:
-        name: onepassword-credentials
-        key: 1password-service-account
+      # serviceAccountToken:
+        # value: "set by fluxcd from a secret"
       annotations:
         homelab.category: secret-management
         homelab.realm: security
