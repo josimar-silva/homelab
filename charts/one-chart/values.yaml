@@ -171,6 +171,17 @@ persistentVolume:
   # -- Mount path for the persistent volume. Defaults to /data
   mountPath: /data
 
+# -- 1Password integration settings
+onepassword:
+  # -- Enable creating a OnePasswordItem to generate a Kubernetes Secret.
+  enabled: false
+  # -- The name of the 1Password vault.
+  vault: "Homelab"
+  # -- The name of the item within the vault.
+  item: ""
+  # -- The name of the Kubernetes Secret to be created by the operator. Defaults to <Release Name>-onepassword.
+  secretName: ""
+
 # -- Node selector for pod scheduling
 nodeSelector: {}
 

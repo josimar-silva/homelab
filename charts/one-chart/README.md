@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -33,6 +33,11 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | internalIngress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts and paths |
 | nameOverride | string | `""` | Override the chart name |
 | nodeSelector | object | `{}` | Node selector for pod scheduling |
+| onepassword | object | `{"enabled":false,"item":"","secretName":"","vault":"Homelab"}` | 1Password integration settings |
+| onepassword.enabled | bool | `false` | Enable creating a OnePasswordItem to generate a Kubernetes Secret. |
+| onepassword.item | string | `""` | The name of the item within the vault. |
+| onepassword.secretName | string | `""` | The name of the Kubernetes Secret to be created by the operator. Defaults to <Release Name>-onepassword. |
+| onepassword.vault | string | `"Homelab"` | The name of the 1Password vault. |
 | persistentVolume.accessModes | list | `["ReadWriteOnce"]` | Access modes for PVC. Defaults to ReadWriteOnce |
 | persistentVolume.enabled | bool | `false` | Enable persistent volume claim |
 | persistentVolume.mountPath | string | `"/data"` | Mount path for the persistent volume. Defaults to /data |
