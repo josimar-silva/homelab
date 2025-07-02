@@ -87,6 +87,12 @@ spec:
       accessModes:
         - ReadWriteOnce
 
+    onepassword:
+      enabled: true
+      vault: "Homelab"
+      item: "Speedtest Tracker"
+      secretName: "speedtest-tracker-secret"
+
     environmentVariables:
       container:
         enabled: true
