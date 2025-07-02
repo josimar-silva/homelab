@@ -88,19 +88,13 @@ spec:
               key: password
       config: |
         module.exports = {
-          secrets: {
-            GHCR_REGISTRY_USERNAME: process.env.GHCR_REGISTRY_USERNAME,
-            GHCR_REGISTRY_PASSWORD: process.env.GHCR_REGISTRY_PASSWORD,
-          },
           "hostRules": [
             {
               "matchHost": "ghcr.io",
-              "encrypted": {
-                "username": "$GHCR_REGISTRY_USERNAME",
-                "password": "$GHCR_REGISTRY_PASSWORD"
-              }
+              "username": process.env.GHCR_REGISTRY_USERNAME,
+              "password": process.env.GHCR_REGISTRY_PASSWORD
             }
-          ],
+          ]
         };
       
     podSecurityContext:
