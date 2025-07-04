@@ -7,7 +7,7 @@ spec:
   interval: 2h
   retryInterval: 5m
   timeout: 5m
-  path: ./infrastructure/rivendell
+  path: ./infrastructure/gondor
   prune: true
   sourceRef:
     kind: GitRepository
