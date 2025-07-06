@@ -45,7 +45,7 @@ spec:
             - containerPort: 2000
               name: http-metrics
           
-          environment:
+          env:
             - name: TUNNEL_TOKEN
               valueFrom:
                 secretKeyRef:
