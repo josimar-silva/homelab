@@ -1,0 +1,96 @@
+{{- if .Values.cloudflared.enabled -}}
+
+{{- $cloudflaredFullname := printf "cloudflared-%s" (include "one-chart.fullname" .) }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $cloudflaredFullname }}
+  labels:
+    {{- include "one-chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "one-chart.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.cloudflared.replicaCount }}
+  template:
+    metadata:
+      {{- with .Values.cloudflared.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "one-chart.labels" . | nindent 8 }}
+        {{- with .Values.cloudflared.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: cloudflared
+          image: "{{ .Values.cloudflared.image.repository }}:{{ .Values.cloudflared.image.tag }}"
+          args:
+            - tunnel
+            - --config
+            - /etc/cloudflared/config/config.yaml
+            - run
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 2000
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          ports:
+            - containerPort: 2000
+              name: http-metrics
+          
+          environment:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $cloudflaredFullname }}
+                  key: tunnel-token
+
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared/config
+              readOnly: true
+
+      restartPolicy: Always
+
+      volumes:
+        - name: config
+          configMap:
+            name: {{ $cloudflaredFullname }}
+            items:
+              - key: config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $cloudflaredFullname }}
+  labels:
+    {{- include "one-chart.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    tunnel: {{ .Values.cloudflared.tunnel.name }}
+
+    metrics: 0.0.0.0:2000
+
+    no-autoupdate: true
+    ingress:
+    - hostname: {{ .Values.cloudflared.tunnel.publicHostname }}
+      service: {{ .Values.cloudflared.tunnel.localHostname }}
+    - service: http_status:404
+---
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: {{ $cloudflaredFullname }}
+  labels:
+    {{- include "one-chart.labels" . | nindent 4 }}
+spec:
+  itemPath: "vaults/{{ .Values.cloudflared.onepassword.vault }}/items/{{ .Values.cloudflared.onepassword.item }}"
+{{- end -}}

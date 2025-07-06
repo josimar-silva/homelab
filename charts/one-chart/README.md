@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -17,6 +17,19 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
+| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2025.7.0"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"replicaCount":2,"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
+| cloudflared.enabled | bool | `false` | Enable Cloudflared deployment |
+| cloudflared.image | object | `{"repository":"cloudflare/cloudflared","tag":"2025.7.0"}` | Cloudflared image repository |
+| cloudflared.onepassword | object | `{"item":"","vault":"Homelab"}` | 1Password integration settings for Cloudflared credentials |
+| cloudflared.onepassword.item | string | `""` | The name of the item within the vault containing Cloudflared credentials |
+| cloudflared.onepassword.vault | string | `"Homelab"` | The name of the 1Password vault where Cloudflared credentials are stored |
+| cloudflared.podAnnotations | object | `{}` | Annotations for the Cloudflared pod |
+| cloudflared.podLabels | object | `{}` | Additional labels for the Cloudflared pod |
+| cloudflared.replicaCount | int | `2` | Number of replicas for the Cloudflared deployment |
+| cloudflared.tunnel | object | `{"localHostname":"","name":"","publicHostname":""}` | Tunnel configuration |
+| cloudflared.tunnel.localHostname | string | `""` | Local service hostname to expose through the tunnel |
+| cloudflared.tunnel.name | string | `""` | Name of the Cloudflare tunnel |
+| cloudflared.tunnel.publicHostname | string | `""` | Public hostname for the tunnel |
 | dns | object | `{"enabled":false}` | DNS configuration for the application |
 | environmentVariables | object | `{"container":{"enabled":false},"fromConfigMap":{"enabled":false},"fromSecret":{"enabled":false}}` | Environment variables for the deployment |
 | fullnameOverride | string | `""` | Override the full resource name |
@@ -30,7 +43,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | internalIngress.annotations | object | `{}` | Annotations for the ingress |
 | internalIngress.className | string | `"internal-ingress"` | Ingress class name. Defaults to "internal-ingress" |
 | internalIngress.enabled | bool | `false` | Enable internal ingress |
-| internalIngress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts and paths |
+| internalIngress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific","port":"http"}]}]` | Ingress hosts and paths |
 | nameOverride | string | `""` | Override the chart name |
 | nodeSelector | object | `{}` | Node selector for pod scheduling |
 | onepassword | object | `{"enabled":false,"item":"","secretName":"","vault":"Homelab"}` | 1Password integration settings |
@@ -53,6 +66,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | service.port | int | `80` | Service port. Defaults to 80. Kept for backward compatibility. Use `ports` for multiple ports. |
 | service.ports | list | `[]` | Service ports. Takes precedence over `service.port`. |
 | service.type | string | `"ClusterIP"` | Kubernetes service type. Defaults to ClusterIP. |
+| strategy | object | `{}` | Deployment strategy |
 | tolerations | list | `[]` | Tolerations for pod scheduling |
 | volumeMounts | list | `[]` | Additional volume mounts for the container |
 | volumes | list | `[]` | Additional volumes for the pod |

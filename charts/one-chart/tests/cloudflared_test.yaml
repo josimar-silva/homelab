@@ -1,0 +1,191 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Cloudflared template tests
+templates:
+  - ../templates/cloudflared.yaml
+release:
+  name: test-release
+  namespace: test-namespace
+
+tests:
+  - it: should not render cloudflared resources when cloudflared.enabled is false
+    set:
+      cloudflared:
+        enabled: false
+    asserts:
+      - hasDocuments: 
+          count: 0
+
+  - it: should render cloudflared Deployment, ConfigMap and OnePasswordItem when cloudflared.enabled is true
+    set:
+      cloudflared:
+        enabled: true
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+        onepassword:
+          vault: MyVault
+          item: MyCloudflaredItem
+    asserts:
+      - hasDocuments:
+          count: 3
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - isKind:
+          of: ConfigMap
+        documentIndex: 1
+      - isKind:
+          of: OnePasswordItem
+        documentIndex: 2
+
+  - it: should render the cloudflared Deployment with correct name and labels
+    set:
+      cloudflared:
+        enabled: true
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - equal:
+          path: metadata.name
+          value: cloudflared-test-release-one-chart
+        documentIndex: 0
+      - matchRegex:
+          path: metadata.labels["helm.sh/chart"]
+          pattern: ^one-chart-[0-9]+\.[0-9]+\.[0-9]+$
+        documentIndex: 0
+
+  - it: should render the cloudflared ConfigMap with correct name and data
+    set:
+      cloudflared:
+        enabled: true
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+    asserts:
+      - isKind:
+          of: ConfigMap
+        documentIndex: 1
+      - equal:
+          path: metadata.name
+          value: cloudflared-test-release-one-chart
+        documentIndex: 1
+      - equal:
+          path: data["config.yaml"]
+          value: |
+            tunnel: my-tunnel
+
+            metrics: 0.0.0.0:2000
+
+            no-autoupdate: true
+            ingress:
+            - hostname: myapp.example.com
+              service: myapp-service:80
+            - service: http_status:404
+        documentIndex: 1
+
+  - it: should render the cloudflared OnePasswordItem with correct name and itemPath
+    set:
+      cloudflared:
+        enabled: true
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+        onepassword:
+          vault: MyVault
+          item: MyCloudflaredItem
+    asserts:
+      - isKind:
+          of: OnePasswordItem
+        documentIndex: 2
+      - equal:
+          path: metadata.name
+          value: cloudflared-test-release-one-chart
+        documentIndex: 2
+      - equal:
+          path: spec.itemPath
+          value: "vaults/MyVault/items/MyCloudflaredItem"
+        documentIndex: 2
+
+  - it: should set cloudflared image and pull policy
+    set:
+      cloudflared:
+        enabled: true
+        image:
+          repository: my-custom-cloudflared
+          tag: latest
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "my-custom-cloudflared:latest"
+        documentIndex: 0
+
+  - it: should set cloudflared pod annotations
+    set:
+      cloudflared:
+        enabled: true
+        podAnnotations:
+          my-annotation: my-value
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - equal:
+          path: spec.template.metadata.annotations["my-annotation"]
+          value: my-value
+        documentIndex: 0
+
+  - it: should set cloudflared pod labels
+    set:
+      cloudflared:
+        enabled: true
+        podLabels:
+          my-label: my-value
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - equal:
+          path: spec.template.metadata.labels["my-label"]
+          value: my-value
+        documentIndex: 0
+
+  - it: should set the cloudflared replica count
+    set:
+      cloudflared:
+        enabled: true
+        replicaCount: 3
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - equal:
+          path: spec.replicas
+          value: 3
+        documentIndex: 0
