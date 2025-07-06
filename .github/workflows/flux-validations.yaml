@@ -19,10 +19,10 @@ jobs:
           curl -s https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh | bash
           sudo mv kustomize /usr/local/bin
 
-      - name: Validate Rivendell infrastructure
+      - name: Validate Gondor infrastructure
         run: |
-          kustomize build infrastructure/rivendell
+          kustomize build infrastructure/gondor
 
-      - name: Validate Rivendell apps
+      - name: Validate Gondor apps
         run: |
-          kustomize build apps/rivendell
+          kustomize build apps/gondor
