@@ -57,11 +57,22 @@ spec:
           paths:
             - path: /
               pathType: ImplementationSpecific
+              port: http
       tls:
         secretName: hello-from-gondor-frontend-tls
         clusterIssuer: letsencrypt-production
         hosts:
           - hello.internal.from-gondor.com
+    
+    cloudflared:
+      enabled: true
+      tunnel:
+        name: hello-from-gondor
+        publicHostname: hello.from-gondor.com
+        localHostname: hello.internal.from-gondor.com
+      onepassword:
+        vault: Homelab
+        item: "[Cloudflare Tunnel] Hello from Gondor"
 
     resources:
       limits:
