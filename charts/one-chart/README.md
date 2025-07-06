@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -50,7 +50,8 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | resources | object | `{}` | Resource requests and limits |
 | securityContext | object | `{}` | Container-level security context |
 | service.annotations | object | `{}` | Annotations for the service |
-| service.port | int | `80` | Service port. Defaults to 80. |
+| service.port | int | `80` | Service port. Defaults to 80. Kept for backward compatibility. Use `ports` for multiple ports. |
+| service.ports | list | `[]` | Service ports. Takes precedence over `service.port`. |
 | service.type | string | `"ClusterIP"` | Kubernetes service type. Defaults to ClusterIP. |
 | tolerations | list | `[]` | Tolerations for pod scheduling |
 | volumeMounts | list | `[]` | Additional volume mounts for the container |

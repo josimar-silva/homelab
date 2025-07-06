@@ -71,3 +71,53 @@ tests:
       - equal:
           path: spec.ports[0].port
           value: 1234
+
+  - it: should render a Service with multiple ports when service.ports is set
+    set:
+      service:
+        ports:
+          - name: http
+            port: 80
+            containerPort: 8080
+          - name: admin
+            port: 8081
+            containerPort: 9090
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 8080
+      - equal:
+          path: spec.ports[1].name
+          value: admin
+      - equal:
+          path: spec.ports[1].port
+          value: 8081
+      - equal:
+          path: spec.ports[1].targetPort
+          value: 9090
+
+  - it: should fall back to service.port when service.ports is empty
+    set:
+      service:
+        port: 1234
+        ports: []
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.ports[0].port
+          value: 1234
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - lengthEqual:
+          path: spec.ports
+          count: 1

@@ -18,9 +18,18 @@ spec:
   loadBalancerIP: {{ .Values.service.loadBalancerIP }}
   {{- end }}
   ports:
+    {{- if .Values.service.ports }}
+    {{- range .Values.service.ports }}
+    - port: {{ .port }}
+      targetPort: {{ .containerPort }}
+      protocol: {{ .protocol | default "TCP" }}
+      name: {{ .name }}
+    {{- end }}
+    {{- else }}
     - port: {{ .Values.service.port | default 80 }}
       targetPort: http
       protocol: TCP
       name: http
+    {{- end }}
   selector:
     {{- include "one-chart.selectorLabels" . | nindent 4 }}

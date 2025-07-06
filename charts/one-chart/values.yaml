@@ -78,8 +78,18 @@ service:
   # loadBalancerIP: ""
   # -- MetalLB IP pool name
   # ipPool: ""
-  # -- Service port. Defaults to 80.
+  # -- Service port. Defaults to 80. Kept for backward compatibility. Use `ports` for multiple ports.
   port: 80
+  # -- Service ports. Takes precedence over `service.port`.
+  ports: []
+    # - name: http
+    #   port: 80
+    #   containerPort: 80
+    #   protocol: TCP
+    # - name: metrics
+    #   port: 9091
+    #   containerPort: 9091
+    #   protocol: TCP
   # -- Annotations for the service
   annotations: {}
 
