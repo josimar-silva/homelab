@@ -66,10 +66,11 @@ spec:
     
     cloudflared:
       enabled: true
+      replicaCount: 1
       tunnel:
         name: hello-from-gondor
         publicHostname: hello.from-gondor.com
-        localHostname: hello.internal.from-gondor.com
+        localHostname: http://hello-from-gondor-frontend:3000
       onepassword:
         vault: Homelab
         item: "[Cloudflare Tunnel] Hello from Gondor"
