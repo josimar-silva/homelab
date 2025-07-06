@@ -107,6 +107,7 @@ internalIngress:
       paths:
         - path: /
           pathType: ImplementationSpecific
+          port: http
   # -- TLS configuration for ingress
   # -- tls:
     # -- Secret name for TLS certificate
@@ -200,3 +201,36 @@ tolerations: []
 
 # -- Affinity rules for pod scheduling
 affinity: {}
+
+
+# -- Deployment strategy
+strategy: {}
+
+# -- Cloudflared settings
+cloudflared:
+  # -- Enable Cloudflared deployment
+  enabled: false
+  # -- Number of replicas for the Cloudflared deployment
+  replicaCount: 2
+  # -- Cloudflared image repository
+  image:
+    repository: cloudflare/cloudflared
+    tag: 2025.7.0
+  # -- Annotations for the Cloudflared pod
+  podAnnotations: {}
+  # -- Additional labels for the Cloudflared pod
+  podLabels: {}
+  # -- Tunnel configuration
+  tunnel:
+    # -- Name of the Cloudflare tunnel
+    name: ""
+    # -- Public hostname for the tunnel
+    publicHostname: ""
+    # -- Local service hostname to expose through the tunnel
+    localHostname: ""
+  # -- 1Password integration settings for Cloudflared credentials
+  onepassword:
+    # -- The name of the 1Password vault where Cloudflared credentials are stored
+    vault: "Homelab"
+    # -- The name of the item within the vault containing Cloudflared credentials
+    item: ""

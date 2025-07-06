@@ -39,7 +39,7 @@ spec:
               service:
                 name: {{ include "one-chart.fullname" $ }}
                 port:
-                  number: {{ $.Values.service.port }}
+                  name: {{ .port | default "http" }}
           {{- end }}
     {{- end }}
 {{- end }}
