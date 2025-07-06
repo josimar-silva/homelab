@@ -1,0 +1,90 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: hello-from-gondor-frontend-release
+  namespace: hello-from-gondor
+spec:
+  interval: 1h # for drifting resources
+  releaseName: hello-from-gondor-frontend
+  targetNamespace: hello-from-gondor
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: apps
+      realm: network
+
+    nameOverride: hello-from-gondor-frontend
+
+    image:
+      repository: "ghcr.io/josimar-silva/homelab-landing-page/frontend"
+      tag: "0.1.0"
+    
+    imagePullSecrets:
+      - name: ghcr-auth
+
+    replicaCount: 4
+
+    strategy:
+      type: Recreate
+
+    service:
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 3000
+          containerPort: 3000
+        - name: management
+          port: 9091
+          containerPort: 9091
+
+    internalIngress:
+      enabled: true
+      className: internal-ingress
+      annotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      hosts:
+        - host: hello.internal.from-gondor.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        secretName: hello-from-gondor-frontend-tls
+        clusterIssuer: letsencrypt-production
+        hosts:
+          - hello.internal.from-gondor.com
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+    livenessProbe:
+      httpGet:
+        path: /api/health
+        port: management
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 10
+
+    readinessProbe:
+      httpGet:
+        path: /api/health
+        port: management
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
