@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -17,7 +17,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
-| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2025.7.0"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"enabled":false,"interval":"30s","path":"/metrics","port":2000,"scrapeTimeout":"10s"},"replicaCount":2,"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
+| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2025.7.0"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"enabled":false,"interval":"30s","path":"/metrics","port":2000,"scrapeTimeout":"10s"},"replicaCount":2,"strategy":{"type":"Recreate"},"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
 | cloudflared.enabled | bool | `false` | Enable Cloudflared deployment |
 | cloudflared.image | object | `{"repository":"cloudflare/cloudflared","tag":"2025.7.0"}` | Cloudflared image repository |
 | cloudflared.onepassword | object | `{"item":"","vault":"Homelab"}` | 1Password integration settings for Cloudflared credentials |
@@ -32,6 +32,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | cloudflared.prometheus.port | int | `2000` | Port to scrape metrics from for Cloudflared |
 | cloudflared.prometheus.scrapeTimeout | string | `"10s"` | Scrape timeout for Cloudflared |
 | cloudflared.replicaCount | int | `2` | Number of replicas for the Cloudflared deployment |
+| cloudflared.strategy | object | `{"type":"Recreate"}` | Deployment strategy |
 | cloudflared.tunnel | object | `{"localHostname":"","name":"","publicHostname":""}` | Tunnel configuration |
 | cloudflared.tunnel.localHostname | string | `""` | Local service hostname to expose through the tunnel |
 | cloudflared.tunnel.name | string | `""` | Name of the Cloudflare tunnel |

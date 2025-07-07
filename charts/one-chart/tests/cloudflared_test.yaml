@@ -308,3 +308,37 @@ tests:
       - notExists:
           path: spec.template.metadata.annotations["prometheus.io/scrape_timeout"]
         documentIndex: 0
+
+  - it: should have a recreate deployment strategy by default
+    set:
+      cloudflared:
+        enabled: true
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+        documentIndex: 0
+
+  - it: should have a rolling update deployment strategy
+    set:
+      cloudflared:
+        enabled: true
+        strategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxUnavailable: 50%
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+        documentIndex: 0
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 50%
+        documentIndex: 0

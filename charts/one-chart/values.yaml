@@ -228,6 +228,9 @@ cloudflared:
   image:
     repository: cloudflare/cloudflared
     tag: 2025.7.0
+  # -- Deployment strategy
+  strategy:
+    type: Recreate
   # -- Annotations for the Cloudflared pod
   podAnnotations: {}
   # -- Additional labels for the Cloudflared pod
