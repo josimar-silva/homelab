@@ -247,3 +247,64 @@ tests:
             app.kubernetes.io/instance: test-release
             app.kubernetes.io/component: cloudflared
         documentIndex: 0
+
+  - it: should render prometheus annotations when cloudflared.prometheus.enabled is true
+    set:
+      cloudflared:
+        enabled: true
+        prometheus:
+          enabled: true
+          port: 2000
+          path: /metrics
+          interval: 30s
+          scrapeTimeout: 10s
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/scrape"]
+          value: "true"
+        documentIndex: 0
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/port"]
+          value: "2000"
+        documentIndex: 0
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/path"]
+          value: "/metrics"
+        documentIndex: 0
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/interval"]
+          value: "30s"
+        documentIndex: 0
+      - equal:
+          path: spec.template.metadata.annotations["prometheus.io/scrape_timeout"]
+          value: "10s"
+        documentIndex: 0
+
+  - it: should not render prometheus annotations when cloudflared.prometheus.enabled is false
+    set:
+      cloudflared:
+        enabled: true
+        prometheus:
+          enabled: false
+    asserts:
+      - isKind:
+          of: Deployment
+        documentIndex: 0
+      - notExists:
+          path: spec.template.metadata.annotations["prometheus.io/scrape"]
+        documentIndex: 0
+      - notExists:
+          path: spec.template.metadata.annotations["prometheus.io/port"]
+        documentIndex: 0
+      - notExists:
+          path: spec.template.metadata.annotations["prometheus.io/path"]
+        documentIndex: 0
+      - notExists:
+          path: spec.template.metadata.annotations["prometheus.io/interval"]
+        documentIndex: 0
+      - notExists:
+          path: spec.template.metadata.annotations["prometheus.io/scrape_timeout"]
+        documentIndex: 0

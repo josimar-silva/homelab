@@ -93,6 +93,18 @@ service:
   # -- Annotations for the service
   annotations: {}
 
+prometheus:
+  # -- Enable Prometheus scraping
+  enabled: false
+  # -- Port to scrape metrics from
+  port: 80
+  # -- Path to scrape metrics from
+  path: /metrics
+  # -- Interval at which to scrape metrics
+  interval: 30s
+  # -- Scrape timeout
+  scrapeTimeout: 10s
+
 internalIngress:
   # -- Enable internal ingress
   enabled: false
@@ -234,3 +246,15 @@ cloudflared:
     vault: "Homelab"
     # -- The name of the item within the vault containing Cloudflared credentials
     item: ""
+  # -- Prometheus settings for Cloudflared
+  prometheus:
+    # -- Enable Prometheus scraping for Cloudflared
+    enabled: false
+    # -- Port to scrape metrics from for Cloudflared
+    port: 2000
+    # -- Path to scrape metrics from for Cloudflared
+    path: /metrics
+    # -- Interval at which to scrape metrics for Cloudflared
+    interval: 30s
+    # -- Scrape timeout for Cloudflared
+    scrapeTimeout: 10s
