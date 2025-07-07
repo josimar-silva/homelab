@@ -32,10 +32,17 @@ spec:
     imagePullSecrets:
       - name: ghcr-auth
 
-    replicaCount: 4
+    replicaCount: 2
 
     strategy:
-      type: Recreate
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 50%
+
+    prometheus:
+      enabled: true
+      port: 9091
+      path: "api/metrics"
 
     service:
       type: ClusterIP
@@ -66,7 +73,11 @@ spec:
     
     cloudflared:
       enabled: true
-      replicaCount: 1
+      replicaCount: 2
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 50%
       tunnel:
         name: hello-from-gondor
         publicHostname: hello.from-gondor.com
@@ -74,6 +85,8 @@ spec:
       onepassword:
         vault: Homelab
         item: "[Cloudflare Tunnel] Hello from Gondor"
+      prometheus:
+        enabled: true
 
     resources:
       limits:
