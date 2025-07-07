@@ -11,7 +11,7 @@ spec:
     spec:
       #renovate: registryUrl=https://1password.github.io/connect-helm-charts
       chart: connect
-      version: 2.0.0
+      version: 2.0.1
       interval: 12h # for checking of a new chart
       sourceRef:
         kind: HelmRepository
