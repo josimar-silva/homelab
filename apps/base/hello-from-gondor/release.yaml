@@ -58,21 +58,7 @@ spec:
       enabled: false
     
     cloudflared:
-      enabled: true
-      replicaCount: 2
-      strategy:
-        type: RollingUpdate
-        rollingUpdate:
-          maxUnavailable: 50%
-      tunnel:
-        name: hello-from-gondor
-        publicHostname: hello.from-gondor.com/api
-        localHostname: http://hello-from-gondor-backend:8080
-      onepassword:
-        vault: Homelab
-        item: "[Cloudflare Tunnel] Hello from Gondor"
-      prometheus:
-        enabled: true
+      enabled: false
 
     resources:
       limits:
@@ -131,7 +117,7 @@ spec:
 
     image:
       repository: "ghcr.io/josimar-silva/homelab-landing-page/frontend"
-      tag: "0.2.0"
+      tag: "0.2.1"
     
     imagePullSecrets:
       - name: ghcr-auth
@@ -177,7 +163,7 @@ spec:
     
     cloudflared:
       enabled: true
-      replicaCount: 2
+      replicaCount: 4
       strategy:
         type: RollingUpdate
         rollingUpdate:
