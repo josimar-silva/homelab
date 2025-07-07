@@ -11,7 +11,7 @@ spec:
     spec:
       #renovate: registryUrl=https://kubernetes.github.io/ingress-nginx
       chart: ingress-nginx
-      version: 4.12.x
+      version: 4.13.x
       interval: 12h # for checking of a new chart
       sourceRef:
         kind: HelmRepository
