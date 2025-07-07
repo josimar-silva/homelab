@@ -1,12 +1,116 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
+  name: hello-from-gondor-backend-release
+  namespace: hello-from-gondor
+spec:
+  interval: 1h # for drifting resources
+  releaseName: hello-from-gondor-backend
+  targetNamespace: hello-from-gondor
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: apps
+      realm: network
+
+    nameOverride: hello-from-gondor-backend
+
+    image:
+      repository: "ghcr.io/josimar-silva/homelab-landing-page/backend"
+      tag: "0.1.0-SNAPSHOT"
+    
+    imagePullSecrets:
+      - name: ghcr-auth
+
+    replicaCount: 2
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 50%
+
+    prometheus:
+      enabled: true
+      port: 9000
+      path: "/q/metrics"
+
+    service:
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 8080
+          containerPort: 8080
+        - name: management
+          port: 9000
+          containerPort: 9000
+
+    internalIngress:
+      enabled: false
+    
+    cloudflared:
+      enabled: true
+      replicaCount: 2
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 50%
+      tunnel:
+        name: hello-from-gondor
+        publicHostname: hello.from-gondor.com/api
+        localHostname: http://hello-from-gondor-backend:8080
+      onepassword:
+        vault: Homelab
+        item: "[Cloudflare Tunnel] Hello from Gondor"
+      prometheus:
+        enabled: true
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+    livenessProbe:
+      httpGet:
+        path: /q/health/live
+        port: management
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 10
+
+    readinessProbe:
+      httpGet:
+        path: /q/health/ready
+        port: management
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
   name: hello-from-gondor-frontend-release
   namespace: hello-from-gondor
 spec:
   interval: 1h # for drifting resources
   releaseName: hello-from-gondor-frontend
   targetNamespace: hello-from-gondor
+  dependsOn:
+    - name: hello-from-gondor-backend
   chartRef:
     kind: HelmChart
     name: one-chart
