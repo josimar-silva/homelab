@@ -110,7 +110,7 @@ spec:
   releaseName: hello-from-gondor-frontend
   targetNamespace: hello-from-gondor
   dependsOn:
-    - name: hello-from-gondor-backend
+    - name: hello-from-gondor-backend-release
   chartRef:
     kind: HelmChart
     name: one-chart
@@ -131,7 +131,7 @@ spec:
 
     image:
       repository: "ghcr.io/josimar-silva/homelab-landing-page/frontend"
-      tag: "0.1.0"
+      tag: "0.2.0"
     
     imagePullSecrets:
       - name: ghcr-auth
