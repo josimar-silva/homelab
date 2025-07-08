@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: "ghcr.io/josimar-silva/homelab-landing-page/backend"
-      tag: "0.1.0-SNAPSHOT"
+      tag: "0.2.0-SNAPSHOT"
     
     imagePullSecrets:
       - name: ghcr-auth
