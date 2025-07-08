@@ -117,7 +117,7 @@ spec:
 
     image:
       repository: "ghcr.io/josimar-silva/homelab-landing-page/frontend"
-      tag: "0.2.1"
+      tag: "0.3.0"
     
     imagePullSecrets:
       - name: ghcr-auth
