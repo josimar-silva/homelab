@@ -451,6 +451,42 @@ tests:
           path: spec.template.spec.containers[0].name
           value: test-release
 
+  - it: should render extra containers when extraContainers is set
+    set:
+      extraContainers:
+        - name: logwatcher
+          image: some-registry/logwatcher
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 5Mi
+            limits:
+              cpu: 100m
+              memory: 5Mi
+          volumeMounts:
+          - name: logs
+            mountPath: /var/log/mylogs
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers
+          content:
+            name: logwatcher
+            image: some-registry/logwatcher
+            imagePullPolicy: Always
+            resources:
+              requests:
+                cpu: 100m
+                memory: 5Mi
+              limits:
+                cpu: 100m
+                memory: 5Mi
+            volumeMounts:
+            - name: logs
+              mountPath: /var/log/mylogs
+
   - it: should render imagePullSecrets when set
     set:
       image.tag: "1.16.0"

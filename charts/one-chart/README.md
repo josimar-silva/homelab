@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -39,6 +39,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | cloudflared.tunnel.publicHostname | string | `""` | Public hostname for the tunnel |
 | dns | object | `{"enabled":false}` | DNS configuration for the application |
 | environmentVariables | object | `{"container":{"enabled":false},"fromConfigMap":{"enabled":false},"fromSecret":{"enabled":false}}` | Environment variables for the deployment |
+| extraContainers | list | `[]` | Add additional containers |
 | fullnameOverride | string | `""` | Override the full resource name |
 | homelab | object | `{"category":"apps","realm":"playground"}` | Homelab settings |
 | homelab.category | string | `"apps"` | Homelab category label. Defaults to "apps". |
