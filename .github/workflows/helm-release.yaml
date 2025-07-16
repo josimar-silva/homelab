@@ -39,7 +39,7 @@ jobs:
         run: echo "version=$(helm show chart charts/one-chart | grep '^version:' | awk '{print $2}')" >> $GITHUB_ENV
 
       - name: "🚀 Push Chart | homelab/one-chart"
-        uses: appany/helm-oci-chart-releaser@v0.4.2
+        uses: appany/helm-oci-chart-releaser@v0.5.0
         with:
           name: one-chart
           repository: josimar-silva/homelab
