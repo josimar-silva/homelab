@@ -172,6 +172,8 @@ spec:
         name: hello-from-gondor
         publicHostname: hello.from-gondor.com
         localHostname: http://hello-from-gondor-frontend:3000
+        originRequest:
+          keepAliveTimeout: 380s
       onepassword:
         vault: Homelab
         item: "[Cloudflare Tunnel] Hello from Gondor"
