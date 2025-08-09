@@ -1,0 +1,9 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: meilisearch 
+  namespace: flux-system
+spec:
+  url: https://meilisearch.github.io/meilisearch-kubernetes
+  interval: 24h
+  timeout: 5m

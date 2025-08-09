@@ -1,0 +1,293 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: linkwarden-db-release
+  namespace: linkwarden
+spec:
+  interval: 1h # for drifting resources
+  releaseName: linkwarden-db
+  targetNamespace: linkwarden
+  chartRef:
+    kind: HelmChart
+    name: postgresql
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    global:
+      defaultStorageClass: "longhorn-default-sc"
+
+    postgresql:
+      auth:
+        database: postgres
+        username: postgres
+        existingSecret: linkwarden-secret
+        secretKeys:
+          adminPasswordKey: "DB_PASSWORD"
+          userPasswordKey: "DB_PASSWORD"
+          replicationPasswordKey: "DB_PASSWORD"
+
+    primary:
+      podLabels:
+        homelab.category: database
+        homelab.realm: storage
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: meilisearch-release
+  namespace: linkwarden
+spec:
+  interval: 1h # for drifting resources
+  releaseName: meilisearch
+  targetNamespace: linkwarden
+  chart:
+    spec:
+      chart: meilisearch
+      version: 0.2.x
+      interval: 12h # for checking of a new chart
+      sourceRef:
+        kind: HelmRepository
+        name: meilisearch
+        namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      tag: "v1.12.8"
+    existingMasterKeySecret: linkwarden-secret
+    persistence:
+      enabled: true
+      storageClass: "longhorn-default-sc"
+      size: "5Gi"
+    service:
+      type: ClusterIP
+      port: 7700
+    podLabels:
+      homelab.category: database
+      homelab.realm: search
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ollama-release
+  namespace: linkwarden
+spec:
+  interval: 1h # for drifting resources
+  releaseName: ollama
+  targetNamespace: linkwarden
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: apps
+      realm: ai
+
+    nameOverride: ollama
+
+    image:
+      repository: "ollama/ollama"
+      tag: "0.11.4"
+
+    replicaCount: 1
+
+    nodeSelector:
+      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
+
+    persistentVolume:
+      enabled: true
+      storageClass: "longhorn-default-sc"
+      size: "15Gi"
+      mountPath: /root/.ollama
+      accessModes:
+        - ReadWriteOnce
+
+    service:
+      type: ClusterIP
+      port: 11434
+
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 4000Mi
+      requests:
+        cpu: 500m
+        memory: 1000Mi
+
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 11434
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 11434
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: linkwarden-release
+  namespace: linkwarden
+spec:
+  interval: 1h # for drifting resources
+  releaseName: linkwarden
+  targetNamespace: linkwarden
+  dependsOn:
+    - name: linkwarden-db-release
+    - name: meilisearch-release
+    - name: ollama-release
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: apps
+      realm: productivity
+
+    nameOverride: linkwarden
+
+    image:
+      repository: "ghcr.io/linkwarden/linkwarden"
+      tag: "v2.11.5"
+
+    replicaCount: 1
+
+    strategy:
+      type: Recreate
+
+    persistentVolume:
+      enabled: true
+      storageClass: "longhorn-default-sc"
+      size: "5Gi"
+      mountPath: /data/data
+      accessModes:
+        - ReadWriteOnce
+
+    onepassword:
+      enabled: true
+      vault: "Homelab"
+      item: "Linkwarden"
+      secretName: "linkwarden-secret"
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: NEXTAUTH_URL
+            value: "https://linkwarden.from-gondor.com"
+          - name: NEXT_PUBLIC_APP_URL
+            value: "https://linkwarden.from-gondor.com"
+          - name: NEXT_PUBLIC_DISABLE_SIGNUP
+            value: "true"
+          - name: NEXT_PUBLIC_DISABLE_REGISTRATION
+            value: "true"
+          - name: NEXT_PUBLIC_OLLAMA_ENDPOINT_URL
+            value: "http://ollama.linkwarden.svc.cluster.local:11434"
+          - name: NEXT_PUBLIC_OLLAMA_ENABLED
+            value: "true"
+          - name: OLLAMA_MODEL
+            value: "phi4-mini"
+          - name: MEILI_HOST
+            value: "http://meilisearch.linkwarden.svc.cluster.local:7700"
+      fromSecret:
+        enabled: true
+        secrets:
+          - linkwarden-secret
+
+    service:
+      type: ClusterIP
+      port: 3000
+
+    internalIngress:
+      enabled: false
+      className: internal-ingress
+      annotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      hosts:
+        - host: linkwarden.internal.from-gondor.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        secretName: linkwarden-internal-tls
+        clusterIssuer: letsencrypt-production
+        hosts:
+          - linkwarden.internal.from-gondor.com
+
+    cloudflared:
+      enabled: true
+      replicaCount: 1
+      tunnel:
+        name: linkwarden
+        publicHostname: linkwarden.from-gondor.com
+        localHostname: http://linkwarden.linkwarden.svc.cluster.local:3000
+        originRequest:
+          keepAliveTimeout: 4s
+      onepassword:
+        vault: Homelab
+        item: "[Cloudflare Tunnel] Linkwarden"
+
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+      requests:
+        cpu: 1000m
+        memory: 1.5Gi
+
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3

@@ -89,6 +89,7 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | ------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
 | [`flash-slothmore`](https://service.berlin.de/)                          | A bot that crawls the Berlin Service Portal to find available appointments. |
 | [`hello-from-gondor`](https://hello.from-gondor.com)                     | Simple dashboard with basic cluster metrics.                                |
+| [`linkwarden`](https://docs.linkwarden.app/)                             | A self-hosted bookmark and link management system.                          |
 | [`pi-hole`](https://pi-hole.net/)                                        | A network-wide ad blocker.                                                  |
 | [`speedtest-tracker`](https://github.com/alexjustesen/speedtest-tracker) | A tool to track internet speed over time.                                   |
 
