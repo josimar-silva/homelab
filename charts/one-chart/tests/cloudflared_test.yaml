@@ -342,3 +342,33 @@ tests:
           path: spec.strategy.rollingUpdate.maxUnavailable
           value: 50%
         documentIndex: 0
+
+  - it: should render the cloudflared ConfigMap with originRequest when set
+    set:
+      cloudflared:
+        enabled: true
+        tunnel:
+          name: my-tunnel
+          publicHostname: myapp.example.com
+          localHostname: myapp-service:80
+          originRequest:
+            keepAliveTimeout: 4s
+    asserts:
+      - isKind:
+          of: ConfigMap
+        documentIndex: 1
+      - equal:
+          path: data["config.yaml"]
+          value: |
+            tunnel: my-tunnel
+
+            metrics: 0.0.0.0:2000
+
+            no-autoupdate: true
+            ingress:
+            - hostname: myapp.example.com
+              service: myapp-service:80
+              originRequest:
+                keepAliveTimeout: 4s
+            - service: http_status:404
+        documentIndex: 1

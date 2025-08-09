@@ -114,6 +114,10 @@ data:
     ingress:
     - hostname: {{ .Values.cloudflared.tunnel.publicHostname }}
       service: {{ .Values.cloudflared.tunnel.localHostname }}
+      {{- with .Values.cloudflared.tunnel.originRequest }}
+      originRequest:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     - service: http_status:404
 ---
 apiVersion: onepassword.com/v1
