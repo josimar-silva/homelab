@@ -82,81 +82,6 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: ollama-release
-  namespace: linkwarden
-spec:
-  interval: 1h # for drifting resources
-  releaseName: ollama
-  targetNamespace: linkwarden
-  chartRef:
-    kind: HelmChart
-    name: one-chart
-    namespace: flux-system
-  install:
-    createNamespace: false
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
-  values:
-    homelab:
-      category: apps
-      realm: ai
-
-    nameOverride: ollama
-
-    image:
-      repository: "ollama/ollama"
-      tag: "0.11.4"
-
-    replicaCount: 1
-
-    nodeSelector:
-      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
-
-    persistentVolume:
-      enabled: true
-      storageClass: "longhorn-default-sc"
-      size: "15Gi"
-      mountPath: /root/.ollama
-      accessModes:
-        - ReadWriteOnce
-
-    service:
-      type: ClusterIP
-      port: 11434
-
-    resources:
-      limits:
-        cpu: 2000m
-        memory: 4000Mi
-      requests:
-        cpu: 500m
-        memory: 1000Mi
-
-    livenessProbe:
-      httpGet:
-        path: /
-        port: 11434
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      successThreshold: 1
-      failureThreshold: 3
-
-    readinessProbe:
-      httpGet:
-        path: /
-        port: 11434
-      initialDelaySeconds: 10
-      periodSeconds: 5
-      successThreshold: 1
-      failureThreshold: 3
-
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
   name: linkwarden-release
   namespace: linkwarden
 spec:
@@ -166,7 +91,6 @@ spec:
   dependsOn:
     - name: linkwarden-db-release
     - name: meilisearch-release
-    - name: ollama-release
   chartRef:
     kind: HelmChart
     name: one-chart
@@ -221,7 +145,7 @@ spec:
           - name: NEXT_PUBLIC_DISABLE_REGISTRATION
             value: "true"
           - name: NEXT_PUBLIC_OLLAMA_ENDPOINT_URL
-            value: "http://ollama.linkwarden.svc.cluster.local:11434"
+            value: "http://ollama.ollama.svc.cluster.local:11434"
           - name: NEXT_PUBLIC_OLLAMA_ENABLED
             value: "true"
           - name: OLLAMA_MODEL
