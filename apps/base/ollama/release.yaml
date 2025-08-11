@@ -52,11 +52,7 @@ spec:
 
     ollama:
       models:
-        pull:
-          - gemma3:4b-it-qat
-        run: 
-          - gemma3:4b-it-qat
-        clean: true
+        clean: false
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
