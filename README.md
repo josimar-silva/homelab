@@ -98,6 +98,7 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | Component                                                                                        | Description                                       |
 | ------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
 | [`cert-manager`](https://cert-manager.io/docs/)                                                  | Manages TLS certificates for the cluster.         |
+| [`cloudnative-pg`](https://cloudnative-pg.io/)                                                   | Manages PostgreSQL clusters in Kubernetes.        |
 | [`ingress-nginx`](https://kubernetes.github.io/ingress-nginx/)                                   | Ingress controller for external access.           |
 | [`internal-dns`](https://coredns.io/)                                                            | Internal DNS server for the cluster.              |
 | [`k8s-dashboard`](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) | Kubernetes dashboard for monitoring the cluster.  |
@@ -111,6 +112,11 @@ The cluster runs a variety of software, from infrastructure components to user-f
 
 This project uses a custom-made Helm chart called [`one-chart`](https://github.com/josimar-silva/homelab/pkgs/container/homelab%2Fone-chart). 
 This chart is designed to be flexible and reusable, and it is used to deploy all the applications that do not have a dedicated Helm chart available.
+
+#### PostgreSQL Cluster Chart
+
+This project includes a custom Helm chart for deploying PostgreSQL clusters
+using CloudNativePG, located at `charts/postgresql-cluster`.
 
 ## Network
 
