@@ -17,7 +17,6 @@ spec:
         kind: HelmRepository
         name: cnpg
         namespace: flux-system
-      interval: 12h
   install:
     createNamespace: false
     remediation:
