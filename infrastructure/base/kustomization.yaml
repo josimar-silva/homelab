@@ -11,3 +11,4 @@ resources:
   - renovate
   - k8s-dashboard
   - onepassword
+  - cloudnativepg
