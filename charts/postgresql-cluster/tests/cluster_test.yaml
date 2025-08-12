@@ -1,0 +1,142 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Cluster template tests
+templates:
+  - ../templates/cluster.yaml
+release:
+  name: test-release
+  namespace: test-namespace
+
+tests:
+  - it: should render a Cluster resource
+    asserts:
+      - isKind:
+          of: Cluster
+      - equal:
+          path: apiVersion
+          value: postgresql.cnpg.io/v1
+      - hasDocuments:
+          count: 1
+
+  - it: should set the correct description
+    set:
+      description: "My test PostgreSQL cluster"
+    asserts:
+      - equal:
+          path: spec.description
+          value: "My test PostgreSQL cluster"
+
+  - it: should set the correct number of instances
+    set:
+      instances: 3
+    asserts:
+      - equal:
+          path: spec.instances
+          value: 3
+
+  - it: should set the correct image name and tag
+    set:
+      image:
+        repository: my-custom-repo/postgresql
+        tag: 16.1
+    asserts:
+      - equal:
+          path: spec.imageName
+          value: my-custom-repo/postgresql:16.1
+
+  - it: should set the correct storage size and storageClass
+    set:
+      storage:
+        size: 20Gi
+        storageClass: my-storage-class
+    asserts:
+      - equal:
+          path: spec.storage.size
+          value: 20Gi
+      - equal:
+          path: spec.storage.storageClass
+          value: my-storage-class
+
+  - it: should set the correct superuser secret name
+    set:
+      postgresql:
+        onepassword:
+          enabled: true
+          secretName: my-pg-secret
+    asserts:
+      - equal:
+          path: spec.superuserSecret.name
+          value: my-pg-secret
+
+  - it: should set the correct resource requests and limits
+    set:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 2048Mi
+    asserts:
+      - equal:
+          path: spec.resources.requests.cpu
+          value: 200m
+      - equal:
+          path: spec.resources.requests.memory
+          value: 512Mi
+      - equal:
+          path: spec.resources.limits.cpu
+          value: 1000m
+      - equal:
+          path: spec.resources.limits.memory
+          value: 2048Mi
+
+  - it: should enable pod monitoring
+    asserts:
+      - equal:
+          path: spec.monitoring.enablePodMonitor
+          value: true
+
+  - it: should set the correct bootstrap database and owner
+    set:
+      postgresql:
+        database:
+          name: testdb
+          owner: testuser
+        onepassword:
+          enabled: true
+          secretName: test-secret
+    asserts:
+      - equal:
+          path: spec.bootstrap.initdb.database
+          value: testdb
+      - equal:
+          path: spec.bootstrap.initdb.owner
+          value: testuser
+      - equal:
+          path: spec.bootstrap.initdb.secret.name
+          value: test-secret
+
+  - it: should disable default managed services and add additional loadbalancer service
+    set:
+      loadBalancer:
+        hostname: pg.example.com
+        ipPool: my-ip-pool
+    asserts:
+      - equal:
+          path: spec.managed.services.disabledDefaultServices[0]
+          value: ro
+      - equal:
+          path: spec.managed.services.disabledDefaultServices[1]
+          value: r
+      - equal:
+          path: spec.managed.services.additional[0].selectorType
+          value: rw
+      - equal:
+          path: spec.managed.services.additional[0].serviceTemplate.spec.type
+          value: LoadBalancer
+      - equal:
+          path: spec.managed.services.additional[0].serviceTemplate.metadata.annotations["external-dns.alpha.kubernetes.io/hostname"]
+          value: pg.example.com
+      - equal:
+          path: spec.managed.services.additional[0].serviceTemplate.metadata.annotations["metallb.io/ip-allocated-from-pool"]
+          value: my-ip-pool

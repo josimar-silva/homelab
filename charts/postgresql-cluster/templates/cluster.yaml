@@ -1,0 +1,72 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "postgresql-cluster.fullname" . }}
+  labels:
+    {{- include "postgresql-cluster.labels" . | nindent 4 }}
+spec:
+  description: {{ .Values.description }}
+
+  instances: {{ .Values.instances }}
+  
+  imageName: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+  
+  storage:
+    size: {{ .Values.storage.size }}
+    storageClass: {{ .Values.storage.storageClass }}
+
+  inheritedMetadata:
+    annotations:
+      {{- with .Values.extraAnnotations }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+    labels:
+      {{- include "postgresql-cluster.labels" . | nindent 6 }}
+
+  monitoring:
+    enablePodMonitor: true
+
+  superuserSecret:
+    name: {{ .Values.postgresql.onepassword.secretName | default (printf "%s-postgresql-onepassword" .Release.Name) }}
+    key: password
+  
+  postgresql:
+    parameters:
+      log_checkpoints: "on"
+      log_lock_waits: "on"
+      log_min_duration_statement: "1000"
+      log_statement: "ddl"
+      log_temp_files: "1024"
+  
+  resources:
+    requests:
+      cpu: {{ .Values.resources.requests.cpu }}
+      memory: {{ .Values.resources.requests.memory }}
+    limits:
+      cpu: {{ .Values.resources.limits.cpu }}
+      memory: {{ .Values.resources.limits.memory }}
+  
+  # -- Define the database to be created
+  bootstrap:
+    initdb:
+      database: {{ .Values.postgresql.database.name }}
+      owner: {{ .Values.postgresql.database.owner }}
+      secret:
+        name: {{ .Values.postgresql.onepassword.secretName | default (printf "%s-postgresql-onepassword" .Release.Name) }}
+
+  managed:
+    services:
+      disabledDefaultServices:
+        - ro
+        - r
+      additional:
+        - selectorType: rw
+          serviceTemplate:
+            metadata:
+              name: {{ default (printf "%s-postgresql-lb" .Release.Name) }}
+              annotations:
+                external-dns.alpha.kubernetes.io/hostname: {{ .Values.loadBalancer.hostname }}
+                metallb.universe.tf/allow-shared-ip: {{ default (printf "%s-postgresql-svc" .Release.Name) }}
+                metallb.io/ip-allocated-from-pool: {{ .Values.loadBalancer.ipPool }}
+            spec:
+              type: LoadBalancer

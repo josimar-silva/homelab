@@ -1,0 +1,78 @@
+# -- Description of the Postgresql Cluster
+description: ""
+
+# -- Override the chart name
+nameOverride: ""
+
+# -- Override the full resource name
+fullnameOverride: ""
+
+# -- Homelab settings
+homelab:
+  # -- Homelab category label. Defaults to "database".
+  category: database
+  # -- Homelab realm label. Defaults to "storage".
+  realm: storage
+
+# -- Number of instances in the cluster
+instances: 1
+
+# -- Database image settings
+image:
+  # -- Container image repository
+  repository: ghcr.io/cloudnative-pg/postgresql
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: 17.5
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- PostgreSQL specific settings
+postgresql:
+  # -- Username for the PostgreSQL database
+  username: ""
+  # -- Database settings
+  database:
+    # -- Name of the database to be created
+    name: ""
+    # -- Owner of the database to be created
+    owner: ""
+  # -- 1Password integration settings for PostgreSQL superuser credentials
+  onepassword:
+    # -- Enable creating a OnePasswordItem to generate a Kubernetes Secret for PostgreSQL credentials.
+    enabled: false
+    # -- The name of the 1Password vault.
+    vault: "Homelab"
+    # -- The name of the item within the vault.
+    item: ""
+    # -- The name of the Kubernetes Secret to be created by the operator. Defaults to <Release Name>-postgresql-onepassword.
+    secretName: ""
+
+# -- Storage settings for the PostgreSQL cluster
+storage:
+  # -- Size of the persistent volume. Defaults to 10Gi
+  size: 10Gi
+  # -- Storage class for PVC. Defaults to longhorn
+  storageClass: longhorn
+
+# -- Resource requests and limits for the PostgreSQL pods
+resources:
+  requests:
+    # -- CPU request for the PostgreSQL pods
+    cpu: 100m
+    # -- Memory request for the PostgreSQL pods
+    memory: 256Mi
+  limits:
+    # -- CPU limit for the PostgreSQL pods
+    cpu: 500m
+    # -- Memory limit for the PostgreSQL pods
+    memory: 1024Mi
+
+# -- Additional annotations for the PostgreSQL pods
+extraAnnotations: {}
+
+# -- LoadBalancer service settings
+loadBalancer:
+  # -- Hostname for the LoadBalancer service (used by ExternalDNS)
+  hostname: ""
+  # -- MetalLB IP pool name for the LoadBalancer service
+  ipPool: ""

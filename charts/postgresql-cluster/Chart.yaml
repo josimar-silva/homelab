@@ -1,0 +1,6 @@
+apiVersion: v2
+name: postgresql-cluster
+description: A Helm chart for deploying PostgreSQL clusters using CloudNativePG
+type: application
+version: 0.1.0
+appVersion: "17.5"
