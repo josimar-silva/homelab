@@ -8,8 +8,27 @@ on:
         - 'charts/**'
 
 jobs:
+  get-changed-charts:
+    runs-on: ubuntu-latest
+    outputs: 
+      charts: ${{ steps.get_charts.outputs.charts }}
+    steps:
+      - name: "🔄 Checkout repo"
+        uses: actions/checkout@v5
+
+      - name: "Get changed charts"
+        id: get_charts
+        run: |
+          CHARTS=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep "charts/.*Chart.yaml" | sed 's/Chart.yaml//' | xargs -I {} basename {} | jq -R -s '. | split("\n") | map(select(length > 0))')
+          echo "charts=$CHARTS" >> $GITHUB_OUTPUT
+
   release:
     runs-on: ubuntu-latest
+    needs: get-changed-charts
+    if: ${{ needs.get-changed-charts.outputs.charts != '[]' }}
+    strategy:
+      matrix:
+        chart: ${{ fromJson(needs.get-changed-charts.outputs.charts) }}
     steps:
       - name: "🔄 Checkout repo"
         uses: actions/checkout@v5
@@ -20,31 +39,23 @@ jobs:
           helm_version: '3.10.0'
           github-token: ${{ secrets.GITHUB_TOKEN }}
     
-      - name: "🔍 Lint all charts"
-        run: |
-            for chart in charts/*/; do
-            echo "🔍 Linting | homelab/$chart"
-            helm lint "$chart"
-            done
+      - name: "🔍 Lint chart ${{ matrix.chart }}"
+        run: helm lint charts/${{ matrix.chart }}
 
-      - name: "🧪 Run helm unittest on all charts"
-        run: |
-            for chart in charts/*/; do
-            echo "🧪 Running unittest | homelab/$chart"
-            helm unittest "$chart"
-            done
+      - name: "🧪 Run helm unittest on chart ${{ matrix.chart }}"
+        run: helm unittest charts/${{ matrix.chart }}
       
-      - name: "🏷️ Chart Version | homelab/one-chart"
+      - name: "🏷️ Chart Version | homelab/${{ matrix.chart }}"
         id: chart_version
-        run: echo "version=$(helm show chart charts/one-chart | grep '^version:' | awk '{print $2}')" >> $GITHUB_ENV
+        run: echo "version=$(helm show chart charts/${{ matrix.chart }} | grep '^version:' | awk '{print $2}')" >> $GITHUB_ENV
 
-      - name: "🚀 Push Chart | homelab/one-chart"
+      - name: "🚀 Push Chart | homelab/${{ matrix.chart }}"
         uses: appany/helm-oci-chart-releaser@v0.5.0
         with:
-          name: one-chart
+          name: ${{ matrix.chart }}
           repository: josimar-silva/homelab
           tag: ${{ env.version }}
-          path: charts/one-chart
+          path: charts/${{ matrix.chart }}
           registry: ghcr.io
           registry_username: ${{ secrets.REGISTRY_USERNAME }}
           registry_password: ${{ secrets.REGISTRY_PASSWORD }}
