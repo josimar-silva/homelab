@@ -1,0 +1,93 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pgadmin-release
+  namespace: pgadmin
+spec:
+  interval: 1h # for drifting resources
+  releaseName: pgadmin
+  targetNamespace: pgadmin
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: apps
+      realm: network
+
+    nameOverride: pgadmin
+
+    image:
+      repository: dpage/pgadmin4
+      tag: 9.6.0
+
+    replicaCount: 1
+
+    strategy:
+      type: Recreate
+
+    onepassword:
+      enabled: true
+      vault: Homelab
+      item: PgAdmin
+      secretName: pgadmin-secret
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: PGADMIN_LISTEN_PORT
+            value: "3004"
+      fromSecret:
+        enabled: true
+        secrets:
+          - pgadmin-secret
+
+    persistentVolume:
+      enabled: true
+      storageClass: longhorn-default-sc
+      size: 1Gi
+      mountPath: /var/lib/pgadmin
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    podSecurityContext:
+      runAsUser: 5050
+      runAsGroup: 5050
+      fsGroup: 5050
+
+    service:
+      port: 3004
+
+    internalIngress:
+      enabled: true
+      className: internal-ingress
+      annotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      hosts:
+        - host: pgadmin.from-gondor.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        secretName: pgdadmin-tls
+        clusterIssuer: letsencrypt-production
+        hosts:
+          - pgadmin.from-gondor.com
+
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 400m
+        memory: 320Mi
