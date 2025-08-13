@@ -1,0 +1,53 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: speedtest-tracker-db
+  namespace: cnpg-system
+spec:
+  interval: 1h
+  releaseName: speedtest-tracker-db
+  targetNamespace: cnpg-system
+  
+  chartRef:
+    kind: HelmChart
+    name: postgresql-cluster
+    namespace: flux-system
+  
+  install:
+    createNamespace: false
+    remediation: 
+      retries: 3
+  
+  upgrade:
+    remediation:
+      retries: 3
+  
+  values:
+    nameOverride: speedtest-tracker-db
+
+    instances: 3
+
+    postgresql:
+      database:
+        name: speedtest_tracker
+        owner: speedy
+      onepassword:
+        enabled: true
+        item: "[Database] Speedtest Tracker"
+        secretName: speedtest-tracker-db
+    
+    storage:
+      size: 1Gi
+      storageClass: "longhorn-default-sc"
+    
+    loadBalancer:
+      hostname: "speedtest-db.from-gondor.com"
+      ipPool: "homelab-local-pool"
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 150m
+        memory: 192Mi
