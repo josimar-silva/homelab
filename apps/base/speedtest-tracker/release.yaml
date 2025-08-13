@@ -1,58 +1,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: speedtest-tracker-db-release
-  namespace: speedtest-tracker
-spec:
-  interval: 1h # for drifting resources
-  releaseName: speedtest-tracker-db
-  targetNamespace: speedtest-tracker
-  chartRef:
-    kind: HelmChart
-    name: postgresql
-    namespace: flux-system
-  install:
-    createNamespace: false
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
-  values:
-    global:
-      defaultStorageClass: "longhorn-default-sc"
-
-      postgresql:
-        auth:
-          database: speedtest_tracker
-          username: speedy
-          existingSecret: speedtest-tracker-secret
-          secretKeys:
-            adminPasswordKey: "DB_PASSWORD"
-            userPasswordKey: "DB_PASSWORD"
-            replicationPasswordKey: "DB_PASSWORD"
-
-    primary:
-      podLabels:
-        homelab.category: database
-        homelab.realm: storage
-
-      postgresql:
-        parameters:
-          wal_level: logical
-
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
   name: speedtest-tracker-release
   namespace: speedtest-tracker
 spec:
   interval: 1h # for drifting resources
   releaseName: speedtest-tracker
   targetNamespace: speedtest-tracker
-  dependsOn:
-    - name: speedtest-tracker-db-release
   chartRef:
     kind: HelmChart
     name: one-chart
@@ -108,7 +62,7 @@ spec:
           - name: DB_CONNECTION
             value: pgsql
           - name: DB_HOST
-            value: speedtest-tracker-db-postgresql.speedtest-tracker.svc.cluster.local
+            value: speedtest-tracker-db-rw.cnpg-system.svc.cluster.local
           - name: DB_PORT
             value: "5432"
           - name: DB_DATABASE
