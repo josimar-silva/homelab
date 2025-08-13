@@ -37,6 +37,10 @@ spec:
         homelab.category: database
         homelab.realm: storage
 
+      postgresql:
+        parameters:
+          wal_level: logical
+
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
