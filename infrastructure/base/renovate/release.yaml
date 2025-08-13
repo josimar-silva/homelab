@@ -1,54 +1,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: mend-renovate-db-release
-  namespace: renovate
-spec:
-  interval: 1h # for drifting resources
-  releaseName: mend-renovate-db
-  targetNamespace: renovate
-  chartRef:
-    kind: HelmChart
-    name: postgresql
-    namespace: flux-system
-  install:
-    createNamespace: false
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
-  values:
-    global:
-      defaultStorageClass: "longhorn-default-sc"
-
-      postgresql:
-        auth:
-          database: renovate
-          username: renovate
-          existingSecret: mend-renovate
-          secretKeys:
-            adminPasswordKey: "pgPassword"
-            userPasswordKey: "pgPassword"
-            replicationPasswordKey: "pgPassword"
-
-    primary:
-      podLabels:
-        homelab.category: database
-        homelab.realm: storage
-
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
   name: mend-renovate
   namespace: renovate
 spec:
   interval: 1h # for drifting resources
   releaseName: mend-renovate-ce
   targetNamespace: renovate
-  dependsOn:
-    - name: mend-renovate-db-release
   chart:
     spec:
       #renovate: registryUrl=https://mend.github.io/renovate-ce-ee
@@ -66,7 +24,7 @@ spec:
       mendRnvGithubBotUserId: "215854695"
       mendRnvAutoDiscoverFilter: "josimar-silva/homelab,josimar-silva/middle-earth-cluster,josimar-silva/rinha-de-backend-2025"
       existingSecret: mend-renovate
-      logLevel: debug
+      logLevel: warn
       extraEnvVars:
         - name: MEND_RNV_DEBUG_MODE
           value: "true"
@@ -102,7 +60,7 @@ spec:
 
     postgresql:
       enabled: true
-      host: mend-renovate-db-postgresql.renovate.svc.cluster.local
+      host: renovate-db-rw.cnpg-system.svc.cluster.local
       port: 5432
       database: renovate
       user: renovate
