@@ -1,46 +1,6 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: linkwarden-db-release
-  namespace: linkwarden
-spec:
-  interval: 1h # for drifting resources
-  releaseName: linkwarden-db
-  targetNamespace: linkwarden
-  chartRef:
-    kind: HelmChart
-    name: postgresql
-    namespace: flux-system
-  install:
-    createNamespace: false
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
-  values:
-    global:
-      defaultStorageClass: "longhorn-default-sc"
-
-    postgresql:
-      auth:
-        database: postgres
-        username: postgres
-        existingSecret: linkwarden-secret
-        secretKeys:
-          adminPasswordKey: "DB_PASSWORD"
-          userPasswordKey: "DB_PASSWORD"
-          replicationPasswordKey: "DB_PASSWORD"
-
-    primary:
-      podLabels:
-        homelab.category: database
-        homelab.realm: storage
-
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
   name: meilisearch-release
   namespace: linkwarden
 spec:
@@ -89,7 +49,6 @@ spec:
   releaseName: linkwarden
   targetNamespace: linkwarden
   dependsOn:
-    - name: linkwarden-db-release
     - name: meilisearch-release
   chartRef:
     kind: HelmChart
@@ -163,19 +122,6 @@ spec:
 
     internalIngress:
       enabled: false
-      className: internal-ingress
-      annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-      hosts:
-        - host: linkwarden.internal.from-gondor.com
-          paths:
-            - path: /
-              pathType: ImplementationSpecific
-      tls:
-        secretName: linkwarden-internal-tls
-        clusterIssuer: letsencrypt-production
-        hosts:
-          - linkwarden.internal.from-gondor.com
 
     cloudflared:
       enabled: true
