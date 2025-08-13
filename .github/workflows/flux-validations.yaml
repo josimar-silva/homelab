@@ -6,6 +6,7 @@ on:
       - 'clusters/**'
       - 'infrastructure/**'
       - 'apps/**'
+      - 'storage/**'
 
 jobs:
   validate:
@@ -26,3 +27,7 @@ jobs:
       - name: Validate Gondor apps
         run: |
           kustomize build apps/gondor
+
+      - name: Validate Gondor storage
+        run: |
+          kustomize build storage/gondor
