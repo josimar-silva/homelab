@@ -15,6 +15,20 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmChart
 metadata:
+  name: one-chart
+  namespace: flux-system
+spec:
+  #renovate: registryUrl=oci://ghcr.io/josimar-silva/homelab
+  chart: postgresql-cluster
+  version: 0.1.0
+  interval: 12h
+  sourceRef:
+    kind: HelmRepository
+    name: homelab
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmChart
+metadata:
   name: postgresql
   namespace: flux-system
 spec:
