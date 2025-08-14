@@ -42,7 +42,7 @@ spec:
     
     loadBalancer:
       hostname: "speedtest-db.from-gondor.com"
-      ipPool: "homelab-local-pool"
+      ipPool: "homelab-database-pool"
 
     resources:
       requests:
