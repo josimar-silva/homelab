@@ -22,7 +22,7 @@ spec:
       mendRnvAcceptTos: y
       mendRnvPlatform: github
       mendRnvGithubBotUserId: "215854695"
-      mendRnvAutoDiscoverFilter: "josimar-silva/homelab,josimar-silva/middle-earth-cluster,josimar-silva/rinha-de-backend-2025"
+      mendRnvAutoDiscoverFilter: "josimar-silva/homelab,josimar-silva/middle-earth-cluster,josimar-silva/rinha-de-backend-2025,josimar-silva/homelab-landing-page"
       existingSecret: mend-renovate
       logLevel: warn
       extraEnvVars:
