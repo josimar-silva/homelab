@@ -66,7 +66,6 @@ spec:
               name: {{ default (printf "%s-postgresql-lb" .Release.Name) }}
               annotations:
                 external-dns.alpha.kubernetes.io/hostname: {{ .Values.loadBalancer.hostname }}
-                metallb.universe.tf/allow-shared-ip: {{ default (printf "%s-postgresql-svc" .Release.Name) }}
                 metallb.io/ip-allocated-from-pool: {{ .Values.loadBalancer.ipPool }}
             spec:
               type: LoadBalancer

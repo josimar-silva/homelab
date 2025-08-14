@@ -1,8 +1,16 @@
 # postgresql-cluster
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 17.5](https://img.shields.io/badge/AppVersion-17.5-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 17.5](https://img.shields.io/badge/AppVersion-17.5-informational?style=flat-square)
 
 A Helm chart for deploying PostgreSQL clusters using CloudNativePG
+
+**Homepage:** <https://github.com/josimar-silva/homelab/tree/main/charts/postgresql-cluster>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Josimar Silva | <josimar-silva@from-gondor.com> |  |
 
 ## Values
 
