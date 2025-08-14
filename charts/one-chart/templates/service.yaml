@@ -9,7 +9,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
     {{- if and (.Values.service.type) (eq .Values.service.type "LoadBalancer") }}
+    {{- if .Values.service.sharedIpEnabled }}
     metallb.universe.tf/allow-shared-ip: {{ include "one-chart.fullname" . }}
+    {{- end }}
     metallb.io/ip-allocated-from-pool: {{ .Values.service.ipPool | default "homelab-local-pool" }}
     {{- end }}
 spec:

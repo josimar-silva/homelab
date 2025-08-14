@@ -94,6 +94,8 @@ service:
   # loadBalancerIP: ""
   # -- MetalLB IP pool name
   # ipPool: ""
+  # -- Enable shared IP feature for LoadBalancer services
+  sharedIpEnabled: false
   # -- Service port. Defaults to 80. Kept for backward compatibility. Use `ports` for multiple ports.
   port: 80
   # -- Service ports. Takes precedence over `service.port`.

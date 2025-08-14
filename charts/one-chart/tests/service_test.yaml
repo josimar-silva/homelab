@@ -27,6 +27,7 @@ tests:
         type: LoadBalancer
         ipPool: metallb-pool
         port: 8080
+        sharedIpEnabled: true
     asserts:
       - isKind:
           of: Service
@@ -36,6 +37,27 @@ tests:
       - equal:
           path: metadata.annotations["metallb.universe.tf/allow-shared-ip"]
           value: test-release-one-chart
+      - equal:
+          path: metadata.annotations["metallb.io/ip-allocated-from-pool"]
+          value: metallb-pool
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+
+  - it: should render a LoadBalancer Service without shared IP annotation by default
+    set:
+      service:
+        type: LoadBalancer
+        ipPool: metallb-pool
+        port: 8080
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+      - notExists:
+          path: metadata.annotations["metallb.universe.tf/allow-shared-ip"]
       - equal:
           path: metadata.annotations["metallb.io/ip-allocated-from-pool"]
           value: metallb-pool
