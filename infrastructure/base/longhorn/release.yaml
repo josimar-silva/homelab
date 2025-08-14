@@ -41,9 +41,6 @@ spec:
               - op: add
                 path: /metadata/annotations/metallb.io~1ip-allocated-from-pool
                 value: homelab-local-pool
-              - op: add
-                path: /metadata/annotations/metallb.universe.tf~1allow-shared-ip
-                value: longhorn-svc
 
   values:
     longhornUI:
