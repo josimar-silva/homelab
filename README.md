@@ -8,11 +8,19 @@
   </a>
   <!-- Talos version -->
   <a href="https://www.talos.dev/v1.10">
-    <img src="https://img.shields.io/badge/talos-v1.10-blue" alt="GitHub stars" />
+    <img src="https://img.shields.io/badge/talos-v1.10-blue" alt="Talos Version" />
+  </a>
+  <!-- OSSF Score Card -->
+  <a href="https://scorecard.dev/viewer/?uri=github.com/josimar-silva/homelab">
+    <img src="https://img.shields.io/ossf-scorecard/github.com/josimar-silva/homelab?label=openssf+scorecard" alt="OpenSSF Score Card">
   </a>
   <!-- Helm Chart Release -->
   <a href="https://github.com/josimar-silva/homelab/actions/workflows/helm-release.yaml">
     <img src="https://github.com/josimar-silva/homelab/actions/workflows/helm-release.yaml/badge.svg" alt="Helm Charts" />
+  </a>
+  <!-- CodeQL Advanced -->
+    <a href="https://github.com/josimar-silva/homelab/actions/workflows/codeql.yaml">
+    <img src="https://github.com/josimar-silva/homelab/actions/workflows/codeql.yaml/badge.svg" alt="Helm Charts" />
   </a>
 </div>
 <div align="center">
@@ -47,6 +55,7 @@
 - [Software](#software)
 - [Network](#network)
 - [Storage](#storage)
+- [Acknowledgements](#acknowledgements)
 - [References](#references)
 
 ## Introduction
@@ -149,8 +158,10 @@ This project would not have been possible without the amazing content produced b
 
 The ease with which I was able to set up this Kubernetes cluster, compared to my first NAS build over a decade ago, is a testament to the quality of the content and the collaborative spirit of the homelab community.
 
-## References
 
+
+--------------
+#### *References*
 -   [Kubernetes](https://kubernetes.io/)
 -   [Talos OS](https://www.talos.dev/)
 -   [FluxCD](https://fluxcd.io/)
