@@ -5,7 +5,7 @@ metadata:
   namespace: metallb
 spec:
   addresses:
-  - 192.168.68.201-192.168.68.200
+  - 192.168.68.201-192.168.68.240
 ---
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
@@ -14,4 +14,4 @@ metadata:
   namespace: metallb
 spec:
   addresses:
-  - 192.168.68.201-192.168.68.250
+  - 192.168.68.241-192.168.68.250
