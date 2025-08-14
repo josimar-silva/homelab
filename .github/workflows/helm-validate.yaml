@@ -18,13 +18,13 @@ jobs:
           helm-version: '3.10.0'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Lint all charts
+      - name: 🔍 Lint all charts
         run: |
             for chart in charts/*/; do
             echo "🔍 Linting chart: $chart"
             helm lint "$chart"
             done
-      - name: Run helm unittest on all charts
+      - name: 🧪 Run helm unittest on all charts
         run: |
             for chart in charts/*/; do
             echo "🧪 Running unittest on chart: $chart"
