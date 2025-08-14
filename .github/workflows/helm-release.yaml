@@ -14,6 +14,11 @@ jobs:
     outputs:
       charts: ${{ steps.get_all_charts.outputs.charts }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
       - name: "🔄 Checkout repo"
         uses: actions/checkout@v5
 
@@ -30,6 +35,11 @@ jobs:
       matrix:
         chart: ${{ fromJson(needs.get-charts.outputs.charts) }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
       - name: "🔄 Checkout repo"
         uses: actions/checkout@v5
 
