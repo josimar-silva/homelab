@@ -8,9 +8,12 @@ on:
         paths:
         - 'charts/**'
 
+permissions:
+  contents: read
+
 jobs:
   get-charts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       charts: ${{ steps.get_all_charts.outputs.charts }}
     steps:
@@ -29,7 +32,7 @@ jobs:
           echo "charts=[$CHART_NAMES]" >> $GITHUB_OUTPUT
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: get-charts
     strategy:
       matrix:
