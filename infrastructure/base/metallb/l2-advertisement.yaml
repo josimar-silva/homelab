@@ -6,3 +6,4 @@ metadata:
 spec:
   ipAddressPools:
   - homelab-local-pool
+  - homelab-database-pool
