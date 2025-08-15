@@ -5,3 +5,4 @@ resources:
   - speedtest-tracker
   - renovate
   - linkwarden
+  - terraform
