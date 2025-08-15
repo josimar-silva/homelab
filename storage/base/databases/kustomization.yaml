@@ -6,3 +6,4 @@ resources:
   - renovate
   - linkwarden
   - terraform
+  - gatus
