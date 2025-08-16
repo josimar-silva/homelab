@@ -32,33 +32,91 @@ connectivity:
     target: 1.1.1.1:53
     interval: 1m
 
+external-http: &external
+  group: External
+  type: http
+  interval: 30s
+  client:
+    timeout: 10s
+  conditions:
+    - "[STATUS] == 200"
+    - "[CERTIFICATE_EXPIRATION] > 48h"
+
+internal-http: &internal
+  group: Internal
+  type: http
+  interval: 1m
+  client:
+    timeout: 10s
+  ui:
+    hide-hostname: true
+    hide-port: true
+    hide-url: true
+  conditions:
+    - "[STATUS] == 200"
+
 endpoints:
   - name: PgAdmin
-    group: Internal
-    type: http
+    <<: *internal
     url: https://pgadmin.from-gondor.com/login
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: Linkwarden
-    group: Internal
-    type: http
-    url: https://linkwarden.from-gondor.com/
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
 
   - name: Ollama
-    group: Internal
-    type: http
+    <<: *internal
     url: https://chat.from-gondor.com
-    interval: 1m
+
+  - name: Longhorn
+    <<: *internal
+    url: http://longhorn.homelab.lan/
+  
+  - name: Minas Tirith
+    <<: *internal
+    url: https://minas-tirith.from-gondor.com/cgi-bin/
+    client:
+      insecure: true
+
+  - name: Plex
+    <<: *internal
+    url: http://minas-tirith.from-gondor.com:32400/
     conditions:
-      - "[STATUS] == 200"
+      - "[STATUS] == 401"
+
+  - name: Home Assistant
+    <<: *internal
+    url: http://ha.homelab.lan:8123/
+
+  - name: Speedtest Tracker
+    <<: *internal
+    url: https://speedtest.from-gondor.com/admin/login
+
+  - name: K8S dashboard
+    <<: *internal
+    url: https://k8s.from-gondor.com
+
+  - name: Gondor Homepage
+    <<: *external
+    url: https://hello.from-gondor.com
+
+  - name: Linkwarden
+    <<: *external
+    url: https://linkwarden.from-gondor.com/
+
+  - name: Gatus
+    <<: *external
+    url: https://uptime.from-gondor.com/
+  
+  - name: Gondor DNS
+    group: DNS
+    type: dns
+    url: "1.1.1.1"
+    interval: 5m
+    dns:
+      query-name: "from-gondor.com"
+      query-type: "A"
+    conditions:
+      - "[DNS_RCODE] == NOERROR"
 
   - name: Pi-hole Main
-    group: Internal
+    group: DNS
     type: dns
     url: "192.168.68.201"
     interval: 1m
@@ -69,7 +127,7 @@ endpoints:
       - "[DNS_RCODE] == NOERROR"     
 
   - name: Pi-hole Replica 01
-    group: Internal
+    group: DNS
     type: dns
     url: "192.168.68.116"
     interval: 1m
@@ -78,54 +136,3 @@ endpoints:
       query-type: "A"
     conditions:
       - "[DNS_RCODE] == NOERROR"     
-
-  - name: Longhorn
-    group: Internal
-    type: http
-    url: http://longhorn.homelab.lan/
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-  
-  - name: Minas Tirith
-    group: Internal
-    type: http
-    url: https://minas-tirith.homelab.lan
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: Speedtest Tracker
-    group: Internal
-    type: http
-    url: https://speedtest.from-gondor.com/admin/login
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: K8S dashboard
-    group: Internal
-    type: http
-    url: https://k8s.from-gondor.com
-    interval: 1m
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: Gondor Homepage
-    group: External
-    type: http
-    url: https://hello.from-gondor.com
-    interval: 30s
-    conditions:
-      - "[STATUS] == 200"
-  
-  - name: Gondor DNS
-    group: External
-    type: dns
-    url: "1.1.1.1"
-    interval: 5m
-    dns:
-      query-name: "from-gondor.com"
-      query-type: "A"
-    conditions:
-      - "[DNS_RCODE] == NOERROR"
