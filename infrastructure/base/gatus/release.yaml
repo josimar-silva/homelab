@@ -1,0 +1,132 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gatus-release
+  namespace: gatus
+spec:
+  interval: 1h # for drifting resources
+  releaseName: gatus
+  targetNamespace: gatus
+  
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  
+  upgrade:
+    remediation:
+      retries: 3
+
+  values:
+    homelab:
+      category: infrastructure
+      realm: monitoring
+
+    nameOverride: gatus
+
+    image:
+      repository:  ghcr.io/twin/gatus
+      tag: v5.22.0
+
+    replicaCount: 1
+  
+    strategy:
+      type: Recreate
+
+    onepassword:
+      enabled: true
+      vault: "Homelab"
+      item: "Gatus"
+      secretName: "gatus-secret"
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: WEB_PORT
+            value: "80"
+      fromSecret:
+        enabled: true
+        secrets:
+          - gatus-secret
+
+    dns:
+      enabled: true
+      policy: None
+      config:
+        nameservers:
+          - 10.96.0.10
+          - 192.168.68.201
+          - 1.1.1.1
+        searches:
+          - gatus.gatus.svc.cluster.local
+        options:
+          - name: ndots
+            value: '5'
+
+    securityContext:
+      readOnlyRootFilesystem: true
+      runAsGroup: 65534
+      runAsNonRoot: true
+      runAsUser: 65534
+    
+    podSecurityContext:
+      fsGroup: 65534
+        
+    resources:
+      limits:
+        cpu: 700m
+        memory: 700Mi
+      requests:
+        cpu: 500m
+        memory: 500Mi
+
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 10
+
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: http
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
+    
+    volumes:
+      - name: gatus-config
+        configMap:
+          name: gatus-config
+
+    volumeMounts:
+      - mountPath: /config
+        name: gatus-config
+        readOnly: true
+
+    cloudflared:
+      enabled: true
+      replicaCount: 1
+      tunnel:
+        name: uptime
+        publicHostname: uptime.from-gondor.com
+        localHostname: http://gatus:8080
+        originRequest:
+          keepAliveTimeout: 4s
+      onepassword:
+        vault: Homelab
+        item: "[Cloudflare Tunnel] Gatus"

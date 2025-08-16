@@ -1,0 +1,131 @@
+storage:
+  type: postgres
+  path: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@gatus-db-rw.cnpg-system.svc.cluster.local:5432/${POSTGRES_DB}?sslmode=disable"
+
+security:
+  basic:
+    username: ${GATUS_USERNAME}
+    password-bcrypt-base64: ${GATUS_PASSWORD_ENCRIPTED}
+
+metrics: true
+
+web:
+  port: ${WEB_PORT}
+
+ui:
+  title: Gondor | Status
+  description: Gondor homelab systems status.
+  header: Gondor
+  logo: https://raw.githubusercontent.com/josimar-silva/homelab/refs/heads/main/docs/images/homelab-logo.png
+  link: https://hello.from-gondor.com
+  dark-mode: true
+  buttons:
+    - name: Homelab
+      link: https://github.com/josimar-silva/homelab
+    - name: Blog
+      link: https://josimar-silva.com/blog
+    - name: Github
+      link: https://github.com/josimar-silva
+
+connectivity:
+  checker:
+    target: 1.1.1.1:53
+    interval: 1m
+
+endpoints:
+  - name: PgAdmin
+    group: Internal
+    type: http
+    url: https://pgadmin.from-gondor.com/login
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Linkwarden
+    group: Internal
+    type: http
+    url: https://linkwarden.from-gondor.com/
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Ollama
+    group: Internal
+    type: http
+    url: https://chat.from-gondor.com
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Pi-hole Main
+    group: Internal
+    type: dns
+    url: "192.168.68.201"
+    interval: 1m
+    dns:
+      query-name: "from-gondor.com"
+      query-type: "A"
+    conditions:
+      - "[DNS_RCODE] == NOERROR"     
+
+  - name: Pi-hole Replica 01
+    group: Internal
+    type: dns
+    url: "192.168.68.116"
+    interval: 1m
+    dns:
+      query-name: "from-gondor.com"
+      query-type: "A"
+    conditions:
+      - "[DNS_RCODE] == NOERROR"     
+
+  - name: Longhorn
+    group: Internal
+    type: http
+    url: http://longhorn.homelab.lan/
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+  
+  - name: Minas Tirith
+    group: Internal
+    type: http
+    url: https://minas-tirith.homelab.lan
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Speedtest Tracker
+    group: Internal
+    type: http
+    url: https://speedtest.from-gondor.com/admin/login
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: K8S dashboard
+    group: Internal
+    type: http
+    url: https://k8s.from-gondor.com
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Gondor Homepage
+    group: External
+    type: http
+    url: https://hello.from-gondor.com
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+  
+  - name: Gondor DNS
+    group: External
+    type: dns
+    url: "1.1.1.1"
+    interval: 5m
+    dns:
+      query-name: "from-gondor.com"
+      query-type: "A"
+    conditions:
+      - "[DNS_RCODE] == NOERROR"

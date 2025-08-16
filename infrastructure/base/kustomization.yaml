@@ -12,3 +12,4 @@ resources:
   - k8s-dashboard
   - onepassword
   - cloudnativepg
+  - gatus
