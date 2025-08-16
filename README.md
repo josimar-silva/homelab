@@ -14,12 +14,24 @@
   <a href="https://scorecard.dev/viewer/?uri=github.com/josimar-silva/homelab">
     <img src="https://img.shields.io/ossf-scorecard/github.com/josimar-silva/homelab?label=openssf+scorecard" alt="OpenSSF Score Card">
   </a>
+  <!-- Gondor Health -->
+  <a href="https://hello.from-gondor.com/">
+    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/health/badge.svg" alt="Helm Charts" />
+  </a>
+  <!-- Gondor uptime -->
+  <a href="https://hello.from-gondor.com/">
+    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/uptimes/30d/badge.svg" alt="Helm Charts" />
+  </a>
+  <!-- Gondor Response Time -->
+  <a href="https://hello.from-gondor.com/">
+    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/response-times/30d/badge.svg" alt="Helm Charts" />
+  </a>
   <!-- Helm Chart Release -->
   <a href="https://github.com/josimar-silva/homelab/actions/workflows/helm-release.yaml">
     <img src="https://github.com/josimar-silva/homelab/actions/workflows/helm-release.yaml/badge.svg" alt="Helm Charts" />
   </a>
   <!-- CodeQL Advanced -->
-    <a href="https://github.com/josimar-silva/homelab/actions/workflows/codeql.yaml">
+  <a href="https://github.com/josimar-silva/homelab/actions/workflows/codeql.yaml">
     <img src="https://github.com/josimar-silva/homelab/actions/workflows/codeql.yaml/badge.svg" alt="Helm Charts" />
   </a>
 </div>
