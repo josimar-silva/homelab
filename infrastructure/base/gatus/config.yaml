@@ -19,6 +19,7 @@ ui:
   logo: https://raw.githubusercontent.com/josimar-silva/homelab/refs/heads/main/docs/images/homelab-logo.png
   link: https://hello.from-gondor.com
   dark-mode: true
+  default-sort-by: group
   buttons:
     - name: Homelab
       link: https://github.com/josimar-silva/homelab
