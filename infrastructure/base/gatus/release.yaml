@@ -84,11 +84,11 @@ spec:
         
     resources:
       limits:
-        cpu: 700m
-        memory: 700Mi
-      requests:
-        cpu: 500m
+        cpu: 300m
         memory: 500Mi
+      requests:
+        cpu: 150m
+        memory: 100Mi
 
     livenessProbe:
       httpGet:
@@ -124,7 +124,7 @@ spec:
       tunnel:
         name: uptime
         publicHostname: uptime.from-gondor.com
-        localHostname: http://gatus:8080
+        localHostname: http://gatus:80
         originRequest:
           keepAliveTimeout: 4s
       onepassword:
