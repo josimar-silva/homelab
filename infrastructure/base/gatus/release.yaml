@@ -31,7 +31,7 @@ spec:
 
     image:
       repository:  ghcr.io/twin/gatus
-      tag: v5.23.0
+      tag: v5.23.1
 
     replicaCount: 1
   
