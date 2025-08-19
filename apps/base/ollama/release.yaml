@@ -27,7 +27,7 @@ spec:
   values:
     image:
       repository: "ollama/ollama"
-      tag: "0.11.4"
+      tag: "0.11.5"
 
     replicaCount: 1
 
