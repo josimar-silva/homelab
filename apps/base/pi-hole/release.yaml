@@ -28,18 +28,6 @@ spec:
     remediation:
       retries: 3
 
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              namespace: pihole
-              labelSelector: "app=pihole"
-            patch: |-
-              - op: replace
-                path: /spec/template/spec/containers/0/env/0/value
-                value: "80,443s" 
-
   values:
     replicaCount: 1
 
@@ -50,6 +38,7 @@ spec:
     extraEnvVars:
       TZ: "Europe/Berlin"
       FTLCONF_dns_revServers: "true,192.168.68.0/24,192.168.68.1,homelab.lan"
+      FTLCONF_webserver_port: "80,443s"
 
     persistentVolumeClaim:
       enabled: true
