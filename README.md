@@ -111,7 +111,7 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | [`flash-slothmore`](https://service.berlin.de/)                          | A bot that crawls the Berlin Service Portal to find available appointments. |
 | [`hello-from-gondor`](https://hello.from-gondor.com)                     | Simple dashboard with basic cluster metrics.                                |
 | [`linkwarden`](https://docs.linkwarden.app/)                             | A self-hosted bookmark and link management system.                          |
-| [`pi-hole`](https://pi-hole.net/)                                        | A network-wide ad blocker.                                                  |
+| [`pi-hole`](https://pi-hole.net/)                                        | A network-wide ad blocker doubling as the LAN DNS server                                                  |
 | [`speedtest-tracker`](https://github.com/alexjustesen/speedtest-tracker) | A tool to track internet speed over time.                                   |
 
 ### Infrastructure
@@ -121,13 +121,14 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | [`cert-manager`](https://cert-manager.io/docs/)                                                  | Manages TLS certificates for the cluster.         |
 | [`cloudnative-pg`](https://cloudnative-pg.io/)                                                   | Manages PostgreSQL clusters in Kubernetes.        |
 | [`ingress-nginx`](https://kubernetes.github.io/ingress-nginx/)                                   | Ingress controller for external access.           |
-| [`internal-dns`](https://coredns.io/)                                                            | Internal DNS server for the cluster.              |
+| [`internal-dns`](https://github.com/kubernetes-sigs/external-dns/)                                                            | An instance of external-DNS configured acting as a local DNS using PiHole as the DNS server.              |
 | [`k8s-dashboard`](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) | Kubernetes dashboard for monitoring the cluster.  |
 | [`longhorn`](https://longhorn.io/docs/)                                                          | Distributed block storage for persistent volumes. |
 | [`metallb`](https://metallb.universe.tf/)                                                        | Bare-metal load balancer for Kubernetes.          |
 | [`onepassword`](https://developer.1password.com/docs/connect)                                    | 1Password integration for managing secrets.       |
 | [`renovate`](https://docs.renovatebot.com/)                                                      | Automated dependency updates.                     |
 | [`flux-system`](https://fluxcd.io/docs/)                                                         | The GitOps operator that powers the cluster.      |
+| [`gatus`](https://github.com/TwiN/gatus)                                                         | Monitoring dashboard with the status of apps.      |
 
 #### One Chart to rule them all
 
@@ -143,7 +144,11 @@ using CloudNativePG, located at `charts/postgresql-cluster`.
 
 The network is segmented into multiple VLANs to provide security and isolation between different types of traffic. The firewall is managed by OPNsense, which is running on a dedicated appliance.
 
-All the nodes in the Kubernetes cluster are connected to an isolated VLAN. `metallb` is used to provide LoadBalancer services for the applications. `internal-dns` provides name resolution for the services in the cluster.
+All the nodes in the Kubernetes cluster are connected to an isolated VLAN. 
+
+`metallb` is used to provide LoadBalancer services for the applications. 
+
+`internal-dns` provides name resolution for the services in the LAN by propagating the name records to Pihole.
 
 ## Storage
 
@@ -169,7 +174,6 @@ This project would not have been possible without the amazing content produced b
 -   [Hardware Haven](https://www.youtube.com/@HardwareHaven)
 
 The ease with which I was able to set up this Kubernetes cluster, compared to my first NAS build over a decade ago, is a testament to the quality of the content and the collaborative spirit of the homelab community.
-
 
 
 --------------
