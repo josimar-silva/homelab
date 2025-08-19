@@ -33,8 +33,4 @@ jobs:
             helm lint "$chart"
             done
       - name: 🧪 Run helm unittest on all charts
-        run: |
-            for chart in charts/*/; do
-            echo "🧪 Running unittest on chart: $chart"
-            helm unittest "$chart"
-            done
+        run: ./charts/run-tests.sh
