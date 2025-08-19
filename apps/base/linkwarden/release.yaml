@@ -9,6 +9,7 @@ spec:
   targetNamespace: linkwarden
   chart:
     spec:
+      #renovate: registryUrl=https://meilisearch.github.io/meilisearch-kubernetes
       chart: meilisearch
       version: 0.2.x
       interval: 12h # for checking of a new chart

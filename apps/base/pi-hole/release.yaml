@@ -11,6 +11,7 @@ spec:
 
   chart:
     spec:
+      #renovate: registryUrl=https://mojo2600.github.io/pihole-kubernetes
       chart: pihole
       version: 2.31.x
       interval: 12h # for checking of a new chart
