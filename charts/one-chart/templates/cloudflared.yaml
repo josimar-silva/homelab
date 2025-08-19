@@ -38,24 +38,6 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      affinity:
-        podAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  {{- include "one-chart.selectorLabels" . | nindent 20 }}
-              topologyKey: "kubernetes.io/hostname"
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/instance: {{ .Release.Name }}
-                  app.kubernetes.io/component: cloudflared
-              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: cloudflared
           image: "{{ .Values.cloudflared.image.repository }}:{{ .Values.cloudflared.image.tag }}"
