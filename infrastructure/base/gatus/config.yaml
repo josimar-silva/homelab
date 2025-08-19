@@ -116,7 +116,7 @@ endpoints:
     conditions:
       - "[DNS_RCODE] == NOERROR"
 
-  - name: Pi-hole Main
+  - name: Pi-hole Primary
     group: DNS
     type: dns
     url: "192.168.68.201"
