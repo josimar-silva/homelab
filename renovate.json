@@ -1,5 +1,20 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests",
+    "helpers:pinGitHubActionDigests",
+    "abandonments:recommended",
+    "group:recommended",
+    "replacements:all",
+    "workarounds:all",
+    "mergeConfidence:age-confidence-badges",
+    ":configMigration",
+    ":pinDevDependencies",
+    ":pinAllExceptPeerDependencies",
+    ":dependencyDashboard",
+    ":semanticPrefixFixDepsChoreOthers"
+  ],
   "prHourlyLimit": 10,
   "reviewers": ["josimar-silva"],
   "labels": ["automated", "dependencies"],
