@@ -14,18 +14,29 @@
     ":semanticPrefixFixDepsChoreOthers"
   ],
   "prHourlyLimit": 10,
-  "reviewers": ["josimar-silva"],
-  "labels": ["automated", "dependencies"],
+  "reviewers": [
+    "josimar-silva"
+  ],
+  "labels": [
+    "automated",
+    "dependencies"
+  ],
   "flux": {
-    "managerFilePatterns": ["(^|/)\\.ya?ml$"]
+    "managerFilePatterns": [
+      "(^|/)\\.ya?ml$"
+    ]
   },
   "kubernetes": {
-    "fileMatch": ["(^|/)\\.ya?ml$"]
+    "managerFilePatterns": [
+      "/(^|/)\\.ya?ml$/"
+    ]
   },
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["(^|/)release\\.ya?ml$"],
+      "managerFilePatterns": [
+        "/(^|/)release\\.ya?ml$/"
+      ],
       "matchStrings": [
         "#renovate:\\s*registryUrl=(?<registryUrl>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
       ],
@@ -33,7 +44,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["(^|/)(release|chart)s?\\.ya?ml$"],
+      "managerFilePatterns": [
+        "/(^|/)(release|chart)s?\\.ya?ml$/"
+      ],
       "matchStrings": [
         "#renovate:\\s*registryUrl=oci:\/\/(?<namespace>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
       ],
@@ -42,7 +55,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["(^|/)release\\.ya?ml$"],
+      "managerFilePatterns": [
+        "/(^|/)release\\.ya?ml$/"
+      ],
       "matchStrings": [
         "repository:\\s*[\"']?(?<repository>[^\"'\\s]+)[\"']?\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
