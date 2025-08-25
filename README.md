@@ -40,7 +40,7 @@
 </div>
 
 <div align="center">
-  A place for experimentation, fun and neverending YAML files.
+  A place for experimentation, fun and never-ending YAML files.
 </div>
 
 <div align="center">
@@ -54,7 +54,7 @@
   <sub>Built with <i>viele</i> ☕️ by
   <a href="https://josimar-silva.com">Josimar Silva</a>.
   <span> | </span>
-  Deliverying greatness from the trenches of
+  Delivering greatness from the trenches of
   <a href="https://hello.from-gondor.com">
     Gondor.
   </a>
@@ -67,7 +67,7 @@
 - [Software](#software)
 - [Network](#network)
 - [Storage](#storage)
-- [Acknowledgements](#acknowledgements)
+- [Acknowledgments](#acknowledgments)
 - [References](#references)
 
 ## Introduction
@@ -121,7 +121,7 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | [`cert-manager`](https://cert-manager.io/docs/)                                                  | Manages TLS certificates for the cluster.         |
 | [`cloudnative-pg`](https://cloudnative-pg.io/)                                                   | Manages PostgreSQL clusters in Kubernetes.        |
 | [`ingress-nginx`](https://kubernetes.github.io/ingress-nginx/)                                   | Ingress controller for external access.           |
-| [`internal-dns`](https://github.com/kubernetes-sigs/external-dns/)                                                            | An instance of external-DNS configured acting as a local DNS using PiHole as the DNS server.              |
+| [`internal-dns`](https://github.com/kubernetes-sigs/external-dns/)                                                            | An instance of external-DNS configured acting as a local DNS using Pi-hole as the DNS server.              |
 | [`k8s-dashboard`](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) | Kubernetes dashboard for monitoring the cluster.  |
 | [`longhorn`](https://longhorn.io/docs/)                                                          | Distributed block storage for persistent volumes. |
 | [`metallb`](https://metallb.universe.tf/)                                                        | Bare-metal load balancer for Kubernetes.          |
@@ -148,7 +148,7 @@ All the nodes in the Kubernetes cluster are connected to an isolated VLAN.
 
 `metallb` is used to provide LoadBalancer services for the applications. 
 
-`internal-dns` provides name resolution for the services in the LAN by propagating the name records to Pihole.
+`internal-dns` provides name resolution for the services in the LAN by propagating the name records to Pi-hole.
 
 ## Storage
 
@@ -160,7 +160,7 @@ For backups, a [QNAP TS-453E](https://www.qnap.com/en/product/ts-453e) NAS is us
 
 Secrets are managed using `onepassword` and the 1Password Connect Operator. The operator syncs secrets from a 1Password vault to Kubernetes secrets. This allows for a secure and centralized way to manage secrets.
 
-## Acknowledgements
+## Acknowledgments
 
 This project would not have been possible without the amazing content produced by the homelab community. I would like to express my gratitude to the following individuals for been a great source of information and inspiration:
 

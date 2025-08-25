@@ -1,0 +1,27 @@
+matrix:
+  - name: Markdown
+    aspell:
+      lang: en
+      d: en_US
+    dictionary:
+      wordlists:
+        - docs/spellcheck/en-wordlist.txt
+      output: build/dictionary/markdown.dic
+      encoding: utf-8
+    pipeline:
+      - pyspelling.filters.markdown:
+          markdown_extensions:
+            - markdown.extensions.extra:
+            - markdown.extensions.fenced_code:
+      - pyspelling.filters.html:
+          comments: false
+          attributes:
+            - alt
+          ignores:
+            - ":matches(code, pre, .photoAuthor)"
+            - "code"
+            - "pre"
+            - "blockquote"
+    sources:
+      - "README.md"
+      - "GEMINI.md"

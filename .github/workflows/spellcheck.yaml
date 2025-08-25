@@ -1,0 +1,58 @@
+name: Spell Check
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "README.md"
+      - "GEMINI.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "README.md"
+      - "GEMINI.md"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check Spelling
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 🛡️ Harden the runner
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
+      - name: 📦 Checkout
+        if: github.event_name != 'pull_request'
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Checkout
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: ⚒️ Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: ⚙️ Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          python -m pip install pyspelling
+
+      - name: ⚙️ Install Aspell
+        run: |
+          sudo apt-get install aspell aspell-en
+
+      - name: 🔍 Spell check
+        run: |
+          python -m pyspelling
