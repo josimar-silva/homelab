@@ -104,7 +104,15 @@ endpoints:
   - name: Gatus
     <<: *external
     url: https://uptime.from-gondor.com/
-  
+
+  - name: Personal Blog
+    <<: *external
+    url: https://blog.josimar-silva.com/
+
+  - name: Personal Website
+    <<: *external
+    url: https://josimar-silva.com/
+
   - name: Gondor DNS
     group: DNS
     type: dns
