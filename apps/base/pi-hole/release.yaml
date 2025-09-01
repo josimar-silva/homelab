@@ -43,7 +43,7 @@ spec:
     persistentVolumeClaim:
       enabled: true
       storageClass: "longhorn-default-sc"
-      size: "1Gi"
+      size: "2Gi"
 
     nodeSelector:
       middle-earth-cluster.homelab/category: hobbit-sm-i3
