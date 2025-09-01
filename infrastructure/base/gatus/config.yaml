@@ -38,7 +38,8 @@ external-http: &external
   type: http
   interval: 30s
   client:
-    timeout: 10s
+    timeout: 30s
+    dns-resolver: tcp://1.1.1.1:53
   conditions:
     - "[STATUS] == 200"
     - "[CERTIFICATE_EXPIRATION] > 48h"
@@ -48,7 +49,8 @@ internal-http: &internal
   type: http
   interval: 1m
   client:
-    timeout: 10s
+    timeout: 30s
+    dns-resolver: tcp://192.168.68.116:53
   ui:
     hide-hostname: true
     hide-port: true
@@ -104,10 +106,6 @@ endpoints:
   - name: Gatus
     <<: *external
     url: https://uptime.from-gondor.com/
-
-  - name: Personal Blog
-    <<: *external
-    url: https://blog.josimar-silva.com/
 
   - name: Personal Website
     <<: *external

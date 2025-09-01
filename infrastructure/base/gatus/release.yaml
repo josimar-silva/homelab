@@ -64,9 +64,9 @@ spec:
       policy: None
       config:
         nameservers:
+          - 10.96.0.10
           - 192.168.68.201
           - 192.168.68.116
-          - 10.96.0.10
         searches:
           - gatus.gatus.svc.cluster.local
         options:
