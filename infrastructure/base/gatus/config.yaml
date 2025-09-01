@@ -76,6 +76,7 @@ endpoints:
     url: https://minas-tirith.from-gondor.com/cgi-bin/
     client:
       insecure: true
+      dns-resolver: tcp://192.168.68.201:53
 
   - name: Plex
     <<: *internal
