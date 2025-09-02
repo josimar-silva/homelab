@@ -25,7 +25,7 @@ spec:
   values:
     nameOverride: terraform-db
 
-    instances: 1
+    instances: 3
 
     postgresql:
       database:
