@@ -109,7 +109,7 @@ spec:
           - name: NEXT_PUBLIC_OLLAMA_ENABLED
             value: "true"
           - name: OLLAMA_MODEL
-            value: "gpt-oss:20b"
+            value: "deepseek-r1"
           - name: MEILI_HOST
             value: "http://meilisearch.linkwarden.svc.cluster.local:7700"
       fromSecret:
