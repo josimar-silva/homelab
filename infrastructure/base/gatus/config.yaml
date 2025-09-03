@@ -59,13 +59,13 @@ internal-http: &internal
     - "[STATUS] == 200"
 
 endpoints:
-  - name: PgAdmin
-    <<: *internal
-    url: https://pgadmin.from-gondor.com/login
-
-  - name: Ollama
+  - name: Gondor GPT
     <<: *internal
     url: https://chat.from-gondor.com
+
+  - name: Saruman
+    <<: *internal
+    url: http://saruman.from-gondor.com:11434
 
   - name: Longhorn
     <<: *internal
@@ -91,6 +91,10 @@ endpoints:
   - name: Speedtest Tracker
     <<: *internal
     url: https://speedtest.from-gondor.com/admin/login
+
+  - name: PgAdmin
+    <<: *internal
+    url: https://pgadmin.from-gondor.com/login
 
   - name: K8S dashboard
     <<: *internal
