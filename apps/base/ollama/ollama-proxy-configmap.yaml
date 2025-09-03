@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ollama-proxy-nginx-conf
+  namespace: ollama
+data:
+  nginx.conf: |
+    worker_processes  1;
+
+    error_log  /var/log/nginx/error.log warn;
+    pid        /tmp/nginx.pid;
+
+    events {
+      worker_connections  1024;
+    }
+
+    http {
+      server {
+        listen 80;
+        
+        resolver 192.168.68.201;
+
+        keepalive_timeout  90;
+
+        location / {
+          proxy_pass http://saruman.from-gondor.com:11434;
+          access_log off;
+        }
+      }
+
+      server {
+        listen 9091;
+        server_name localhost;
+
+        location /api/health {
+          return 200 "{\"status\":\"ok\"}";
+          add_header Content-Type text/plain;
+          access_log off;
+        }
+
+        location /api/metrics {
+          stub_status;
+          access_log off;
+        }
+      }
+    }

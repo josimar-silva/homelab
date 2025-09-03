@@ -5,3 +5,4 @@ resources:
   - namespace.yaml
   - release.yaml
   - repository.yaml
+  - ollama-proxy-configmap.yaml

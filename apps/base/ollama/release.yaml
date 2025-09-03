@@ -1,59 +1,3 @@
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: ollama-release
-  namespace: ollama
-spec:
-  interval: 1h # for drifting resources
-  releaseName: ollama
-  targetNamespace: ollama
-  chart:
-    spec:
-      chart: ollama
-      version: 1.26.0
-      interval: 12h # for checking of a new chart
-      sourceRef:
-        kind: HelmRepository
-        name: otwld
-        namespace: flux-system
-  install:
-    createNamespace: false
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
-  values:
-    image:
-      repository: "ollama/ollama"
-      tag: "0.11.8"
-
-    replicaCount: 1
-
-    nodeSelector:
-      middle-earth-cluster.from-gondor.com/category: hobbit-bg-i7
-
-    persistentVolume:
-      enabled: true
-      storageClass: "longhorn-default-sc"
-      size: 30Gi
-
-    resources:
-      limits:
-        cpu: 2000m
-        memory: 4096Mi
-      requests:
-        cpu: 500m
-        memory: 2000Mi
-    
-    ingress:
-      enabled: false
-
-    ollama:
-      models:
-        clean: false
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -63,8 +7,6 @@ spec:
   interval: 1h
   releaseName: openwebui
   targetNamespace: ollama
-  dependsOn:
-    - name: ollama-release
   chart:
     spec:
       chart: open-webui
@@ -91,7 +33,7 @@ spec:
 
     persistence:
       storageClass: "longhorn-default-sc"
-      size: 5Gi
+      size: 10Gi
 
     ollama:
       enabled: false
@@ -100,4 +42,95 @@ spec:
       enabled: false
       
     ollamaUrls:
-      - http://ollama.ollama.svc.cluster.local:11434
+      - http://ollama-proxy.ollama.svc.cluster.local
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ollama-proxy-release
+  namespace: ollama
+spec:
+  interval: 1h
+  releaseName: ollama-proxy
+  targetNamespace: ollama
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: proxy
+      realm: network
+
+    nameOverride: ollama-proxy
+
+    image:
+      repository: nginxinc/nginx-unprivileged
+      tag: alpine@sha256:285b776f6694a03fce74d62d38876311d759a40b0d54b5b2bf0113701bc2edb6
+
+    replicaCount: 4
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 50%
+
+    dns:
+      enabled: true
+      config:
+        nameservers:
+          - 192.168.68.201
+          - 192.168.68.116
+
+    volumes:
+      - name: nginx-conf
+        configMap:
+          name: ollama-proxy-nginx-conf
+
+    volumeMounts:
+      - name: nginx-conf
+        mountPath: /etc/nginx/nginx.conf
+        subPath: nginx.conf
+
+    service:
+      type: LoadBalancer
+      ports:
+        - name: http
+          port: 80
+          containerPort: 80
+        - name: management
+          port: 9091
+          containerPort: 9091
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+    livenessProbe:
+      httpGet:
+        path: /api/health
+        port: management
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 10
+
+    readinessProbe:
+      httpGet:
+        path: /api/health
+        port: management
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
