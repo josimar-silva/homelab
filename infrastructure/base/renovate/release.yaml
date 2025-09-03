@@ -68,7 +68,7 @@ spec:
     cachePersistence:
       enabled: true
       storageClass: "longhorn-default-sc"
-      size: 1Gi
+      size: 15Gi
     
     ingress:
       enabled: false
