@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: "ghcr.io/josimar-silva/flash-slothmore"
-      tag: "0.2.3"
+      tag: "0.3.0"
       pullPolicy: IfNotPresent
     
     imagePullSecrets:
