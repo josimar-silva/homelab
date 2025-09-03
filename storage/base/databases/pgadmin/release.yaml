@@ -11,13 +11,16 @@ spec:
     kind: HelmChart
     name: one-chart
     namespace: flux-system
+  
   install:
     createNamespace: false
     remediation:
       retries: 3
+  
   upgrade:
     remediation:
       retries: 3
+  
   values:
     homelab:
       category: apps
@@ -57,7 +60,7 @@ spec:
     persistentVolume:
       enabled: true
       storageClass: longhorn-default-sc
-      size: 1Gi
+      size: 2Gi
       mountPath: /var/lib/pgadmin
 
     securityContext:
