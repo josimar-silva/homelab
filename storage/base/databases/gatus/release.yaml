@@ -37,7 +37,7 @@ spec:
         secretName: gatus-db
     
     storage:
-      size: 3Gi
+      size: 10Gi
       storageClass: "longhorn-default-sc"
     
     loadBalancer:
