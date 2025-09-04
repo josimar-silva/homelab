@@ -24,6 +24,7 @@ spec:
     createNamespace: false
     remediation:
       retries: 3
+  
   upgrade:
     remediation:
       retries: 3
@@ -44,9 +45,6 @@ spec:
       enabled: true
       storageClass: "longhorn-default-sc"
       size: "2Gi"
-
-    nodeSelector:
-      middle-earth-cluster.homelab/category: hobbit-sm-i3
 
     resources:
       limits:
