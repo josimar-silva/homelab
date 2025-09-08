@@ -148,3 +148,14 @@ endpoints:
       query-type: "A"
     conditions:
       - "[DNS_RCODE] == NOERROR"     
+
+  - name: Pi-hole Replica 02
+    group: DNS
+    type: dns
+    url: "192.168.68.111"
+    interval: 1m
+    dns:
+      query-name: "from-gondor.com"
+      query-type: "A"
+    conditions:
+      - "[DNS_RCODE] == NOERROR"     
