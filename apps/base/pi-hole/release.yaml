@@ -95,6 +95,7 @@ spec:
     dnsmasq:
       customDnsEntries:
       - address=/pihole-replica-01.from-gondor.com/192.168.68.116
+      - address=/pihole-replica-02.from-gondor.com/192.168.68.111
       - address=/minas-tirith.from-gondor.com/192.168.68.120
       
     adlists:
