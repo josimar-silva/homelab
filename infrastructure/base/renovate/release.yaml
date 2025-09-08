@@ -11,7 +11,7 @@ spec:
     spec:
       #renovate: registryUrl=https://mend.github.io/renovate-ce-ee
       chart: mend-renovate-ce
-      version: 11.2.0
+      version: 11.3.0
       interval: 12h # for checking of a new chart
       sourceRef:
         kind: HelmRepository
