@@ -43,8 +43,8 @@ spec:
 
     persistentVolumeClaim:
       enabled: true
-      storageClass: "longhorn-default-sc"
-      size: "2Gi"
+      storageClass: default
+      size: 2Gi
 
     resources:
       limits:
