@@ -58,16 +58,29 @@ spec:
       enabled: false
 
     serviceWeb:
+      type: LoadBalancer
       loadBalancerIP: 192.168.68.201
       annotations:
         metallb.universe.tf/allow-shared-ip: pihole-svc
-      type: LoadBalancer
 
     serviceDns:
+      type: LoadBalancer
       loadBalancerIP: 192.168.68.201
       annotations:
         metallb.universe.tf/allow-shared-ip: pihole-svc
-      type: LoadBalancer
+
+    ingress:
+      enabled: true
+      ingressClassName: internal-ingress
+      annotations:
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        cert-manager.io/cluster-issuer: letsencrypt-production
+      hosts:
+        - pihole.from-gondor.com
+      tls:
+        - secretName: pihole-tls
+          hosts:
+            - pihole.from-gondor.com
 
     DNS1: "1.1.1.1"
     DNS2: "8.8.8.8"
@@ -81,7 +94,6 @@ spec:
 
     dnsmasq:
       customDnsEntries:
-      - address=/pihole.from-gondor.com/192.168.68.201
       - address=/pihole-replica-01.from-gondor.com/192.168.68.116
       - address=/minas-tirith.from-gondor.com/192.168.68.120
       
