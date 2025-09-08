@@ -22,3 +22,28 @@ parameters:
         "isGroup": false
       }
     ]'
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: default
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "4"
+  staleReplicaTimeout: "30"
+  fromBackup: ""
+  fsType: "xfs"
+  diskSelector: "default-storage"
+  recurringJobSelector: '[
+      {
+        "name": "daily-snapshot",
+        "isGroup": false
+      },
+      {
+        "name": "weekly-volume-backup",
+        "isGroup": false
+      }
+    ]'
