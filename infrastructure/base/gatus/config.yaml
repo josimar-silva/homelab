@@ -50,7 +50,7 @@ internal-http: &internal
   interval: 1m
   client:
     timeout: 30s
-    dns-resolver: tcp://192.168.68.116:53
+    dns-resolver: tcp://192.168.68.111:53
   ui:
     hide-hostname: true
     hide-port: true
@@ -76,7 +76,7 @@ endpoints:
     url: https://minas-tirith.from-gondor.com/cgi-bin/
     client:
       insecure: true
-      dns-resolver: tcp://192.168.68.201:53
+      dns-resolver: tcp://192.168.68.111:53
 
   - name: Plex
     <<: *internal
