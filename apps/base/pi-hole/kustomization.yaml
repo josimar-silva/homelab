@@ -6,3 +6,6 @@ resources:
  - "release.yaml"
  - "configmap.yaml"
  - "onepassword-item.yaml"
+ - "cert-renewal-configmap.yaml"
+ - "cert-renewal-cronjob.yaml"
+ - "cert-renewal-secret.yaml"

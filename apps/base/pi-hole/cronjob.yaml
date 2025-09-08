@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cert-renewal-cronjob
+  namespace: pihole
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cert-renewal
+            image: alpine/git:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              apk add --no-cache openssh-client
+              mkdir -p /root/.ssh
+              cp /etc/ssh/ssh_known_hosts /root/.ssh/known_hosts
+              ssh-keyscan replica-01.from-gondor.com >> /root/.ssh/known_hosts
+              ssh-keyscan replica-02.from-gondor.com >> /root/.ssh/known_hosts
+              chmod 600 /root/.ssh/known_hosts
+              chmod 600 /etc/ssh/id_rsa
+
+              for replica in replica-01.from-gondor.com replica-02.from-gondor.com; do
+                echo "Renewing certificate on $replica"
+                ssh -i /etc/ssh/id_rsa root@$replica "/bin/sh" < /etc/cert-renewal/renew-certs.sh
+              done
+            volumeMounts:
+            - name: ssh-key
+              mountPath: /etc/ssh
+              readOnly: true
+            - name: cert-renewal-script
+              mountPath: /etc/cert-renewal
+              readOnly: true
+          restartPolicy: OnFailure
+          volumes:
+          - name: ssh-key
+            secret:
+              secretName: ssh-key-secret
+              defaultMode: 0400
+          - name: cert-renewal-script
+            configMap:
+              name: cert-renewal-script

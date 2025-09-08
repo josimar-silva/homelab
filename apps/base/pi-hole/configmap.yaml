@@ -25,4 +25,54 @@ data:
   SYNC_GRAVITY_CLIENT: "false"
   SYNC_GRAVITY_CLIENT_BY_GROUP: "false"
   API_ENABLED: "true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cert-renewal-script
+  namespace: pihole
+data:
+  renew-certs.sh: |
+    #!/bin/sh
 
+    set -e
+
+    # The domain for which to renew the certificate
+    DOMAIN="pihole.from-gondor.com"
+    # The path to the acme.sh script
+    ACME_SH_PATH="/root/.acme.sh/acme.sh"
+    # The path to the Pi-hole configuration directory
+    PIHOLE_CONFIG_DIR="/etc/pihole"
+    # The path to the lighttpd configuration file
+    LIGHTTPD_CONFIG_FILE="/etc/lighttpd/external.conf"
+
+    # Check if acme.sh is installed
+    if [ ! -f "$ACME_SH_PATH" ]; then
+      echo "acme.sh not found. Please install it first."
+      exit 1
+    fi
+
+    # Renew the certificate
+    "$ACME_SH_PATH" --renew -d "$DOMAIN" --force
+
+    # Install the certificate
+    "$ACME_SH_PATH" --install-cert -d "$DOMAIN" \
+      --cert-file "$PIHOLE_CONFIG_DIR/certs/pihole.pem" \
+      --key-file "$PIHOLE_CONFIG_DIR/certs/pihole.key" \
+      --fullchain-file "$PIHOLE_CONFIG_DIR/certs/pihole-fullchain.pem" \
+      --reloadcmd "service lighttpd restart"
+
+    # Create the combined certificate file for lighttpd
+    cat "$PIHOLE_CONFIG_DIR/certs/pihole.key" "$PIHOLE_CONFIG_DIR/certs/pihole.pem" > "$PIHOLE_CONFIG_DIR/certs/pihole-combined.pem"
+
+    # Update the lighttpd configuration
+    if ! grep -q "ssl.pemfile" "$LIGHTTPD_CONFIG_FILE"; then
+      echo "Updating lighttpd configuration"
+      echo "ssl.pemfile = \"$PIHOLE_CONFIG_DIR/certs/pihole-combined.pem\"" >> "$LIGHTTPD_CONFIG_FILE"
+      echo "ssl.ca-file = \"$PIHOLE_CONFIG_DIR/certs/pihole-fullchain.pem\"" >> "$LIGHTTPD_CONFIG_FILE"
+      echo "ssl.engine = \"enable\"" >> "$LIGHTTPD_CONFIG_FILE"
+      echo "ssl.cipher-list = \"EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH\"" >> "$LIGHTTPD_CONFIG_FILE"
+    fi
+
+    # Restart lighttpd
+    service lighttpd restart
