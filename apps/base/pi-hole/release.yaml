@@ -289,7 +289,7 @@ spec:
 
     image:
       repository: ghcr.io/lovelaze/nebula-sync
-      tag: "v0.11.0"
+      tag: "v0.11.1"
       pullPolicy: IfNotPresent
     
     strategy:
