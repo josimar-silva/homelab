@@ -38,7 +38,7 @@ spec:
 
     extraEnvVars:
       TZ: "Europe/Berlin"
-      FTLCONF_dns_revServers: "true,192.168.68.0/24,192.168.68.1,homelab.lan"
+      FTLCONF_dns_revServers: "true,192.168.68.0/24,192.168.68.1,homelab"
       FTLCONF_webserver_port: "80,443s"
 
     persistentVolumeClaim:
