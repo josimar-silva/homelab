@@ -22,7 +22,7 @@ image:
   # -- Container image repository
   repository: ghcr.io/cloudnative-pg/postgresql
   # -- Overrides the image tag whose default is the chart appVersion
-  tag: 17.5
+  tag: 17.6
   # -- Image pull policy
   pullPolicy: IfNotPresent
 
