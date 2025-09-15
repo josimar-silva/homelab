@@ -69,6 +69,15 @@ dns-server: &dns-server
     - "[DNS_RCODE] == NOERROR"   
 
 endpoints:
+  - name: Anduril
+    <<: *internal
+    url: https://anduril.from-gondor.com
+    client:
+      dns-resolver: tcp://192.168.68.1:53
+    conditions:
+      - "[STATUS] == 200"
+      - "[CERTIFICATE_EXPIRATION] > 48h"
+
   - name: Gondor GPT
     <<: *internal
     url: https://chat.from-gondor.com
