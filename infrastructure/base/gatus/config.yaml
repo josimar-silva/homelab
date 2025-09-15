@@ -58,6 +58,16 @@ internal-http: &internal
   conditions:
     - "[STATUS] == 200"
 
+dns-server: &dns-server
+  group: DNS Servers
+  type: dns
+  interval: 1m
+  dns:
+    query-name: "from-gondor.com"
+    query-type: "A"
+  conditions:
+    - "[DNS_RCODE] == NOERROR"   
+
 endpoints:
   - name: Gondor GPT
     <<: *internal
@@ -122,40 +132,19 @@ endpoints:
     url: "1.1.1.1"
     interval: 5m
     dns:
-      query-name: "from-gondor.com"
+      query-name: "hello.from-gondor.com"
       query-type: "A"
     conditions:
       - "[DNS_RCODE] == NOERROR"
 
   - name: Pi-hole Primary
-    group: DNS
-    type: dns
-    url: "192.168.68.201"
-    interval: 1m
-    dns:
-      query-name: "from-gondor.com"
-      query-type: "A"
-    conditions:
-      - "[DNS_RCODE] == NOERROR"     
+    <<: *dns-server
+    url: 192.168.68.201    
 
   - name: Pi-hole Replica 01
-    group: DNS
-    type: dns
-    url: "192.168.68.116"
-    interval: 1m
-    dns:
-      query-name: "from-gondor.com"
-      query-type: "A"
-    conditions:
-      - "[DNS_RCODE] == NOERROR"     
+    <<: *dns-server
+    url: 192.168.68.116    
 
   - name: Pi-hole Replica 02
-    group: DNS
-    type: dns
-    url: "192.168.68.111"
-    interval: 1m
-    dns:
-      query-name: "from-gondor.com"
-      query-type: "A"
-    conditions:
-      - "[DNS_RCODE] == NOERROR"     
+    <<: *dns-server
+    url: 192.168.68.111    
