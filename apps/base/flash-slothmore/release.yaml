@@ -38,9 +38,6 @@ spec:
     strategy:
       type: Recreate
 
-    nodeSelector:
-      middle-earth-cluster.from-gondor.com/category: hobbit-md-i5
-
     service:
       type: ClusterIP
       port: 8080
