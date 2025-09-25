@@ -84,21 +84,22 @@ This cluster is built on top of Talos OS and its Talos configuration is provisio
 ### Server Rack
 
 The server rack is a custom-built 19" rack that houses all the hardware for the homelab. 
-It includes the mini-PCs, switch, firewall, patch panel, NAS and UPS.
 
-![server rack](docs/images/server-rack.jpg)
+It includes the mini-PCs, switch, firewall, patch panel, NAS and UPS (and a companion NUT server built with Raspberry Pi 4).
+<p align="left"><img src="docs/images/homelab-server-rack-v1.jpg" alt="server rack" width="500" height="500"></p>
 
 ### Nodes
 
 The k8s cluster consists of the following nodes:
 
-| Name      | Role          | Model                   | Category        | CPU              | RAM   | Storage      |
-|-----------|---------------|-------------------------|-----------------|------------------|-------|--------------|
-| `gandalf` | Control Plane | EliteDesk 800 G3 Mini   | hobbit-md-i5    | Intel i5-7500t   | 16GB  | 256GB NVMe   |
-| `sam`     | Worker        | EliteDesk 800 G3 Mini   | hobbit-md-i5    | Intel i5-7500t   | 16GB  | 256GB NVMe   |
-| `pipin`   | Worker        | EliteDesk 800 G3 Mini   | hobbit-sm-i3    | Intel i3-6100T   | 16GB  | 120GB NVMe   |
-| `merry`   | Worker        | EliteDesk 800 G3 Mini   | hobbit-sm-i3    | Intel i3-6100T   | 16GB  | 120GB NVMe   |
-| `gollum`  | Worker        | Lenovo G400s Laptop     | hobbit-bg-i7    | Intel i7-3612QM  | 16GB  | 1TB Sata SSD |
+| Name      | Role          | Model                   | Category        | CPU              | RAM    | GPU           | Storage      |
+|-----------|---------------|-------------------------|-----------------|------------------|--------|---------------|--------------|
+| `gandalf` | Control Plane | EliteDesk 800 G3 Mini   | hobbit-md-i5    | Intel i5-7500t   |  16GB  | N/A           | 256GB NVMe   |
+| `sam`     | Worker        | EliteDesk 800 G3 Mini   | hobbit-md-i5    | Intel i5-7500t   |  16GB  | N/A           | 500GB NVMe   |
+| `pipin`   | Worker        | EliteDesk 800 G3 Mini   | hobbit-sm-i3    | Intel i3-6100T   |  16GB  | N/A           | 500GB NVMe   |
+| `merry`   | Worker        | EliteDesk 800 G3 Mini   | hobbit-sm-i3    | Intel i3-6100T   |  16GB  | N/A           | 500GB NVMe   |
+| `gollum`  | Worker        | Lenovo G400s Laptop     | hobbit-bg-i7    | Intel i7-3612QM  |  16GB  | N/A           | 1TB Sata SSD |
+| `saruman` | LLM Server    | Custom Build            | N/A             | AMD Ryzen 8600G  | 128GB  | NVIDIA 3090   | 1TB NVMe     |
 
 ## Software
 
@@ -111,7 +112,7 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | [`flash-slothmore`](https://service.berlin.de/)                          | A bot that crawls the Berlin Service Portal to find available appointments. |
 | [`hello-from-gondor`](https://hello.from-gondor.com)                     | Simple dashboard with basic cluster metrics.                                |
 | [`linkwarden`](https://docs.linkwarden.app/)                             | A self-hosted bookmark and link management system.                          |
-| [`pi-hole`](https://pi-hole.net/)                                        | A network-wide ad blocker doubling as the LAN DNS server                                                  |
+| [`pi-hole`](https://pi-hole.net/)                                        | A network-wide ad blocker doubling as the LAN DNS server                    |
 | [`speedtest-tracker`](https://github.com/alexjustesen/speedtest-tracker) | A tool to track internet speed over time.                                   |
 
 ### Infrastructure
@@ -121,7 +122,7 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | [`cert-manager`](https://cert-manager.io/docs/)                                                  | Manages TLS certificates for the cluster.         |
 | [`cloudnative-pg`](https://cloudnative-pg.io/)                                                   | Manages PostgreSQL clusters in Kubernetes.        |
 | [`ingress-nginx`](https://kubernetes.github.io/ingress-nginx/)                                   | Ingress controller for external access.           |
-| [`internal-dns`](https://github.com/kubernetes-sigs/external-dns/)                                                            | An instance of external-DNS configured acting as a local DNS using Pi-hole as the DNS server.              |
+| [`internal-dns`](https://github.com/kubernetes-sigs/external-dns/)                               | An instance of external-DNS acting as a local DNS using Pi-hole as the DNS server.              |
 | [`k8s-dashboard`](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) | Kubernetes dashboard for monitoring the cluster.  |
 | [`longhorn`](https://longhorn.io/docs/)                                                          | Distributed block storage for persistent volumes. |
 | [`metallb`](https://metallb.universe.tf/)                                                        | Bare-metal load balancer for Kubernetes.          |
