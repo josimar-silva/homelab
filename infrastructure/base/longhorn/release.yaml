@@ -26,22 +26,6 @@ spec:
     remediation:
       retries: 3
 
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              version: v1
-              kind: Service
-              namespace: longhorn-system
-              labelSelector: "app=longhorn-ui"
-            patch: |-
-              - op: add
-                path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-                value: longhorn.homelab.lan
-              - op: add
-                path: /metadata/annotations/metallb.io~1ip-allocated-from-pool
-                value: homelab-local-pool
-
   values:
     longhornUI:
       replicas: 1
@@ -49,6 +33,9 @@ spec:
       ui:
         type: "LoadBalancer"
         loadBalancerIP: 192.168.68.202
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: longhorn.homelab.lan
+          metallb.io/ip-allocated-from-pool: homelab-local-pool
     defaultSettings:
       defaultDataPath: "/var/mnt/storage"
     defaultBackupStore:
