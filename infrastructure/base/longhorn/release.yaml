@@ -12,7 +12,7 @@ spec:
     spec:
       #renovate: registryUrl=https://charts.longhorn.io
       chart: longhorn
-      version: 1.9.x
+      version: 1.10.x
       interval: 12h # for checking of a new chart
       sourceRef:
         kind: HelmRepository
