@@ -14,6 +14,7 @@ Kustomizations
 kustomizations
 Lempa
 Lenovo
+LLM
 LoadBalancer
 Mischa
 NAS
@@ -24,6 +25,7 @@ OPNsense
 OpenSSF
 Pi-hole
 QNAP
+Ryzen
 Sata
 SSD
 stateful
