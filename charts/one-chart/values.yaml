@@ -245,7 +245,7 @@ cloudflared:
   # -- Cloudflared image repository
   image:
     repository: cloudflare/cloudflared
-    tag: 2025.9.1
+    tag: 2025.10.0
   # -- Deployment strategy
   strategy:
     type: Recreate
