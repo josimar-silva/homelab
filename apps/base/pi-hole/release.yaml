@@ -34,7 +34,7 @@ spec:
 
     image:
       repository: "pihole/pihole"
-      tag: "2025.10.2"
+      tag: "2025.10.3"
 
     extraEnvVars:
       TZ: "Europe/Berlin"
