@@ -153,6 +153,18 @@ endpoints:
       query-name: "hello.from-gondor.com"
       query-type: "A"
 
+  - name: Apex DNS
+    <<: *dns-query
+    dns:
+      query-name: "josimar-silva.com"
+      query-type: "A"
+
+  - name: Blog DNS
+    <<: *dns-query
+    dns:
+      query-name: "blog.josimar-silva.com"
+      query-type: "A"
+
   - name: Kaizen DNS
     <<: *dns-query
     dns:
