@@ -16,15 +16,15 @@
   </a>
   <!-- Gondor Health -->
   <a href="https://hello.from-gondor.com/">
-    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/health/badge.svg" alt="Helm Charts" />
+    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/health/badge.svg" alt="Gondor Health" />
   </a>
   <!-- Gondor uptime -->
   <a href="https://hello.from-gondor.com/">
-    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/uptimes/30d/badge.svg" alt="Helm Charts" />
+    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/uptimes/30d/badge.svg" alt="Gondor Uptime" />
   </a>
   <!-- Gondor Response Time -->
   <a href="https://hello.from-gondor.com/">
-    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/response-times/30d/badge.svg" alt="Helm Charts" />
+    <img src="https://status.from-gondor.com/api/v1/endpoints/external_gondor-homepage/response-times/30d/badge.svg" alt="Gondor Response Time" />
   </a>
   <!-- Helm Chart Release -->
   <a href="https://github.com/josimar-silva/homelab/actions/workflows/helm-release.yaml">
