@@ -212,6 +212,21 @@ persistentVolume:
   # -- Mount path for the persistent volume. Defaults to /data
   mountPath: /data
 
+# -- List of persistent volumes for the deployment. Takes precedence over `persistentVolume` (single volume) for backward compatibility.
+persistentVolumes: []
+# - name: data
+#   storageClass: "longhorn-default-sc"
+#   accessModes:
+#     - ReadWriteOnce
+#   size: 10Gi
+#   mountPath: /data
+# - name: backup
+#   storageClass: "longhorn-backup-sc"
+#   accessModes:
+#     - ReadWriteOnce
+#   size: 20Gi
+#   mountPath: /backup
+
 # -- 1Password integration settings
 onepassword:
   # -- Enable creating a OnePasswordItem to generate a Kubernetes Secret.

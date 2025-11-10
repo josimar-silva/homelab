@@ -1,4 +1,23 @@
-{{- if .Values.persistentVolume.enabled }}
+{{- if .Values.persistentVolumes }}
+{{- range .Values.persistentVolumes }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "one-chart.fullname" $ }}-{{ .name }}
+  labels: 
+    {{- include "one-chart.labels" $ | nindent 4 }}
+spec:
+  accessModes:
+    {{- range .accessModes | default (list "ReadWriteOnce") }}
+    - {{ . }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .size | default "1Gi" }}
+  storageClassName: {{ .storageClass }}
+{{- end }}
+{{- else if .Values.persistentVolume.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

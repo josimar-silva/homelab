@@ -59,3 +59,198 @@ tests:
       - equal:
           path: spec.resources.requests.storage
           value: 10Gi
+
+  - it: should render multiple PersistentVolumeClaims when persistentVolumes list is provided
+    set:
+      persistentVolumes:
+        - name: data
+          storageClass: longhorn-data
+          size: 20Gi
+          mountPath: /data
+          accessModes:
+            - ReadWriteOnce
+        - name: backup
+          storageClass: longhorn-backup
+          size: 30Gi
+          mountPath: /backup
+          accessModes:
+            - ReadWriteMany
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+
+  - it: should render first PVC with correct name, storage, storageClassName, and accessModes for data volume
+    documentIndex: 0
+    set:
+      persistentVolumes:
+        - name: data
+          storageClass: longhorn-data
+          size: 20Gi
+          mountPath: /data
+          accessModes:
+            - ReadWriteOnce
+        - name: backup
+          storageClass: longhorn-backup
+          size: 30Gi
+          mountPath: /backup
+          accessModes:
+            - ReadWriteMany
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: pvc-release-one-chart-data
+      - equal:
+          path: spec.storageClassName
+          value: longhorn-data
+      - equal:
+          path: spec.resources.requests.storage
+          value: 20Gi
+      - equal:
+          path: spec.accessModes
+          value:
+            - ReadWriteOnce
+
+  - it: should render second PVC with correct name, storage, storageClassName, and accessModes for backup volume
+    documentIndex: 1
+    set:
+      persistentVolumes:
+        - name: data
+          storageClass: longhorn-data
+          size: 20Gi
+          mountPath: /data
+          accessModes:
+            - ReadWriteOnce
+        - name: backup
+          storageClass: longhorn-backup
+          size: 30Gi
+          mountPath: /backup
+          accessModes:
+            - ReadWriteMany
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: pvc-release-one-chart-backup
+      - equal:
+          path: spec.storageClassName
+          value: longhorn-backup
+      - equal:
+          path: spec.resources.requests.storage
+          value: 30Gi
+      - equal:
+          path: spec.accessModes
+          value:
+            - ReadWriteMany
+
+  - it: should set correct storage and storageClassName for first PVC (data) in multi-volume configuration
+    documentIndex: 0
+    set:
+      persistentVolumes:
+        - name: data
+          storageClass: fast-ssd
+          size: 50Gi
+          mountPath: /data
+          accessModes:
+            - ReadWriteOnce
+        - name: cache
+          storageClass: fast-nvme
+          size: 100Gi
+          mountPath: /cache
+          accessModes:
+            - ReadWriteOnce
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: pvc-release-one-chart-data
+      - equal:
+          path: spec.storageClassName
+          value: fast-ssd
+      - equal:
+          path: spec.resources.requests.storage
+          value: 50Gi
+
+  - it: should set correct storage and storageClassName for second PVC (cache) in multi-volume configuration
+    documentIndex: 1
+    set:
+      persistentVolumes:
+        - name: data
+          storageClass: fast-ssd
+          size: 50Gi
+          mountPath: /data
+          accessModes:
+            - ReadWriteOnce
+        - name: cache
+          storageClass: fast-nvme
+          size: 100Gi
+          mountPath: /cache
+          accessModes:
+            - ReadWriteOnce
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: pvc-release-one-chart-cache
+      - equal:
+          path: spec.storageClassName
+          value: fast-nvme
+      - equal:
+          path: spec.resources.requests.storage
+          value: 100Gi
+
+  - it: should use default accessModes if not specified in persistentVolumes
+    set:
+      persistentVolumes:
+        - name: data
+          storageClass: longhorn-default-sc
+          size: 10Gi
+          mountPath: /data
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: pvc-release-one-chart-data
+      - equal:
+          path: spec.accessModes
+          value:
+            - ReadWriteOnce
+
+  - it: should prefer persistentVolumes over persistentVolume when both are set (use main from persistentVolumes)
+    set:
+      persistentVolume:
+        enabled: true
+        storageClass: longhorn-default-sc
+        size: 5Gi
+        mountPath: /data
+      persistentVolumes:
+        - name: main
+          storageClass: other-sc
+          size: 20Gi
+          mountPath: /main
+          accessModes:
+            - ReadWriteOnce
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: pvc-release-one-chart-main
+      - equal:
+          path: spec.storageClassName
+          value: other-sc
+      - equal:
+          path: spec.resources.requests.storage
+          value: 20Gi
+      - equal:
+          path: spec.accessModes
+          value:
+            - ReadWriteOnce
+      - notEqual:
+          path: spec.storageClassName
+          value: longhorn-default-sc
