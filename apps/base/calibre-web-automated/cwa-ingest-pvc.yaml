@@ -9,7 +9,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: "192.168.68.120"
-    path: "/ebooks"
+    path: "/ebooks/cwa-book-ingest"
     readOnly: false
   persistentVolumeReclaimPolicy: Retain
 ---
