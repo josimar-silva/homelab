@@ -549,3 +549,147 @@ tests:
           path: spec.template.metadata.annotations["prometheus.io/interval"]
       - notExists:
           path: spec.template.metadata.annotations["prometheus.io/scrape_timeout"]
+
+  - it: should render multiple PVC volumes and volumeMounts when persistentVolumes list is provided
+    set:
+      image.tag: "1.16.0"
+      persistentVolumes:
+        - name: data
+          storageClass: longhorn-data
+          size: 20Gi
+          mountPath: /data
+          accessModes:
+            - ReadWriteOnce
+        - name: backup
+          storageClass: longhorn-backup
+          size: 30Gi
+          mountPath: /backup
+          accessModes:
+            - ReadWriteMany
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: test-release-one-chart-data
+            persistentVolumeClaim:
+              claimName: test-release-one-chart-data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: test-release-one-chart-backup
+            persistentVolumeClaim:
+              claimName: test-release-one-chart-backup
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: test-release-one-chart-data
+            mountPath: /data
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: test-release-one-chart-backup
+            mountPath: /backup
+
+  - it: should prefer persistentVolumes over persistentVolume when both are set
+    set:
+      image.tag: "1.16.0"
+      persistentVolume:
+        enabled: true
+        storageClass: longhorn-default-sc
+        size: 5Gi
+        mountPath: /data
+      persistentVolumes:
+        - name: main
+          storageClass: other-sc
+          size: 20Gi
+          mountPath: /main
+          accessModes:
+            - ReadWriteOnce
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: test-release-one-chart-main
+            persistentVolumeClaim:
+              claimName: test-release-one-chart-main
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: test-release-one-chart-main
+            mountPath: /main
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: test-release-one-chart
+            persistentVolumeClaim:
+              claimName: test-release-one-chart
+
+  - it: should render both custom volumes and multiple PVC volumes when persistentVolumes is set
+    set:
+      image.tag: "1.16.0"
+      volumes:
+        - name: custom-volume
+          emptyDir: {}
+      persistentVolumes:
+        - name: data
+          storageClass: longhorn-data
+          size: 20Gi
+          mountPath: /data
+          accessModes:
+            - ReadWriteOnce
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: custom-volume
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: test-release-one-chart-data
+            persistentVolumeClaim:
+              claimName: test-release-one-chart-data
+
+  - it: should render both custom volumeMounts and multiple PVC volumeMounts when persistentVolumes is set
+    set:
+      image.tag: "1.16.0"
+      volumeMounts:
+        - name: custom-volume
+          mountPath: /custom
+      persistentVolumes:
+        - name: data
+          storageClass: longhorn-data
+          size: 20Gi
+          mountPath: /data
+          accessModes:
+            - ReadWriteOnce
+        - name: backup
+          storageClass: longhorn-backup
+          size: 30Gi
+          mountPath: /backup
+          accessModes:
+            - ReadWriteMany
+    asserts:
+      - isKind:
+          of: Deployment
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: custom-volume
+            mountPath: /custom
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: test-release-one-chart-data
+            mountPath: /data
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: test-release-one-chart-backup
+            mountPath: /backup
