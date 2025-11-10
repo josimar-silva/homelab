@@ -131,6 +131,10 @@ endpoints:
     <<: *external
     url: https://hello.from-gondor.com
 
+  - name: Calibre Web Automated
+    <<: *external
+    url: https://calibre.from-gondor.com/
+
   - name: Linkwarden
     <<: *external
     url: https://linkwarden.from-gondor.com/

@@ -1,7 +1,9 @@
+Calibre
 CLI
 CLI's
 CloudNativePG
 DNS
+ebooks
 EliteDesk
 FluxCD
 Geerling
@@ -41,5 +43,5 @@ homelabber
 md
 sm
 unittest
-viele
 Uptime
+viele
