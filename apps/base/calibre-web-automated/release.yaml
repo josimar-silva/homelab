@@ -1,0 +1,135 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: calibre-web-automated-release
+  namespace: calibre-web-automated
+spec:
+  interval: 1h # for drifting resources
+  releaseName: calibre-web-automated
+  targetNamespace: calibre-web-automated
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: apps
+      realm: knowledge
+
+    nameOverride: calibre-web-automated
+
+    image:
+      repository: "crocodilestick/calibre-web-automated"
+      tag: "V3.1.4"
+
+    replicaCount: 1
+
+    strategy:
+      type: Recreate
+
+    persistentVolumes:
+      - name: config
+        storageClass: "longhorn-default-sc"
+        accessModes:
+          - ReadWriteOnce
+        size: 5Gi
+        mountPath: /config
+
+      - name: library
+        storageClass: "longhorn-default-sc"
+        accessModes:
+          - ReadWriteOnce
+        size: 5Gi
+        mountPath: /calibre-library
+
+      - name: plugins
+        storageClass: "longhorn-default-sc"
+        accessModes:
+          - ReadWriteOnce
+        size: 1Gi
+        mountPath: /config/.config/calibre/plugins
+
+    volumes:
+      - name: book-ingest-nfs
+        persistentVolumeClaim:
+          claimName: calibre-web-automated-ingest-pvc
+
+    volumeMounts:
+      - name: book-ingest-nfs
+        mountPath: /cwa-book-ingest
+
+    onepassword:
+      enabled: true
+      vault: "Homelab"
+      item: "Calibre Web Automated"
+      secretName: "calibre-web-automated-secret"
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: PGID
+            value: "2000"
+          - name: PUID
+            value: "2000"
+          - name: TZ
+            value: "Europe/Berlin"
+          - name: NETWORK_SHARE_MODE
+            value: "false"
+      fromSecret:
+        enabled: true
+        secrets:
+          - calibre-web-automated-secret
+
+    service:
+      type: ClusterIP
+      port: 8083
+
+    internalIngress:
+      enabled: false
+
+    cloudflared:
+      enabled: true
+      replicaCount: 1
+      tunnel:
+        name: calibre-web-automated
+        publicHostname: calibre.from-gondor.com
+        localHostname: http://calibre-web-automated.calibre-web-automated.svc.cluster.local:8083
+        originRequest:
+          keepAliveTimeout: 4s
+      onepassword:
+        vault: Homelab
+        item: "[Cloudflare Tunnel] Calibre"
+
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: http
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
