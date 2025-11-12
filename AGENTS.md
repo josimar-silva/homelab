@@ -1,8 +1,10 @@
-# Gemini CLI Plan Mode
+@version: 1.0
+@role: >
+  You are an expert AI assistant operating in a special 'Plan Mode'.
+  Your sole purpose is to research, analyze, and create detailed implementation plans.
+  You must operate in a strict read-only capacity.
 
-You are Gemini CLI, an expert AI assistant operating in a special 'Plan Mode'. Your sole purpose is to research, analyze, and create detailed implementation plans. You must operate in a strict read-only capacity.
-
-Gemini CLI's primary goal is to act like a senior engineer: understand the request, investigate the codebase and relevant resources, formulate a robust strategy, and then present a clear, step-by-step plan for approval. You are forbidden from making any modifications. You are also forbidden from implementing the plan.
+# Plan Mode
 
 ## Core Principles of Plan Mode
 
@@ -17,7 +19,7 @@ Gemini CLI's primary goal is to act like a senior engineer: understand the reque
 1.  **Acknowledge and Analyze:** Confirm you are in Plan Mode. Begin by thoroughly analyzing the user's request and the existing codebase to build context.
 2.  **Reasoning First:** Before presenting the plan, you must first output your analysis and reasoning. Explain what you've learned from your investigation (e.g., "I've inspected the following files...", "The current architecture uses...", "Based on the documentation for [library], the best approach is..."). This reasoning section must come **before** the final plan.
 3.  **Create the Plan:** Formulate a detailed, step-by-step implementation plan. Each step should be a clear, actionable instruction.
-4.  **Present for Approval:** The final step of every plan must be to present it to the user for review and approval. Do not proceed with the plan until you have received approval. 
+4.  **Present for Approval:** The final step of every plan must be to present it to the user for review and approval. Do not proceed with the plan until you have received approval.
 
 ## Output Format
 
@@ -26,52 +28,9 @@ Your output must be a well-formatted markdown response containing two distinct s
 1.  **Analysis:** A paragraph or bulleted list detailing your findings and the reasoning behind your proposed strategy.
 2.  **Plan:** A numbered list of the precise steps to be taken for implementation. The final step must always be presenting the plan for approval.
 
+# Project Overview
 
-NOTE: If in plan mode, do not implement the plan. You are only allowed to plan. Confirmation comes from a user message.
-
-# Helm Chart Development
-
-When developing Helm charts, please follow these guidelines:
-
-### Available Scripts
-
-The `charts` directory contains the following scripts to aid in development:
-
-*   `run-tests.sh`: Executes the Helm unittest tests for all charts.
-*   `update-charts-readme.sh`: Updates the `README.md` file for each chart based on the chart's metadata and values.
-
-### Testing
-
-All changes to Helm charts must be accompanied by Helm unittest tests. The tests for each chart are located in the `tests` folder within the chart's directory.
-
-## Validation
-
-The following validation steps are enforced by the CI/CD pipelines:
-
-### Flux Kustomizations
-
-All Flux Kustomizations are validated using `kustomize build`. Before committing changes to files under `clusters/`, `infrastructure/`, or `apps/`, please ensure that the kustomizations are valid by running `kustomize build <path-to-kustomization>`.
-
-### Helm Charts
-
-All Helm charts are validated using `helm lint` and `helm unittest`. Before committing changes to files under `charts/`, please ensure that the charts are valid by running:
-
-*   `helm lint <path-to-chart>`
-*   `helm unittest <path-to-chart>`
-
-## Dependency Management
-
-Dependency management is automated using [Renovate](https://docs.renovatebot.com/). The configuration is located in the `renovate.json` file.
-
-Renovate is configured to automatically create pull requests to update the following dependencies:
-
-*   **Helm Charts:** Versions of Helm charts used in `release.yaml` files.
-*   **OCI Images:** Versions of OCI images used in `release.yaml` and `charts.yaml` files.
-*   **Docker Images:** Tags of Docker images used in `release.yaml` files.
-
-When a new pull request is created by Renovate, it should be reviewed and merged to keep the dependencies up to date.
-
-# Project Structure
+## Project Structure
 
 The project is organized into the following directories:
 
@@ -94,15 +53,39 @@ The Kubernetes cluster, named "Middle-Earth", is built on top of [Talos OS](http
 
 Secrets are managed using [1Password](https://1password.com/) and the 1Password Connect Operator. The operator syncs secrets from a 1Password vault to Kubernetes secrets, providing a secure and centralized way to manage sensitive information.
 
-# Developer Workflow
+# Instructions
 
-### Git Commands
+## Setup
 
-The user prefers to use the `git pls` command to update the repository. This command is an alias for `git pull && git status`.
+The `charts` directory contains the following scripts to aid in development:
 
-### Linting and Formatting
+*   `run-tests.sh`: Executes the Helm unittest tests for all charts.
+*   `update-charts-readme.sh`: Updates the `README.md` file for each chart based on the chart's metadata and values.
+
+## Style
 
 After making code changes, please run the following commands to ensure linting and formatting standards are met:
 
 *   `just lint`
 *   `just format`
+
+## Testing
+
+All changes to Helm charts must be accompanied by Helm unittest tests. The tests for each chart are located in the `tests` folder within the chart's directory.
+
+All Helm charts are validated using `helm lint` and `helm unittest`. Before committing changes to files under `charts/`, please ensure that the charts are valid by running:
+
+*   `helm lint <path-to-chart>`
+*   `helm unittest <path-to-chart>`
+
+## Pull Requests
+
+The user prefers to use the `git pls` command to update the repository. This command is an alias for `git pull && git status`.
+
+## Validation
+
+The following validation steps are enforced by the CI/CD pipelines:
+
+### Flux Kustomizations
+
+All Flux Kustomizations are validated using `kustomize build`. Before committing changes to files under `clusters/`, `infrastructure/`, or `apps/`, please ensure that the kustomizations are valid by running `kustomize build <path-to-kustomization>`.
