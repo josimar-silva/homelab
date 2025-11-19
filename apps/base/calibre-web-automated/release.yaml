@@ -46,7 +46,7 @@ spec:
         storageClass: "longhorn-default-sc"
         accessModes:
           - ReadWriteOnce
-        size: 5Gi
+        size: 10Gi
         mountPath: /calibre-library
 
       - name: plugins
