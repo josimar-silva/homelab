@@ -23,7 +23,7 @@ jobs:
           egress-policy: audit
 
       - name: "🔄 Checkout repo"
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
 
       - name: "Get all charts"
         id: get_all_charts
@@ -44,7 +44,7 @@ jobs:
           egress-policy: audit
 
       - name: "🔄 Checkout repo"
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
 
       - name: "⎈ Set up Helm"
         uses: d3adb5/helm-unittest-action@850bc76597579183998069830d5fa8c3ef0ea34a # v2
