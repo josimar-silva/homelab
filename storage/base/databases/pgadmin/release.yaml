@@ -74,21 +74,18 @@ spec:
     service:
       port: 3004
 
-    internalIngress:
+    httpRoute:
       enabled: true
-      className: internal-ingress
-      annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-      hosts:
-        - host: pgadmin.from-gondor.com
-          paths:
+      parentRef:
+        name: internal-gateway
+        namespace: ingress-nginx
+        sectionName: https
+      hostnames:
+        - pgadmin.from-gondor.com
+      rules:
+        - matches:
             - path: /
-              pathType: ImplementationSpecific
-      tls:
-        secretName: pgdadmin-tls
-        clusterIssuer: letsencrypt-production
-        hosts:
-          - pgadmin.from-gondor.com
+          port: 3004
 
     resources:
       requests:
