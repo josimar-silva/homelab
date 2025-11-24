@@ -90,6 +90,15 @@ spec:
         hosts:
           - pgadmin.from-gondor.com
 
+    httpRoute:
+      enabled: true
+      hosts:
+        - host: pgadmin.from-gondor.com
+          paths:
+            - path: /
+              pathType: PathPrefix
+          port: 3004
+
     resources:
       requests:
         cpu: 200m
