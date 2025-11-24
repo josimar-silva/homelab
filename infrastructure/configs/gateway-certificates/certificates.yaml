@@ -1,0 +1,33 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-from-gondor-tls
+  namespace: ingress-nginx
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: security
+spec:
+  secretName: wildcard-from-gondor-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+    - "*.from-gondor.com"
+    - "from-gondor.com"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-internal-from-gondor-tls
+  namespace: ingress-nginx
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: security
+spec:
+  secretName: wildcard-internal-from-gondor-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+    - "*.internal.from-gondor.com"
+    - "internal.from-gondor.com"
