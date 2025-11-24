@@ -144,22 +144,18 @@ spec:
           port: 9091
           containerPort: 9091
 
-    internalIngress:
+    httpRoute:
       enabled: true
-      className: internal-ingress
-      annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-      hosts:
-        - host: hello.internal.from-gondor.com
-          paths:
+      parentRef:
+        name: internal-gateway
+        namespace: ingress-nginx
+        sectionName: https-internal
+      hostnames:
+        - hello.internal.from-gondor.com
+      rules:
+        - matches:
             - path: /
-              pathType: ImplementationSpecific
-              port: http
-      tls:
-        secretName: hello-from-gondor-frontend-tls
-        clusterIssuer: letsencrypt-production
-        hosts:
-          - hello.internal.from-gondor.com
+          port: 3000
     
     cloudflared:
       enabled: true
