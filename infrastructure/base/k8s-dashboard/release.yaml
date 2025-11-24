@@ -20,14 +20,4 @@ spec:
   values:
     app:
       ingress:
-        enabled: true
-        ingressClassName: internal-ingress
-        useDefaultAnnotations: true
-        hosts:
-          - k8s.from-gondor.com
-        issuer:
-          name: letsencrypt-production
-          scope: cluster
-        tls:
-          enabled: true
-          secretName: k8s-dashboard-tls
+        enabled: false
