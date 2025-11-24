@@ -1,0 +1,44 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: internal-gateway
+  namespace: ingress-nginx
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: network
+spec:
+  gatewayClassName: nginx
+  listeners:
+    # HTTP listener - typically redirects to HTTPS
+    - name: http
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All
+    # HTTPS listener for external domains
+    - name: https
+      port: 443
+      protocol: HTTPS
+      hostname: "*.from-gondor.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: wildcard-from-gondor-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: All
+    # HTTPS listener for internal domains
+    - name: https-internal
+      port: 443
+      protocol: HTTPS
+      hostname: "*.internal.from-gondor.com"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: wildcard-internal-from-gondor-tls
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: All

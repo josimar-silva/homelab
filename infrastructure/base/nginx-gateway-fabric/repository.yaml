@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: nginx-gateway-fabric
+  namespace: flux-system
+spec:
+  url: oci://ghcr.io/nginx/charts
+  type: oci
+  interval: 24h
+  timeout: 5m
