@@ -70,17 +70,7 @@ spec:
         metallb.universe.tf/allow-shared-ip: pihole-svc
 
     ingress:
-      enabled: true
-      ingressClassName: internal-ingress
-      annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        cert-manager.io/cluster-issuer: letsencrypt-production
-      hosts:
-        - pihole.from-gondor.com
-      tls:
-        - secretName: pihole-tls
-          hosts:
-            - pihole.from-gondor.com
+      enabled: false
 
     DNS1: "1.1.1.1"
     DNS2: "8.8.8.8"
