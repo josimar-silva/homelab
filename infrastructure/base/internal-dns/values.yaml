@@ -14,9 +14,6 @@ sources:
   - ingress
   - gateway-httproute
 
-ingress:
-  class: internal-ingress
-
 provider:
   name: pihole
 
