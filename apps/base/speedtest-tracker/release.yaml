@@ -113,6 +113,15 @@ spec:
         hosts:
           - speedtest.from-gondor.com
 
+    httpRoute:
+      enabled: true
+      hosts:
+        - host: speedtest.from-gondor.com
+          paths:
+            - path: /
+              pathType: PathPrefix
+          port: 80
+
     resources:
       limits:
         cpu: 900m
