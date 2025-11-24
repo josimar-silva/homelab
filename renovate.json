@@ -62,6 +62,16 @@
       ],
       "packageNameTemplate": "{{repository}}",
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)kustomization\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=github-releases\\s+depName=(?<depName>[^\\s]+)[\\s\\S]*?-\\s*https://github.com/[^/]+/[^/]+/releases/download/v(?<currentValue>[^/]+)/[^\\s]+"
+      ],
+      "datasourceTemplate": "github-releases"
     }
   ]
 }
