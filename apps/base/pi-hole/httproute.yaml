@@ -1,0 +1,22 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pihole
+  namespace: pihole
+  labels:
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: network
+spec:
+  parentRefs:
+    - name: internal-gateway
+      namespace: ingress-nginx
+  hostnames:
+    - pihole.from-gondor.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: pihole-web
+          port: 80
