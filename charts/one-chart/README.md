@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.11.0](https://img.shields.io/badge/Version-0.11.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.12.0](https://img.shields.io/badge/Version-0.12.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -44,6 +44,15 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | homelab | object | `{"category":"apps","realm":"playground"}` | Homelab settings |
 | homelab.category | string | `"apps"` | Homelab category label. Defaults to "apps". |
 | homelab.realm | string | `"playground"` | Homelab realm label. Defaults to "playground". |
+| httpRoute | object | `{"annotations":{},"enabled":false,"hostnames":["chart-example.local"],"parentRef":{"name":"internal-gateway","namespace":"ingress-nginx"},"rules":[{"matches":[{"path":"/","pathType":"PathPrefix"}],"port":80}]}` | HTTPRoute configuration for Gateway API |
+| httpRoute.annotations | object | `{}` | Annotations for the HTTPRoute |
+| httpRoute.enabled | bool | `false` | Enable HTTPRoute (Gateway API) |
+| httpRoute.hostnames | list | `["chart-example.local"]` | Hostnames for the HTTPRoute |
+| httpRoute.parentRef | object | `{"name":"internal-gateway","namespace":"ingress-nginx"}` | Parent Gateway reference |
+| httpRoute.parentRef.name | string | `"internal-gateway"` | Name of the parent Gateway. Defaults to "internal-gateway" |
+| httpRoute.parentRef.namespace | string | `"ingress-nginx"` | Namespace of the parent Gateway. Defaults to "ingress-nginx" |
+| httpRoute.rules | list | `[{"matches":[{"path":"/","pathType":"PathPrefix"}],"port":80}]` | Routing rules |
+| httpRoute.rules[0].port | int | `80` | Port to route traffic to. Defaults to 80 |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"nginx"` | Container image repository |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion |
