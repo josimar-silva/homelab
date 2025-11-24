@@ -22,10 +22,10 @@ A Helm chart for deploying PostgreSQL clusters using CloudNativePG
 | homelab | object | `{"category":"database","realm":"storage"}` | Homelab settings |
 | homelab.category | string | `"database"` | Homelab category label. Defaults to "database". |
 | homelab.realm | string | `"storage"` | Homelab realm label. Defaults to "storage". |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/cloudnative-pg/postgresql","tag":17.5}` | Database image settings |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/cloudnative-pg/postgresql","tag":18.1}` | Database image settings |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/cloudnative-pg/postgresql"` | Container image repository |
-| image.tag | float | `17.5` | Overrides the image tag whose default is the chart appVersion |
+| image.tag | float | `18.1` | Overrides the image tag whose default is the chart appVersion |
 | instances | int | `1` | Number of instances in the cluster |
 | loadBalancer | object | `{"hostname":"","ipPool":""}` | LoadBalancer service settings |
 | loadBalancer.hostname | string | `""` | Hostname for the LoadBalancer service (used by ExternalDNS) |
