@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TLSRoute
+metadata:
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: security
+spec:
+  parentRefs:
+    - name: internal-gateway
+      namespace: ingress-nginx
+      sectionName: tls-passthrough
+  hostnames:
+    - k8s.from-gondor.com
+  rules:
+    - backendRefs:
+        - name: kubernetes-dashboard-kong-proxy
+          port: 443

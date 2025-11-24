@@ -9,7 +9,7 @@ metadata:
 spec:
   gatewayClassName: nginx
   listeners:
-    # HTTP listener - typically redirects to HTTPS
+    # HTTP listener
     - name: http
       port: 80
       protocol: HTTP
@@ -42,3 +42,15 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    # TLS passthrough for backends that handle their own TLS
+    - name: tls-passthrough
+      port: 443
+      protocol: TLS
+      hostname: "k8s.from-gondor.com"
+      tls:
+        mode: Passthrough
+      allowedRoutes:
+        namespaces:
+          from: All
+        kinds:
+          - kind: TLSRoute
