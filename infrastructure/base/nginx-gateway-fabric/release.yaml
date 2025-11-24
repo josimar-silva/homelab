@@ -30,7 +30,7 @@ spec:
       gwAPIExperimentalFeatures:
         enable: false
     nginx:
-      replicas: 4
+      replicas: 2
       service:
         type: LoadBalancer
         annotations:
