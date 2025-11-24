@@ -12,6 +12,7 @@ namespaced: false
 sources:
   - service
   - ingress
+  - gateway-httproute
 
 ingress:
   class: internal-ingress
