@@ -24,13 +24,7 @@ spec:
     replicaCount: 1
 
     ingress:
-      enabled: true
-      class: internal-ingress
-      annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        cert-manager.io/cluster-issuer: letsencrypt-production
-      host: chat.from-gondor.com
-      tls: true
+      enabled: false
 
     persistence:
       storageClass: "longhorn-default-sc"

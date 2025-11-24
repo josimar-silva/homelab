@@ -6,3 +6,4 @@ resources:
   - release.yaml
   - repository.yaml
   - ollama-proxy-configmap.yaml
+  - "httproute.yaml"
