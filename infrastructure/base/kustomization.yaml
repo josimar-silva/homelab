@@ -9,7 +9,6 @@ resources:
   - ingress-nginx
   - nginx-gateway-fabric
   - internal-dns
-  - internal-ingress
   - renovate
   - k8s-dashboard
   - onepassword
