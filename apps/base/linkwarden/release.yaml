@@ -124,6 +124,19 @@ spec:
     internalIngress:
       enabled: false
 
+    httpRoute:
+      enabled: true
+      parentRef:
+        name: internal-gateway
+        namespace: ingress-nginx
+        sectionName: https-internal
+      hostnames:
+        - linkwarden.internal.from-gondor.com
+      rules:
+        - matches:
+            - path: /
+          port: 3000
+
     cloudflared:
       enabled: true
       replicaCount: 1
