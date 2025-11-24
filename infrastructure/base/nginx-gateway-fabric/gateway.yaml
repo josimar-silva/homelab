@@ -42,15 +42,3 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
-    # TLS passthrough for backends that handle their own TLS
-    - name: tls-passthrough
-      port: 443
-      protocol: TLS
-      hostname: "k8s.from-gondor.com"
-      tls:
-        mode: Passthrough
-      allowedRoutes:
-        namespaces:
-          from: All
-        kinds:
-          - kind: TLSRoute
