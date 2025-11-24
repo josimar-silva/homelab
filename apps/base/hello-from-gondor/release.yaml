@@ -53,9 +53,6 @@ spec:
         - name: management
           port: 9000
           containerPort: 9000
-
-    internalIngress:
-      enabled: false
     
     cloudflared:
       enabled: false

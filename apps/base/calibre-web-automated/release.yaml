@@ -92,9 +92,6 @@ spec:
       type: ClusterIP
       port: 8083
 
-    internalIngress:
-      enabled: false
-
     cloudflared:
       enabled: true
       replicaCount: 1
