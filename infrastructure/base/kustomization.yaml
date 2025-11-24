@@ -5,7 +5,9 @@ resources:
   - metallb
   - longhorn
   - cert-manager
+  - gateway-api
   - ingress-nginx
+  - nginx-gateway-fabric
   - internal-dns
   - internal-ingress
   - renovate
