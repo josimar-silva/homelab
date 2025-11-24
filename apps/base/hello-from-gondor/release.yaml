@@ -160,6 +160,15 @@ spec:
         clusterIssuer: letsencrypt-production
         hosts:
           - hello.internal.from-gondor.com
+
+    httpRoute:
+      enabled: true
+      hosts:
+        - host: hello.internal.from-gondor.com
+          paths:
+            - path: /
+              pathType: PathPrefix
+          port: 3000
     
     cloudflared:
       enabled: true
