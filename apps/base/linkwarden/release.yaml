@@ -121,9 +121,6 @@ spec:
       type: ClusterIP
       port: 3000
 
-    internalIngress:
-      enabled: false
-
     httpRoute:
       enabled: true
       parentRef:
