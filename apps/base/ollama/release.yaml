@@ -9,6 +9,7 @@ spec:
   targetNamespace: ollama
   chart:
     spec:
+      #renovate: registryUrl=https://helm.openwebui.com
       chart: open-webui
       version: 7.2.0
       sourceRef:
