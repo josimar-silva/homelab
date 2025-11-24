@@ -123,31 +123,6 @@ prometheus:
   # -- Scrape timeout
   scrapeTimeout: 10s
 
-internalIngress:
-  # -- Enable internal ingress
-  enabled: false
-  # -- Ingress class name. Defaults to "internal-ingress"
-  className: internal-ingress
-  # -- Annotations for the ingress
-  annotations: {}
-    # -- kubernetes.io/tls-acme: "true"
-  # -- Ingress hosts and paths
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-          port: http
-  # -- TLS configuration for ingress
-  # -- tls:
-    # -- Secret name for TLS certificate
-    # secretName: chart-example-tls
-    # -- cert-manager ClusterIssuer
-    # clusterIssuer: letsencrypt-staging
-    # -- Hosts for the TLS certificate
-    # hosts:
-    #   - chart-example.local
-
 # -- HTTPRoute configuration for Gateway API
 httpRoute:
   # -- Enable HTTPRoute (Gateway API)

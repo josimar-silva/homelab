@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.12.0](https://img.shields.io/badge/Version-0.12.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.13.0](https://img.shields.io/badge/Version-0.13.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -57,10 +57,6 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | image.repository | string | `"nginx"` | Container image repository |
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion |
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries |
-| internalIngress.annotations | object | `{}` | Annotations for the ingress |
-| internalIngress.className | string | `"internal-ingress"` | Ingress class name. Defaults to "internal-ingress" |
-| internalIngress.enabled | bool | `false` | Enable internal ingress |
-| internalIngress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific","port":"http"}]}]` | Ingress hosts and paths |
 | nameOverride | string | `""` | Override the chart name |
 | nodeSelector | object | `{}` | Node selector for pod scheduling |
 | onepassword | object | `{"enabled":false,"item":"","secretName":"","vault":"Homelab"}` | 1Password integration settings |
