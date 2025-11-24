@@ -97,21 +97,18 @@ spec:
       type: ClusterIP
       port: 80
 
-    internalIngress:
+    httpRoute:
       enabled: true
-      className: internal-ingress
-      annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-      hosts:
-        - host: speedtest.from-gondor.com
-          paths:
+      parentRef:
+        name: internal-gateway
+        namespace: ingress-nginx
+        sectionName: https
+      hostnames:
+        - speedtest.from-gondor.com
+      rules:
+        - matches:
             - path: /
-              pathType: ImplementationSpecific
-      tls:
-        secretName: speedtest-tracker-tls
-        clusterIssuer: letsencrypt-production
-        hosts:
-          - speedtest.from-gondor.com
+          port: 80
 
     resources:
       limits:
