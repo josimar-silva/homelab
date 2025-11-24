@@ -148,6 +148,43 @@ internalIngress:
     # hosts:
     #   - chart-example.local
 
+# -- HTTPRoute configuration for Gateway API
+httpRoute:
+  # -- Enable HTTPRoute (Gateway API)
+  enabled: false
+  # -- Annotations for the HTTPRoute
+  annotations: {}
+  # -- Parent Gateway reference
+  parentRef:
+    # -- Name of the parent Gateway. Defaults to "internal-gateway"
+    name: internal-gateway
+    # -- Namespace of the parent Gateway. Defaults to "ingress-nginx"
+    namespace: ingress-nginx
+    # -- Section name (listener) on the Gateway for TLS. Use "https" for TLS termination
+    # sectionName: https
+  # -- Hostnames for the HTTPRoute
+  hostnames:
+    - chart-example.local
+  # -- Routing rules
+  rules:
+    - matches:
+        - path: /
+          pathType: PathPrefix
+      # -- Port to route traffic to. Defaults to 80
+      port: 80
+      # -- Custom backend references (optional, overrides default service)
+      # backendRefs:
+      #   - name: my-service
+      #     port: 8080
+      #     weight: 100
+      # -- Request/response filters (optional)
+      # filters:
+      #   - type: RequestHeaderModifier
+      #     requestHeaderModifier:
+      #       add:
+      #         - name: X-Custom-Header
+      #           value: custom-value
+
 # -- DNS configuration for the application
 dns:
   #   -- Enable DNS configuration

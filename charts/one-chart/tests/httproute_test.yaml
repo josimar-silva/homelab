@@ -1,0 +1,248 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: HTTPRoute template tests
+templates:
+  - ../templates/httproute.yaml
+release:
+  name: test-release
+  namespace: test-namespace
+
+tests:
+  - it: should not render anything if httpRoute.enabled is false
+    set:
+      httpRoute:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should render an HTTPRoute with default parentRef
+    set:
+      httpRoute:
+        enabled: true
+        hostnames:
+          - "test.local"
+        rules:
+          - matches:
+              - path: /
+            port: 80
+    asserts:
+      - isKind:
+          of: HTTPRoute
+      - equal:
+          path: spec.parentRefs[0].name
+          value: internal-gateway
+      - equal:
+          path: spec.parentRefs[0].namespace
+          value: ingress-nginx
+      - equal:
+          path: spec.hostnames[0]
+          value: test.local
+      - equal:
+          path: spec.rules[0].matches[0].path.value
+          value: /
+      - equal:
+          path: spec.rules[0].matches[0].path.type
+          value: PathPrefix
+      - equal:
+          path: spec.rules[0].backendRefs[0].name
+          value: test-release-one-chart
+      - equal:
+          path: spec.rules[0].backendRefs[0].port
+          value: 80
+
+  - it: should render with custom parentRef
+    set:
+      httpRoute:
+        enabled: true
+        parentRef:
+          name: custom-gateway
+          namespace: custom-namespace
+          sectionName: https
+        hostnames:
+          - "custom.local"
+        rules:
+          - matches:
+              - path: /
+            port: 443
+    asserts:
+      - equal:
+          path: spec.parentRefs[0].name
+          value: custom-gateway
+      - equal:
+          path: spec.parentRefs[0].namespace
+          value: custom-namespace
+      - equal:
+          path: spec.parentRefs[0].sectionName
+          value: https
+
+  - it: should render with multiple hostnames
+    set:
+      httpRoute:
+        enabled: true
+        hostnames:
+          - "host1.local"
+          - "host2.local"
+        rules:
+          - matches:
+              - path: /
+            port: 80
+    asserts:
+      - equal:
+          path: spec.hostnames[0]
+          value: host1.local
+      - equal:
+          path: spec.hostnames[1]
+          value: host2.local
+
+  - it: should render with custom pathType
+    set:
+      httpRoute:
+        enabled: true
+        hostnames:
+          - "test.local"
+        rules:
+          - matches:
+              - path: /exact
+                pathType: Exact
+            port: 80
+    asserts:
+      - equal:
+          path: spec.rules[0].matches[0].path.type
+          value: Exact
+      - equal:
+          path: spec.rules[0].matches[0].path.value
+          value: /exact
+
+  - it: should render with header matching
+    set:
+      httpRoute:
+        enabled: true
+        hostnames:
+          - "test.local"
+        rules:
+          - matches:
+              - path: /
+                headers:
+                  - name: X-Custom-Header
+                    value: custom-value
+            port: 80
+    asserts:
+      - equal:
+          path: spec.rules[0].matches[0].headers[0].name
+          value: X-Custom-Header
+      - equal:
+          path: spec.rules[0].matches[0].headers[0].value
+          value: custom-value
+
+  - it: should render with custom backendRefs
+    set:
+      httpRoute:
+        enabled: true
+        hostnames:
+          - "test.local"
+        rules:
+          - matches:
+              - path: /
+            backendRefs:
+              - name: custom-service
+                port: 8080
+                weight: 100
+    asserts:
+      - equal:
+          path: spec.rules[0].backendRefs[0].name
+          value: custom-service
+      - equal:
+          path: spec.rules[0].backendRefs[0].port
+          value: 8080
+      - equal:
+          path: spec.rules[0].backendRefs[0].weight
+          value: 100
+
+  - it: should render with multiple rules
+    set:
+      httpRoute:
+        enabled: true
+        hostnames:
+          - "test.local"
+        rules:
+          - matches:
+              - path: /api
+            port: 8080
+          - matches:
+              - path: /web
+            port: 3000
+    asserts:
+      - equal:
+          path: spec.rules[0].matches[0].path.value
+          value: /api
+      - equal:
+          path: spec.rules[0].backendRefs[0].port
+          value: 8080
+      - equal:
+          path: spec.rules[1].matches[0].path.value
+          value: /web
+      - equal:
+          path: spec.rules[1].backendRefs[0].port
+          value: 3000
+
+  - it: should render with annotations
+    set:
+      httpRoute:
+        enabled: true
+        annotations:
+          foo: bar
+          baz: qux
+        hostnames:
+          - "test.local"
+        rules:
+          - matches:
+              - path: /
+            port: 80
+    asserts:
+      - equal:
+          path: metadata.annotations.foo
+          value: bar
+      - equal:
+          path: metadata.annotations.baz
+          value: qux
+
+  - it: should render with filters
+    set:
+      httpRoute:
+        enabled: true
+        hostnames:
+          - "test.local"
+        rules:
+          - matches:
+              - path: /
+            port: 80
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  add:
+                    - name: X-Added-Header
+                      value: added-value
+    asserts:
+      - equal:
+          path: spec.rules[0].filters[0].type
+          value: RequestHeaderModifier
+      - equal:
+          path: spec.rules[0].filters[0].requestHeaderModifier.add[0].name
+          value: X-Added-Header
+
+  - it: should not render sectionName if not set
+    set:
+      httpRoute:
+        enabled: true
+        parentRef:
+          name: internal-gateway
+          namespace: ingress-nginx
+        hostnames:
+          - "test.local"
+        rules:
+          - matches:
+              - path: /
+            port: 80
+    asserts:
+      - notExists:
+          path: spec.parentRefs[0].sectionName
