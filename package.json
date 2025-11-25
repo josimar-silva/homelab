@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "dependencies": {
+    "glob": "^13.0.0"
+  }
+}

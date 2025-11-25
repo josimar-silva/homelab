@@ -1,0 +1,81 @@
+---
+name: Validate Renovate Config
+
+on:
+  pull_request:
+    paths:
+      - 'renovate.json'
+      - '.github/workflows/renovate-validate.yaml'
+      - 'scripts/validate-renovate.sh'
+      - 'scripts/test-renovate-managers.sh'
+  push:
+    branches:
+      - main
+    paths:
+      - 'renovate.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository        
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+
+      - name: Validate renovate.json
+        run: ./scripts/validate-renovate.sh
+        env:
+          RENOVATE_VERSION: "42"
+          STRICT_MODE: "true"
+
+      - name: Validation summary
+        if: success()
+        run: |
+          echo "✓ Renovate configuration is valid"
+          echo ""
+          echo "The following checks passed:"
+          echo "  - JSON syntax validation"
+          echo "  - Renovate schema validation"
+          echo "  - Configuration migration check (strict mode)"
+
+  test-custom-managers:
+    runs-on: ubuntu-24.04
+    needs: validate
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install glob
+
+      - name: Test custom manager regex patterns
+        run: ./scripts/test-renovate-managers.sh
+
+      - name: Test summary
+        if: success()
+        run: |
+          echo "✓ All custom manager tests passed"
+          echo ""
+          echo "The following custom managers were tested:"
+          echo "  - Manager 1: Helm charts with registryUrl (https)"
+          echo "  - Manager 2: Helm charts with OCI registryUrl"
+          echo "  - Manager 3: Docker repository/tag pattern"
+          echo "  - Manager 4: GitHub releases in kustomization files"
