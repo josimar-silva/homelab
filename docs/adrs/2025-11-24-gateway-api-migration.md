@@ -64,7 +64,7 @@ flowchart TB
     end
 
     subgraph Controller["NGINX Gateway Fabric"]
-        NGF[nginx-gateway-fabric<br/>4 replicas]
+        NGF[nginx-gateway-fabric<br/>2 replicas]
     end
 
     Client --> LB
