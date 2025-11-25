@@ -1,7 +1,9 @@
 Calibre
+config
 CLI
 CLI's
 CloudNativePG
+CRDs
 DNS
 ebooks
 EliteDesk
@@ -11,6 +13,7 @@ GitOps
 Gondor
 YAML
 Josimar
+JSON
 Kubernetes
 Kustomizations
 kustomizations
@@ -33,6 +36,7 @@ SSD
 stateful
 Talos
 TLS
+validator
 VLAN
 VLANs
 balancer
@@ -40,8 +44,10 @@ bg
 codebase
 homelab
 homelabber
+NGINX
 md
 sm
 unittest
 Uptime
 viele
+
