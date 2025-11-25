@@ -47,8 +47,9 @@
         "/(^|/)(release|chart)s?\\.ya?ml$/"
       ],
       "matchStrings": [
-        "#renovate:\\s*registryUrl=oci:\/\/(?<namespace>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
+        "#renovate:\\s*registryUrl=oci:\/\/(?<registry>[^\/\\s]+)\/(?<namespace>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
       ],
+      "registryUrlTemplate": "https://{{registry}}",
       "packageNameTemplate": "{{namespace}}/{{depName}}",
       "datasourceTemplate": "docker"
     },
