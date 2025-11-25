@@ -67,6 +67,8 @@
 - [Software](#software)
 - [Network](#network)
 - [Storage](#storage)
+- [Secret Management](#secret-management)
+- [Development](#development)
 - [Acknowledgments](#acknowledgments)
 - [References](#references)
 
@@ -162,6 +164,38 @@ For backups, a [QNAP TS-453E](https://www.qnap.com/en/product/ts-453e) NAS is us
 ## Secret Management
 
 Secrets are managed using `onepassword` and the 1Password Connect Operator. The operator syncs secrets from a 1Password vault to Kubernetes secrets. This allows for a secure and centralized way to manage secrets.
+
+## Development
+
+### Validation and Testing
+
+The repository includes automated validation for configuration files:
+
+#### Renovate Configuration Validation
+
+Validate the Renovate configuration locally before committing:
+
+```bash
+just validate-renovate
+```
+
+This validates `renovate.json` using the official Renovate config validator, checking for:
+- JSON syntax errors
+- Schema compliance
+- Configuration migration requirements
+- Custom manager regex patterns
+
+The validation also runs automatically in CI when changes are made to `renovate.json`.
+
+#### Other Validations
+
+```bash
+# Run YAML linting, shellcheck, helm lint, and kubeconform
+just lint
+
+# Format shell scripts and YAML files
+just format
+```
 
 ## Acknowledgments
 
