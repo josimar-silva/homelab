@@ -18,6 +18,19 @@ lint:
         -schema-location 'https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.29.0-standalone-strict/' \
         /app/apps/ /app/infrastructure/ /app/storage/ /app/clusters/
 
+# Validation recipes
+validate-renovate:
+    @echo "Validating Renovate configuration..."
+    ./scripts/validate-renovate.sh
+
+test-renovate:
+    @echo "Testing Renovate custom manager regex patterns..."
+    ./scripts/test-renovate-managers.sh
+
+test-renovate-all: validate-renovate test-renovate
+    @echo ""
+    @echo "All Renovate validation and tests completed successfully!"
+
 # Formatting recipes
 format:
     @echo "Running shfmt (via Docker)..."
