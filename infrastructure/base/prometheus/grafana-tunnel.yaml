@@ -1,0 +1,67 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana-cloudflare-tunnel
+  namespace: monitoring
+spec:
+  interval: 1h
+  releaseName: grafana-cloudflare-tunnel
+  targetNamespace: monitoring
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+
+  values:
+    homelab:
+      category: infrastructure
+      realm: monitoring
+
+    nameOverride: grafana-tunnel
+
+    # Disable main application deployment (we only want cloudflared)
+    replicaCount: 0
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    # Enable Cloudflared tunnel
+    cloudflared:
+      enabled: true
+      replicaCount: 2
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      tunnel:
+        name: grafana
+        publicHostname: grafana.from-gondor.com
+        localHostname: http://prometheus-grafana.monitoring.svc.cluster.local:80
+        originRequest:
+          keepAliveTimeout: 380s
+          noTLSVerify: false
+      onepassword:
+        vault: Homelab
+        item: "[Cloudflare Tunnel] Grafana"
+      prometheus:
+        enabled: true
+        port: 2000
+        path: /metrics
+        interval: 30s
+        scrapeTimeout: 10s
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi

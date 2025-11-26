@@ -1,0 +1,440 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 1h # Check for drift every hour
+  releaseName: prometheus
+  targetNamespace: monitoring
+  chart:
+    spec:
+      #renovate: registryUrl=oci://ghcr.io/prometheus-community/charts
+      chart: kube-prometheus-stack
+      version: 79.8.2
+      interval: 12h # Check for new chart versions every 12 hours
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+    crds: CreateReplace # Install CRDs during installation
+  
+  upgrade:
+    remediation:
+      retries: 3
+    crds: CreateReplace # Update CRDs during upgrades
+    cleanupOnFail: true
+  
+  
+  uninstall:
+    keepHistory: false
+  
+  values:
+    # Common labels for all resources
+    commonLabels:
+      cluster: middle-earth-cluster
+
+    # Namespace override
+    namespaceOverride: monitoring
+
+    # ============================================
+    # Prometheus Operator Configuration
+    # ============================================
+    prometheusOperator:
+      enabled: true
+      # Resource limits for the operator itself
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
+      # Add label to operator's ServiceMonitor
+      serviceMonitor:
+        additionalLabels:
+          prometheus: kube-prometheus-stack
+      prometheusSpec:
+        retention: 30d
+
+    # ============================================
+    # Prometheus Server Configuration
+    # ============================================
+    prometheus:
+      enabled: true
+      # Add label to Prometheus ServiceMonitor
+      serviceMonitor:
+        additionalLabels:
+          prometheus: kube-prometheus-stack
+      prometheusSpec:
+        # Startup configuration
+        maximumStartupDurationSeconds: 60
+
+        # Retention and storage
+        retention: 30d
+        retentionSize: "45GB"
+
+        # Resource requests/limits
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+
+        # Storage configuration - using existing PVC pattern
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 50Gi
+              storageClassName: default
+
+        # Enable admin API for advanced operations
+        enableAdminAPI: false
+
+        # Service monitor selection - restrict to labeled monitors only
+        # This prevents Prometheus from auto-discovering all ServiceMonitors in the cluster
+        # Only monitors with the label 'prometheus: kube-prometheus-stack' will be discovered
+        serviceMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelector:
+          matchLabels:
+            prometheus: kube-prometheus-stack
+
+        podMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelector:
+          matchLabels:
+            prometheus: kube-prometheus-stack
+
+        ruleSelectorNilUsesHelmValues: false
+        ruleSelector:
+          matchLabels:
+            prometheus: kube-prometheus-stack
+
+        # Security context
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          fsGroup: 2000
+
+        # Replicas for HA
+        replicas: 1
+
+    # ============================================
+    # Alertmanager Configuration
+    # ============================================
+    alertmanager:
+      enabled: true
+      # Add label to Alertmanager ServiceMonitor
+      serviceMonitor:
+        additionalLabels:
+          prometheus: kube-prometheus-stack
+      alertmanagerSpec:
+        # Resource requests/limits
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+
+        # Storage for alertmanager
+        storage:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 10Gi
+              storageClassName: default
+
+        # Security context
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          fsGroup: 2000
+
+        # Replicas for HA
+        replicas: 1
+
+    # ============================================
+    # Grafana Configuration
+    # ============================================
+    grafana:
+      enabled: true
+      # Admin credentials from 1Password
+      admin:
+        existingSecret: grafana-admin-credentials
+        userKey: username
+        passwordKey: password
+
+      # Resource requests/limits
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+      # Persistence for dashboards
+      persistence:
+        enabled: true
+        size: 5Gi
+        storageClassName: default
+
+      # Grafana plugins
+      plugins: []
+
+      # Default dashboards
+      defaultDashboardsEnabled: true
+      defaultDashboardsTimezone: Europe/Berlin
+
+      # Security context - run as non-root with read-only root filesystem
+      containerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 472  # Grafana default user
+        runAsGroup: 472
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+      # Additional volumes for read-only root filesystem
+      extraEmptyDirMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: grafana-tmp
+          mountPath: /var/lib/grafana/tmp
+        - name: grafana-plugins
+          mountPath: /var/lib/grafana/plugins
+
+      # Grafana configuration - set root URL for external access
+      grafana.ini:
+        server:
+          root_url: https://grafana.from-gondor.com
+          serve_from_sub_path: false
+          # Protocol must match root_url scheme for correct URL generation
+          protocol: https
+          # Enforce HTTPS
+          enforce_domain: true
+          # Enable HSTS (Strict-Transport-Security)
+          enable_gzip: true
+          # Domain for cookie (matches root_url)
+          domain: grafana.from-gondor.com
+
+        # Security settings
+        security:
+          # Disable anonymous access explicitly
+          allow_embedding: false
+          cookie_secure: true
+          cookie_samesite: lax
+          strict_transport_security: true
+          strict_transport_security_max_age_seconds: 31536000
+          strict_transport_security_preload: true
+          strict_transport_security_subdomains: true
+          x_content_type_options: true
+          x_xss_protection: true
+          content_security_policy: true
+          content_security_policy_template: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+          # Disable admin user creation via API
+          disable_initial_admin_creation: false
+          # Admin password policy
+          admin_password_min_length: 12
+
+        # Session settings
+        session:
+          # Session cookie name
+          cookie_name: grafana_session
+          # Session lifetime
+          session_life_time: 86400  # 24 hours
+          # Rotate session token on login
+          rotate_token_on_logout: true
+
+        # Login settings
+        auth.basic:
+          enabled: true
+
+        # Anonymous access - explicitly disabled
+        auth.anonymous:
+          enabled: false
+
+        # Login rate limiting
+        auth:
+          login_maximum_inactive_lifetime_duration: 7d
+          login_maximum_lifetime_duration: 30d
+          # Token rotation
+          token_rotation_interval_minutes: 10
+          # Login rate limiting
+          disable_login_form: false
+          # OAuth token expiration
+          oauth_auto_login: false
+          # Disable signout redirect
+          disable_signout_menu: false
+
+        # Brute force protection
+        security.login:
+          # Maximum consecutive failed login attempts before lockout
+          max_consecutive_failed_login_attempts: 5
+          # Failed login attempts window
+          failed_login_attempts_window: 300  # 5 minutes
+          # Temporary lockout duration
+          temporary_lockout_duration: 900  # 15 minutes
+
+        # Data proxy settings
+        dataproxy:
+          # Logging
+          logging: true
+          # Timeout
+          timeout: 30
+          # Keep alive
+          keep_alive_seconds: 30
+
+        # Analytics and reporting - disable telemetry
+        analytics:
+          reporting_enabled: false
+          check_for_updates: false
+          check_for_plugin_updates: false
+
+        # Snapshots - disable external snapshots
+        snapshots:
+          external_enabled: false
+
+      ingress:
+        enabled: false
+
+    # ============================================
+    # Kube State Metrics Configuration
+    # ============================================
+    kube-state-metrics:
+      enabled: true
+      # Add label to kube-state-metrics ServiceMonitor
+      prometheus:
+        monitor:
+          additionalLabels:
+            prometheus: kube-prometheus-stack
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+
+    # ============================================
+    # Node Exporter Configuration
+    # ============================================
+    prometheus-node-exporter:
+      enabled: true
+      # Add label to node-exporter ServiceMonitor
+      prometheus:
+        monitor:
+          additionalLabels:
+            prometheus: kube-prometheus-stack
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 128Mi
+
+    # ============================================
+    # Component-Specific Service Monitors
+    # ============================================
+
+    # Disable etcd monitoring (not accessible in most managed k8s)
+    kubeEtcd:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+
+    # Kubernetes API server monitoring
+    kubeApiServer:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        additionalLabels:
+          prometheus: kube-prometheus-stack
+
+    # Kubelet monitoring
+    kubelet:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        additionalLabels:
+          prometheus: kube-prometheus-stack
+
+    # CoreDNS monitoring
+    coreDns:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        additionalLabels:
+          prometheus: kube-prometheus-stack
+
+    # Kube Controller Manager (may not be accessible in managed k8s)
+    kubeControllerManager:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+
+    # Kube Scheduler (may not be accessible in managed k8s)
+    kubeScheduler:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+
+    # Kube Proxy
+    kubeProxy:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        additionalLabels:
+          prometheus: kube-prometheus-stack
+
+    # ============================================
+    # Default Rules and Alerts
+    # ============================================
+    defaultRules:
+      create: true
+      # Add labels to default PrometheusRules so they match our selector
+      additionalRuleLabels:
+        prometheus: kube-prometheus-stack
+      rules:
+        alertmanager: true
+        etcd: false # Disabled since etcd monitoring is disabled
+        configReloaders: true
+        general: true
+        k8s: true
+        kubeApiserverAvailability: true
+        kubeApiserverSlos: true
+        kubeControllerManager: false
+        kubelet: true
+        kubeProxy: true
+        kubePrometheusGeneral: true
+        kubePrometheusNodeRecording: true
+        kubernetesApps: true
+        kubernetesResources: true
+        kubernetesStorage: true
+        kubernetesSystem: true
+        kubeScheduler: false
+        kubeStateMetrics: true
+        network: true
+        node: true
+        nodeExporterAlerting: true
+        nodeExporterRecording: true
+        prometheus: true
+        prometheusOperator: true
