@@ -1,0 +1,35 @@
+# Homepage Bookmarks Configuration
+# https://gethomepage.dev/latest/configs/bookmarks/
+
+- Development:
+    - GitHub:
+        - icon: mdi-github
+          href: https://github.com/josimar-silva
+          description: Source code hosting
+
+    - Homelab:
+        - icon: mdi-kubernetes
+          href: https://github.com/josimar-silva/homelab
+          description: Homelab Resources
+
+- Tooling:
+    - Flux CD:
+        - icon: mdi-git
+          href: https://fluxcd.io/
+          description: GitOps toolkit
+
+    - Helm:
+        - icon: mdi-ship-wheel
+          href: https://helm.sh/
+          description: Kubernetes package manager
+
+- Monitoring:
+    - Prometheus:
+        - icon: mdi-chart-line
+          href: https://prometheus.io/
+          description: Monitoring system
+
+    - Grafana:
+        - icon: mdi-chart-box
+          href: https://grafana.com/
+          description: Visualization platform

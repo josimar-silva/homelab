@@ -1,0 +1,74 @@
+# Homepage Settings Configuration
+# https://gethomepage.dev/configs/settings/
+
+title: Homelab Dashboard
+favicon: https://hello.from-gondor.com/favicon.ico
+
+# Theme configuration
+theme: dark
+color: slate
+
+# Layout configuration
+layout:
+  Applications:
+    style: row
+    columns: 3
+  Media:
+    style: row
+    columns: 3
+  Infrastructure:
+    Monitoring:
+      style: row
+      columns: 3
+    Storage:
+      style: row
+      columns: 3
+  Network:
+    DNS:
+      style: row
+      columns: 3
+    Security:
+      style: row
+      columns: 3
+  AI:
+    style: row
+    columns: 2
+    
+  Public Websites:
+    style: row
+    columns: 2
+
+# Enable search
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: true
+  hideVisitURL: true
+
+# Background settings (using solid dark theme)
+# background:
+#   image: https://example.com/your-background.png
+#   blur: sm
+#   saturate: 50
+#   brightness: 50
+#   opacity: 50
+
+# Additional settings
+startUrl: "/"
+showStats: true
+statusStyle: "dot"
+
+# Hide errors banner (optional)
+hideErrors: false
+
+# Language
+language: en
+
+# Features
+features:
+  # Enable search functionality
+  search: true
+
+# Provider configurations
+providers:
+  longhorn:
+    url: http://longhorn.homelab.lan/
