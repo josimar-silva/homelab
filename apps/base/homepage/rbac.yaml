@@ -16,53 +16,18 @@ metadata:
     app.kubernetes.io/name: homepage
     app.kubernetes.io/component: clusterrole
 rules:
-  # Read-only access for cluster-wide resources
+  # Core API group - cluster and pod information
   - apiGroups:
       - ""
     resources:
-      - nodes
       - namespaces
-    verbs:
-      - get
-      - list
-
-  # Read-only access for namespaced resources
-  - apiGroups:
-      - ""
-    resources:
       - pods
-      - services
-      - endpoints
-      - persistentvolumeclaims
-      - configmaps
-      - secrets
+      - nodes
     verbs:
       - get
       - list
 
-  # Read-only access for apps resources
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-      - daemonsets
-      - statefulsets
-      - replicasets
-    verbs:
-      - get
-      - list
-
-  # Read-only access for batch jobs
-  - apiGroups:
-      - batch
-    resources:
-      - jobs
-      - cronjobs
-    verbs:
-      - get
-      - list
-
-  # Read-only access for networking
+  # Networking API - ingress resources
   - apiGroups:
       - networking.k8s.io
     resources:
@@ -71,7 +36,7 @@ rules:
       - get
       - list
 
-  # Read-only access for Gateway API resources
+  # Gateway API resources
   - apiGroups:
       - gateway.networking.k8s.io
     resources:
@@ -81,7 +46,7 @@ rules:
       - get
       - list
 
-  # Read-only access for metrics
+  # Metrics API - resource usage
   - apiGroups:
       - metrics.k8s.io
     resources:
