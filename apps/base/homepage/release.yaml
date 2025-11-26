@@ -44,9 +44,7 @@ spec:
     replicaCount: 1
 
     strategy:
-      type: RollingUpdate
-      rollingUpdate:
-        maxUnavailable: 50%
+      type: Recreate
 
     onepassword:
       enabled: true
