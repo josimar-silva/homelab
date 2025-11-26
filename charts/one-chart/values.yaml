@@ -25,6 +25,15 @@ nameOverride: ""
 # -- Override the full resource name
 fullnameOverride: ""
 
+# -- Service account name for the pod. Leave empty to use the default service account.
+# WARNING: Using the default service account is not recommended for applications that
+# require Kubernetes API access. Create a dedicated ServiceAccount with minimal RBAC.
+serviceAccountName: ""
+
+# -- Automatically mount service account token. Set to true for applications that
+# need Kubernetes API access. Default is false for security (secure by default).
+automountServiceAccountToken: false
+
 # -- Environment variables for the deployment
 environmentVariables:
 #   -- Container environment variables

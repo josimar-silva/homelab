@@ -790,3 +790,69 @@ tests:
                 mountPath: /tmp/source
               - name: config
                 mountPath: /app/config
+
+  - it: should not render serviceAccountName when not set
+    set:
+      image.tag: "1.16.0"
+    asserts:
+      - isKind:
+          of: Deployment
+      - notExists:
+          path: spec.template.spec.serviceAccountName
+
+  - it: should not render serviceAccountName when empty string
+    set:
+      image.tag: "1.16.0"
+      serviceAccountName: ""
+    asserts:
+      - isKind:
+          of: Deployment
+      - notExists:
+          path: spec.template.spec.serviceAccountName
+
+  - it: should render serviceAccountName when set
+    set:
+      image.tag: "1.16.0"
+      serviceAccountName: "my-service-account"
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: "my-service-account"
+
+  - it: should not render automountServiceAccountToken when false (default)
+    set:
+      image.tag: "1.16.0"
+      automountServiceAccountToken: false
+    asserts:
+      - isKind:
+          of: Deployment
+      - notExists:
+          path: spec.template.spec.automountServiceAccountToken
+
+  - it: should render automountServiceAccountToken when true
+    set:
+      image.tag: "1.16.0"
+      automountServiceAccountToken: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: true
+
+  - it: should render both serviceAccountName and automountServiceAccountToken when both are set
+    set:
+      image.tag: "1.16.0"
+      serviceAccountName: "my-service-account"
+      automountServiceAccountToken: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.serviceAccountName
+          value: "my-service-account"
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: true
