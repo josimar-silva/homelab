@@ -1,0 +1,32 @@
+# Homepage Kubernetes Integration Configuration
+# https://gethomepage.dev/configs/kubernetes/
+
+# This file enables Homepage to integrate with the Kubernetes cluster
+# and display cluster information, pod status, and resource metrics.
+#
+# The application runs with a ServiceAccount (homepage) that has ClusterRole
+# permissions defined in rbac.yaml for read-only access to cluster resources.
+
+# Kubernetes API mode configuration
+mode: cluster
+
+# Cluster resources to monitor
+# These will be displayed in the Kubernetes widget on the dashboard
+clusters:
+  - name: Middle-Earth Cluster
+    # Use in-cluster configuration (serviceAccount token)
+    # This automatically uses the mounted service account credentials
+    inClusterConfig: true
+
+    # Namespaces to show in the dashboard
+    # Empty array means show all namespaces the service account has access to
+    namespaces: []
+
+    # Show cluster-wide metrics
+    showClusterMetrics: true
+
+    # Show node information
+    showNodes: true
+
+    # Show namespace information
+    showNamespaces: true

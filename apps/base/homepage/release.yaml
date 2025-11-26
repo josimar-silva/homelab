@@ -111,6 +111,12 @@ spec:
       failureThreshold: 10
 
     persistentVolumes:
+      - name: config
+        storageClass: "longhorn-default-sc"
+        accessModes:
+          - ReadWriteOnce
+        size: 1Gi
+        mountPath: /app/config
       - name: logs
         storageClass: "longhorn-default-sc"
         accessModes:
@@ -118,13 +124,30 @@ spec:
         size: 1Gi
         mountPath: /app/config/logs
 
-    # Mount ConfigMaps for Homepage configuration
+    # Init container to ALWAYS copy config files from ConfigMap to PVC (source of truth)
+    initContainers:
+      - name: copy-config
+        image: busybox:1.36
+        command:
+          - sh
+          - -c
+          - |
+            echo "Copying configuration files from ConfigMap to PVC..."
+            echo "ConfigMap is the source of truth - always overwriting config files"
+            cp -v /tmp/configmap/* /app/config/
+            chmod 644 /app/config/*.yaml
+            echo "Configuration files copied successfully"
+            echo "Current files in /app/config:"
+            ls -la /app/config/
+        volumeMounts:
+          - name: homepage-config-source
+            mountPath: /tmp/configmap
+            readOnly: true
+          - name: config
+            mountPath: /app/config
+
+    # Mount ConfigMap in init container only
     volumes:
-      - name: homepage-config
+      - name: homepage-config-source
         configMap:
           name: homepage-config
-
-    volumeMounts:
-      - mountPath: /app/config
-        name: homepage-config
-        readOnly: false
