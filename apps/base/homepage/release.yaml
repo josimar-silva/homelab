@@ -129,4 +129,4 @@ spec:
     volumeMounts:
       - mountPath: /app/config
         name: homepage-config
-        readOnly: true
+        readOnly: false
