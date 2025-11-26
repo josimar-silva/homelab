@@ -17,6 +17,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
+| automountServiceAccountToken | bool | `false` | Automatically mount service account token. Set to true for applications that need Kubernetes API access. Default is false for security (secure by default). |
 | cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2025.11.1"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"enabled":false,"interval":"30s","path":"/metrics","port":2000,"scrapeTimeout":"10s"},"replicaCount":2,"strategy":{"type":"Recreate"},"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
 | cloudflared.enabled | bool | `false` | Enable Cloudflared deployment |
 | cloudflared.image | object | `{"repository":"cloudflare/cloudflared","tag":"2025.11.1"}` | Cloudflared image repository |
@@ -87,6 +88,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | service.ports | list | `[]` | Service ports. Takes precedence over `service.port`. |
 | service.sharedIpEnabled | bool | `false` | Enable shared IP feature for LoadBalancer services |
 | service.type | string | `"ClusterIP"` | Kubernetes service type. Defaults to ClusterIP. |
+| serviceAccountName | string | `""` | Service account name for the pod. Leave empty to use the default service account. WARNING: Using the default service account is not recommended for applications that require Kubernetes API access. Create a dedicated ServiceAccount with minimal RBAC. |
 | strategy | object | `{}` | Deployment strategy |
 | tolerations | list | `[]` | Tolerations for pod scheduling |
 | volumeMounts | list | `[]` | Additional volume mounts for the container |
