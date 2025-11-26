@@ -19,23 +19,15 @@ spec:
     remediation:
       retries: 3
 
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: homepage
-            patch: |
-              - op: add
-                path: /spec/template/spec/serviceAccountName
-                value: homepage
-
   values:
     homelab:
       category: apps
       realm: monitoring
 
     nameOverride: homepage
+
+    serviceAccountName: homepage
+    automountServiceAccountToken: true
 
     image:
       repository: ghcr.io/gethomepage/homepage
