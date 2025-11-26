@@ -227,7 +227,7 @@ spec:
           root_url: https://grafana.from-gondor.com
           serve_from_sub_path: false
           # Protocol must match root_url scheme for correct URL generation
-          protocol: https
+          protocol: http
           # Enforce HTTPS
           enforce_domain: true
           # Enable HSTS (Strict-Transport-Security)
