@@ -1,0 +1,59 @@
+# Homepage Widgets Configuration
+# https://gethomepage.dev/configs/info-widgets/
+
+# Top-level widgets
+- logo:
+    icon: https://hello.from-gondor.com/favicon.ico
+
+# Kubernetes widget - requires RBAC configuration
+- kubernetes:
+    cluster:
+      show: true
+      cpu: true
+      memory: true
+      showLabel: true
+      label: "Middle-Earth Cluster"
+    nodes:
+      show: true
+      cpu: true
+      memory: true
+      showLabel: true
+
+# Resource widgets
+- resources:
+    backend: kubernetes
+    expanded: true
+    cpu: true
+    memory: true
+
+# OpenMeteo weather widget
+- openmeteo:
+    label: Weather
+    latitude: 52.520008
+    longitude: 13.404954
+    timezone: Europe/Berlin
+    units: metric
+    cache: 5
+
+# Pi-hole DNS widgets
+- pihole:
+    href: http://192.168.68.201/admin
+    key: {{HOMEPAGE_VAR_PIHOLE_PRIMARY_KEY}}
+    label: Pi-hole Primary
+
+- pihole:
+    href: http://192.168.68.116/admin
+    key: {{HOMEPAGE_VAR_PIHOLE_REPLICA_01_KEY}}
+    label: Pi-hole Replica 01
+
+- pihole:
+    href: http://192.168.68.111/admin
+    key: {{HOMEPAGE_VAR_PIHOLE_REPLICA_02_KEY}}
+    label: Pi-hole Replica 02
+
+# Longhorn storage widget
+- longhorn:
+    expanded: true
+    total: true
+    labels: true
+    nodes: true

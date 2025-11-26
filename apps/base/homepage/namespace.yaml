@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: homepage
+  labels:
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: monitoring

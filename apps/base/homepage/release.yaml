@@ -1,0 +1,124 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: homepage-release
+  namespace: homepage
+spec:
+  interval: 1h # for drifting resources
+  releaseName: homepage
+  targetNamespace: homepage
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: homepage
+            patch: |
+              - op: add
+                path: /spec/template/spec/serviceAccountName
+                value: homepage
+
+  values:
+    homelab:
+      category: apps
+      realm: monitoring
+
+    nameOverride: homepage
+
+    image:
+      repository: ghcr.io/gethomepage/homepage
+      tag: v1.7.0
+
+    replicaCount: 1
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 50%
+
+    onepassword:
+      enabled: true
+      vault: "Homelab"
+      item: "Homepage"
+      secretName: "homepage-secret"
+
+    environmentVariables:
+      fromSecret:
+        enabled: true
+        secrets:
+          - homepage-secret
+
+    service:
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 3000
+          containerPort: 3000
+
+    httpRoute:
+      enabled: true
+      parentRef:
+        name: internal-gateway
+        namespace: ingress-nginx
+        sectionName: https-internal
+      hostnames:
+        - homepage.internal.from-gondor.com
+      rules:
+        - matches:
+            - path: /
+          port: 3000
+
+    cloudflared:
+      enabled: false
+
+    podAnnotations:
+      app.kubernetes.io/component: dashboard
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+
+    livenessProbe:
+      httpGet:
+        path: /api/healthcheck
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 10
+
+    readinessProbe:
+      httpGet:
+        path: /api/healthcheck
+        port: http
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
+
+    # Mount ConfigMaps for Homepage configuration
+    volumes:
+      - name: homepage-config
+        configMap:
+          name: homepage-config
+
+    volumeMounts:
+      - mountPath: /app/config
+        name: homepage-config
+        readOnly: true

@@ -1,0 +1,143 @@
+# Homepage Services Configuration
+# https://gethomepage.dev/configs/services/
+
+- Applications:
+    - Gondor Homepage:
+        icon: mdi-home
+        href: https://hello.from-gondor.com
+        description: Homelab landing page
+        ping: hello-from-gondor-frontend.hello-from-gondor.svc.cluster.local
+
+    - Linkwarden:
+        icon: mdi-link-variant
+        href: https://linkwarden.from-gondor.com/
+        description: Bookmark manager
+
+    - Home Assistant:
+        icon: mdi-home-assistant
+        href: http://ha.homelab.lan:8123/
+        description: Home automation platform
+
+- Media:
+    - Minas Tirith:
+        icon: mdi-nas
+        href: https://minas-tirith.from-gondor.com/cgi-bin/
+        description: Network Attached Storage
+        widget:
+          type: qnap
+          url: https://minas-tirith.from-gondor.com
+          username: {{HOMEPAGE_VAR_QNAP_USERNAME}}
+          password: {{HOMEPAGE_VAR_QNAP_PASSWORD}}
+
+    - Plex:
+        icon: mdi-plex
+        href: http://minas-tirith.from-gondor.com:32400/
+        description: Media server
+
+    - Calibre Web Automated:
+        icon: mdi-book-open-variant
+        href: https://calibre.from-gondor.com/
+        description: E-book library
+
+- Infrastructure:
+    - Monitoring:
+        - Kubernetes Dashboard:
+            icon: mdi-kubernetes
+            href: https://k8s.from-gondor.com
+            description: Kubernetes cluster dashboard
+
+        - Gatus:
+            icon: mdi-monitor-eye
+            href: https://uptime.from-gondor.com
+            description: Uptime monitoring
+            ping: gatus.gatus.svc.cluster.local
+
+        - Speedtest Tracker:
+            icon: mdi-speedometer
+            href: https://speedtest.from-gondor.com
+            description: Internet speed monitoring
+            ping: speedtest-tracker.speedtest-tracker.svc.cluster.local
+            widget:
+              type: speedtest
+              url: https://speedtest.from-gondor.com
+              version: 2
+              key: {{HOMEPAGE_VAR_SPEEDTEST_TRACKER_KEY}}
+              bitratePrecision: 1
+
+    - Storage:
+        - Longhorn:
+            icon: mdi-nas
+            href: http://longhorn.homelab.lan/
+            description: Distributed block storage
+
+        - PgAdmin:
+            icon: mdi-database
+            href: https://pgadmin.from-gondor.com
+            description: PostgreSQL administration
+
+- Network:
+    - DNS:
+        - Pi-hole Primary:
+            icon: mdi-pi-hole
+            href: https://pihole.from-gondor.com/admin
+            description: DNS and ad blocking (primary)
+            ping: https://pihole.from-gondor.com
+            widget:
+              type: pihole
+              url: https://pihole.from-gondor.com
+              version: 6
+              key: {{HOMEPAGE_VAR_PIHOLE_PRIMARY_KEY}}
+
+        - Pi-hole Replica 01:
+            icon: mdi-pi-hole
+            href: https://pihole-replica-01.from-gondor.com/admin
+            description: DNS and ad blocking (replica 1)
+            ping: https://pihole-replica-01.from-gondor.com
+            widget:
+              type: pihole
+              url: https://pihole-replica-01.from-gondor.com
+              version: 6
+              key: {{HOMEPAGE_VAR_PIHOLE_REPLICA_01_KEY}}
+
+        - Pi-hole Replica 02:
+            icon: mdi-pi-hole
+            href: https://pihole-replica-02.from-gondor.com/admin
+            description: DNS and ad blocking (replica 2)
+            ping: https://pihole-replica-02.from-gondor.com
+            widget:
+              type: pihole
+              url: https://pihole-replica-02.from-gondor.com
+              version: 6
+              key: {{HOMEPAGE_VAR_PIHOLE_REPLICA_02_KEY}}
+
+    - Security:
+        - Anduril:
+            icon: mdi-shield-check
+            href: https://anduril.from-gondor.com
+            description: Firewall and router
+            widget:
+              type: opnsense
+              url: https://anduril.from-gondor.com
+              username: {{HOMEPAGE_VAR_OPNSENSE_API_KEY}}
+              password: {{HOMEPAGE_VAR_OPNSENSE_API_SECRET}}
+- AI:
+    - OpenWebUI:
+        icon: mdi-robot
+        href: https://chat.from-gondor.com
+        description: AI chat interface (OpenWebUI)
+
+    - Ollama:
+        icon: mdi-brain
+        href: http://saruman.from-gondor.com:11434
+        description: Local LLM inference engine
+
+- Public Websites:
+    - Personal Website:
+        icon: mdi-account
+        href: https://josimar-silva.com/
+        description: Personal blog & portfolio
+
+    - Kaizen Blog:
+        icon: mdi-post
+        href: https://kaizen.josimar-silva.com/
+        description: Continous Improvement Journal
