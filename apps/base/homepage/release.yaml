@@ -112,6 +112,14 @@ spec:
       successThreshold: 1
       failureThreshold: 10
 
+    persistentVolumes:
+      - name: logs
+        storageClass: "longhorn-default-sc"
+        accessModes:
+          - ReadWriteOnce
+        size: 1Gi
+        mountPath: /app/config/logs
+
     # Mount ConfigMaps for Homepage configuration
     volumes:
       - name: homepage-config
