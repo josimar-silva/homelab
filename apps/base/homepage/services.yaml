@@ -6,7 +6,7 @@
         icon: mdi-home
         href: https://hello.from-gondor.com
         description: Homelab landing page
-        ping: hello-from-gondor-frontend.hello-from-gondor.svc.cluster.local
+        ping: https://hello.from-gondor.com
 
     - Linkwarden:
         icon: mdi-link-variant
@@ -23,11 +23,11 @@
         icon: mdi-nas
         href: https://minas-tirith.from-gondor.com/cgi-bin/
         description: Network Attached Storage
-        widget:
-          type: qnap
-          url: https://minas-tirith.from-gondor.com
-          username: {{HOMEPAGE_VAR_QNAP_USERNAME}}
-          password: {{HOMEPAGE_VAR_QNAP_PASSWORD}}
+        # widget:
+        #   type: qnap
+        #   url: https://minas-tirith.from-gondor.com
+        #   username: {{HOMEPAGE_VAR_QNAP_USERNAME}}
+        #   password: {{HOMEPAGE_VAR_QNAP_PASSWORD}}
 
     - Plex:
         icon: mdi-plex
@@ -56,7 +56,6 @@
             icon: mdi-speedometer
             href: https://speedtest.from-gondor.com
             description: Internet speed monitoring
-            ping: https://speedtest.from-gondor.com
             widget:
               type: speedtest
               url: https://speedtest.from-gondor.com
@@ -81,7 +80,6 @@
             icon: mdi-pi-hole
             href: https://pihole.from-gondor.com/admin
             description: DNS and ad blocking (primary)
-            ping: https://pihole.from-gondor.com
             widget:
               type: pihole
               url: https://pihole.from-gondor.com
@@ -115,11 +113,11 @@
             icon: mdi-shield-check
             href: https://anduril.from-gondor.com
             description: Firewall and router
-            widget:
-              type: opnsense
-              url: https://anduril.from-gondor.com
-              username: {{HOMEPAGE_VAR_OPNSENSE_API_KEY}}
-              password: {{HOMEPAGE_VAR_OPNSENSE_API_SECRET}}
+            # widget:
+            #   type: opnsense
+            #   url: https://anduril.from-gondor.com
+            #   username: {{HOMEPAGE_VAR_OPNSENSE_API_KEY}}
+            #   password: {{HOMEPAGE_VAR_OPNSENSE_API_SECRET}}
 - AI:
     - OpenWebUI:
         icon: mdi-robot

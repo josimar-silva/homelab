@@ -26,12 +26,4 @@
     labels: true
     nodes: true
 
-# OpenMeteo weather widget
-- openmeteo:
-    label: Weather
-    latitude: 52.520008
-    longitude: 13.404954
-    timezone: Europe/Berlin
-    units: metric
-    cache: 5
 
