@@ -45,7 +45,7 @@ spec:
       create: true
       applicationName: onepassword-operator
       autoRestart: true
-      pollingInterval: 1800
+      pollingInterval: 3600
       authMethod: service-account
       # serviceAccountToken:
         # value: "set by fluxcd from a secret"
