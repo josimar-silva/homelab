@@ -78,6 +78,23 @@ extraContainers: []
   #   - name: logs
   #     mountPath: /var/log/mylogs
 
+# -- Init containers to run before the main container
+initContainers: []
+  # - name: init-config
+  #   image: busybox:1.36
+  #   command:
+  #     - sh
+  #     - -c
+  #     - |
+  #       echo "Initializing..."
+  #       cp /tmp/source/* /app/config/
+  #   volumeMounts:
+  #     - name: config-source
+  #       mountPath: /tmp/source
+  #       readOnly: true
+  #     - name: config
+  #       mountPath: /app/config
+
 # -- Container-level security context
 securityContext: {}
   # capabilities:
