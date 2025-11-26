@@ -50,13 +50,13 @@
             icon: mdi-monitor-eye
             href: https://uptime.from-gondor.com
             description: Uptime monitoring
-            ping: gatus.gatus.svc.cluster.local
+            ping: https://uptime.from-gondor.com
 
         - Speedtest Tracker:
             icon: mdi-speedometer
             href: https://speedtest.from-gondor.com
             description: Internet speed monitoring
-            ping: speedtest-tracker.speedtest-tracker.svc.cluster.local
+            ping: https://speedtest.from-gondor.com
             widget:
               type: speedtest
               url: https://speedtest.from-gondor.com
