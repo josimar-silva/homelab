@@ -138,16 +138,22 @@ service:
   annotations: {}
 
 prometheus:
-  # -- Enable Prometheus scraping
+  # -- Enable Prometheus ServiceMonitor (requires Prometheus Operator)
   enabled: false
-  # -- Port to scrape metrics from
-  port: 80
+  # -- Service port name to scrape metrics from (must match service.ports[].name)
+  portName: http
   # -- Path to scrape metrics from
   path: /metrics
   # -- Interval at which to scrape metrics
   interval: 30s
   # -- Scrape timeout
   scrapeTimeout: 10s
+  # -- Additional labels for the ServiceMonitor (e.g., prometheus: kube-prometheus-stack)
+  additionalLabels: {}
+  # -- Relabeling configs for the ServiceMonitor
+  relabelings: []
+  # -- MetricRelabeling configs for the ServiceMonitor
+  metricRelabelings: []
 
 # -- HTTPRoute configuration for Gateway API
 httpRoute:
@@ -322,13 +328,19 @@ cloudflared:
     item: ""
   # -- Prometheus settings for Cloudflared
   prometheus:
-    # -- Enable Prometheus scraping for Cloudflared
+    # -- Enable Prometheus ServiceMonitor for Cloudflared (requires Prometheus Operator)
     enabled: false
-    # -- Port to scrape metrics from for Cloudflared
-    port: 2000
+    # -- Service port name to scrape metrics from for Cloudflared
+    portName: http-metrics
     # -- Path to scrape metrics from for Cloudflared
     path: /metrics
     # -- Interval at which to scrape metrics for Cloudflared
     interval: 30s
     # -- Scrape timeout for Cloudflared
     scrapeTimeout: 10s
+    # -- Additional labels for the Cloudflared ServiceMonitor
+    additionalLabels: {}
+    # -- Relabeling configs for the Cloudflared ServiceMonitor
+    relabelings: []
+    # -- MetricRelabeling configs for the Cloudflared ServiceMonitor
+    metricRelabelings: []

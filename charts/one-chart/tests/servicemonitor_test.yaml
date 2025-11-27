@@ -1,0 +1,131 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: ServiceMonitor template tests
+templates:
+  - ../templates/servicemonitor.yaml
+release:
+  name: test-release
+  namespace: test-namespace
+
+tests:
+  - it: should not render ServiceMonitor when prometheus.enabled is false
+    set:
+      prometheus:
+        enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should render ServiceMonitor when prometheus.enabled is true
+    set:
+      prometheus:
+        enabled: true
+    asserts:
+      - isKind:
+          of: ServiceMonitor
+      - equal:
+          path: metadata.name
+          value: test-release-one-chart
+      - equal:
+          path: metadata.labels["prometheus"]
+          value: kube-prometheus-stack
+
+  - it: should configure correct endpoint with default values
+    set:
+      prometheus:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.endpoints[0].port
+          value: http
+      - equal:
+          path: spec.endpoints[0].path
+          value: /metrics
+      - equal:
+          path: spec.endpoints[0].interval
+          value: 30s
+      - equal:
+          path: spec.endpoints[0].scrapeTimeout
+          value: 10s
+
+  - it: should use custom port name and path
+    set:
+      prometheus:
+        enabled: true
+        portName: custom-metrics
+        path: /custom/metrics
+        interval: 60s
+        scrapeTimeout: 20s
+    asserts:
+      - equal:
+          path: spec.endpoints[0].port
+          value: custom-metrics
+      - equal:
+          path: spec.endpoints[0].path
+          value: /custom/metrics
+      - equal:
+          path: spec.endpoints[0].interval
+          value: 60s
+      - equal:
+          path: spec.endpoints[0].scrapeTimeout
+          value: 20s
+
+  - it: should add additional labels when provided
+    set:
+      prometheus:
+        enabled: true
+        additionalLabels:
+          foo: bar
+          team: platform
+    asserts:
+      - equal:
+          path: metadata.labels["foo"]
+          value: bar
+      - equal:
+          path: metadata.labels["team"]
+          value: platform
+
+  - it: should configure relabelings when provided
+    set:
+      prometheus:
+        enabled: true
+        relabelings:
+          - sourceLabels: [__meta_kubernetes_pod_name]
+            targetLabel: pod_name
+    asserts:
+      - equal:
+          path: spec.endpoints[0].relabelings[0].sourceLabels[0]
+          value: __meta_kubernetes_pod_name
+      - equal:
+          path: spec.endpoints[0].relabelings[0].targetLabel
+          value: pod_name
+
+  - it: should configure metricRelabelings when provided
+    set:
+      prometheus:
+        enabled: true
+        metricRelabelings:
+          - sourceLabels: [__name__]
+            regex: "go_.*"
+            action: drop
+    asserts:
+      - equal:
+          path: spec.endpoints[0].metricRelabelings[0].sourceLabels[0]
+          value: __name__
+      - equal:
+          path: spec.endpoints[0].metricRelabelings[0].regex
+          value: "go_.*"
+      - equal:
+          path: spec.endpoints[0].metricRelabelings[0].action
+          value: drop
+
+  - it: should have correct selector labels
+    set:
+      prometheus:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/name"]
+          value: one-chart
+      - equal:
+          path: spec.selector.matchLabels["app.kubernetes.io/instance"]
+          value: test-release

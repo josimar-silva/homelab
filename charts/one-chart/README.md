@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.14.0](https://img.shields.io/badge/Version-0.14.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.14.1](https://img.shields.io/badge/Version-0.14.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -18,7 +18,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
 | automountServiceAccountToken | bool | `false` | Automatically mount service account token. Set to true for applications that need Kubernetes API access. Default is false for security (secure by default). |
-| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2025.11.1"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"enabled":false,"interval":"30s","path":"/metrics","port":2000,"scrapeTimeout":"10s"},"replicaCount":2,"strategy":{"type":"Recreate"},"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
+| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2025.11.1"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"additionalLabels":{},"enabled":false,"interval":"30s","metricRelabelings":[],"path":"/metrics","portName":"http-metrics","relabelings":[],"scrapeTimeout":"10s"},"replicaCount":2,"strategy":{"type":"Recreate"},"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
 | cloudflared.enabled | bool | `false` | Enable Cloudflared deployment |
 | cloudflared.image | object | `{"repository":"cloudflare/cloudflared","tag":"2025.11.1"}` | Cloudflared image repository |
 | cloudflared.onepassword | object | `{"item":"","vault":"Homelab"}` | 1Password integration settings for Cloudflared credentials |
@@ -26,11 +26,14 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | cloudflared.onepassword.vault | string | `"Homelab"` | The name of the 1Password vault where Cloudflared credentials are stored |
 | cloudflared.podAnnotations | object | `{}` | Annotations for the Cloudflared pod |
 | cloudflared.podLabels | object | `{}` | Additional labels for the Cloudflared pod |
-| cloudflared.prometheus | object | `{"enabled":false,"interval":"30s","path":"/metrics","port":2000,"scrapeTimeout":"10s"}` | Prometheus settings for Cloudflared |
-| cloudflared.prometheus.enabled | bool | `false` | Enable Prometheus scraping for Cloudflared |
+| cloudflared.prometheus | object | `{"additionalLabels":{},"enabled":false,"interval":"30s","metricRelabelings":[],"path":"/metrics","portName":"http-metrics","relabelings":[],"scrapeTimeout":"10s"}` | Prometheus settings for Cloudflared |
+| cloudflared.prometheus.additionalLabels | object | `{}` | Additional labels for the Cloudflared ServiceMonitor |
+| cloudflared.prometheus.enabled | bool | `false` | Enable Prometheus ServiceMonitor for Cloudflared (requires Prometheus Operator) |
 | cloudflared.prometheus.interval | string | `"30s"` | Interval at which to scrape metrics for Cloudflared |
+| cloudflared.prometheus.metricRelabelings | list | `[]` | MetricRelabeling configs for the Cloudflared ServiceMonitor |
 | cloudflared.prometheus.path | string | `"/metrics"` | Path to scrape metrics from for Cloudflared |
-| cloudflared.prometheus.port | int | `2000` | Port to scrape metrics from for Cloudflared |
+| cloudflared.prometheus.portName | string | `"http-metrics"` | Service port name to scrape metrics from for Cloudflared |
+| cloudflared.prometheus.relabelings | list | `[]` | Relabeling configs for the Cloudflared ServiceMonitor |
 | cloudflared.prometheus.scrapeTimeout | string | `"10s"` | Scrape timeout for Cloudflared |
 | cloudflared.replicaCount | int | `2` | Number of replicas for the Cloudflared deployment |
 | cloudflared.strategy | object | `{"type":"Recreate"}` | Deployment strategy |
@@ -75,10 +78,13 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | podAnnotations | object | `{}` | Annotations for the pod |
 | podLabels | object | `{}` | Additional labels for the pod |
 | podSecurityContext | object | `{}` | Pod-level security context |
-| prometheus.enabled | bool | `false` | Enable Prometheus scraping |
+| prometheus.additionalLabels | object | `{}` | Additional labels for the ServiceMonitor (e.g., prometheus: kube-prometheus-stack) |
+| prometheus.enabled | bool | `false` | Enable Prometheus ServiceMonitor (requires Prometheus Operator) |
 | prometheus.interval | string | `"30s"` | Interval at which to scrape metrics |
+| prometheus.metricRelabelings | list | `[]` | MetricRelabeling configs for the ServiceMonitor |
 | prometheus.path | string | `"/metrics"` | Path to scrape metrics from |
-| prometheus.port | int | `80` | Port to scrape metrics from |
+| prometheus.portName | string | `"http"` | Service port name to scrape metrics from (must match service.ports[].name) |
+| prometheus.relabelings | list | `[]` | Relabeling configs for the ServiceMonitor |
 | prometheus.scrapeTimeout | string | `"10s"` | Scrape timeout |
 | replicaCount | int | `1` | Number of replicas for the deployment |
 | resources | object | `{}` | Resource requests and limits |

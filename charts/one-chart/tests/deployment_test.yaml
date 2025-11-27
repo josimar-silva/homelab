@@ -505,51 +505,6 @@ tests:
           content:
             name: another-secret
 
-  - it: should render prometheus annotations when prometheus.enabled is true
-    set:
-      prometheus:
-        enabled: true
-        port: 9090
-        path: /metrics-custom
-        interval: 15s
-        scrapeTimeout: 5s
-    asserts:
-      - isKind:
-          of: Deployment
-      - equal:
-          path: spec.template.metadata.annotations["prometheus.io/scrape"]
-          value: "true"
-      - equal:
-          path: spec.template.metadata.annotations["prometheus.io/port"]
-          value: "9090"
-      - equal:
-          path: spec.template.metadata.annotations["prometheus.io/path"]
-          value: "/metrics-custom"
-      - equal:
-          path: spec.template.metadata.annotations["prometheus.io/interval"]
-          value: "15s"
-      - equal:
-          path: spec.template.metadata.annotations["prometheus.io/scrape_timeout"]
-          value: "5s"
-
-  - it: should not render prometheus annotations when prometheus.enabled is false
-    set:
-      prometheus:
-        enabled: false
-    asserts:
-      - isKind:
-          of: Deployment
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/scrape"]
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/port"]
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/path"]
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/interval"]
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/scrape_timeout"]
-
   - it: should render multiple PVC volumes and volumeMounts when persistentVolumes list is provided
     set:
       image.tag: "1.16.0"

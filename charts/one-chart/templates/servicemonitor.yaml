@@ -1,0 +1,29 @@
+{{- if .Values.prometheus.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "one-chart.fullname" . }}
+  labels:
+    {{- include "one-chart.labels" . | nindent 4 }}
+    prometheus: kube-prometheus-stack
+  {{- with .Values.prometheus.additionalLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "one-chart.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: {{ .Values.prometheus.portName | default "http" }}
+      path: {{ .Values.prometheus.path }}
+      interval: {{ .Values.prometheus.interval }}
+      scrapeTimeout: {{ .Values.prometheus.scrapeTimeout }}
+      {{- with .Values.prometheus.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prometheus.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end -}}
