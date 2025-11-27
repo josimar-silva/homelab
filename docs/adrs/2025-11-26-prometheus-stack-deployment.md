@@ -47,11 +47,12 @@ flowchart TB
         subgraph Storage["Persistent Storage"]
             PV1[Prometheus PVC<br/>50Gi Longhorn]
             PV2[Alertmanager PVC<br/>10Gi Longhorn]
-            PV3[Grafana PVC<br/>10Gi Longhorn]
+            PV3[Grafana PVC<br/>5Gi Longhorn]
         end
 
         AM[Alertmanager]
         GR[Grafana]
+        NGINX[nginx Reverse Proxy<br/>alpine]
     end
 
     subgraph Secrets["Secret Management"]
@@ -67,7 +68,7 @@ flowchart TB
     subgraph Security["Security Controls"]
         NP[NetworkPolicies<br/>9 policies]
         PSS[Pod Security Standard<br/>restricted]
-        CSP[Security Headers<br/>CSP, HSTS]
+        CSP[Security Headers<br/>CSP, HSTS, X-Frame-Options]
     end
 
     Sources --> SM
@@ -82,12 +83,13 @@ flowchart TB
     OP --> GS
     GS --> GR
 
-    CF --> GR
+    CF --> NGINX
+    NGINX --> GR
     DNS_Record --> CF
 
     NP --> Monitoring
     PSS --> Monitoring
-    CSP --> GR
+    CSP --> NGINX
 
     PO --> Prometheus
     PO --> AM
@@ -103,6 +105,7 @@ sequenceDiagram
     participant P as Prometheus
     participant AM as Alertmanager
     participant G as Grafana
+    participant N as nginx Proxy
     participant U as User
 
     PO->>SM: Watch for ServiceMonitors
@@ -113,10 +116,14 @@ sequenceDiagram
     P->>P: Store in TSDB (50Gi)
     P->>P: Evaluate PrometheusRules
     P->>AM: Send alerts
-    U->>G: Access grafana.from-gondor.com
+    U->>N: Access grafana.from-gondor.com
+    N->>N: Strip Cloudflare CSP
+    N->>N: Apply proper CSP headers
+    N->>G: Forward request
     G->>P: Query metrics (PromQL)
     P-->>G: Return query results
-    G-->>U: Render dashboards
+    G-->>N: Return dashboard HTML
+    N-->>U: Render dashboards
 ```
 
 ### Security Architecture
@@ -129,13 +136,13 @@ flowchart TB
 
     subgraph Cloudflare["Cloudflare Edge"]
         CDN[CDN + DDoS Protection]
-        Tunnel[Cloudflare Tunnel]
+        Tunnel[Cloudflare Tunnel<br/>Adds restrictive CSP]
     end
 
     subgraph K8s["Kubernetes Cluster"]
         subgraph NSPolicy["Network Policies"]
             NP1[Prometheus Ingress<br/>Only from ServiceMonitors]
-            NP2[Grafana Ingress<br/>Only from Cloudflare]
+            NP2[Grafana Tunnel Ingress<br/>Only from Cloudflare]
             NP3[Alertmanager Ingress<br/>Only from Prometheus]
             NP4[DNS Egress<br/>CoreDNS only]
             NP5[Webhook Egress<br/>Alertmanager only]
@@ -144,7 +151,8 @@ flowchart TB
         subgraph Monitoring["monitoring namespace"]
             PSS_Label[pod-security.kubernetes.io/enforce: restricted]
 
-            Grafana[Grafana<br/>Read-only FS<br/>CSP Headers<br/>Rate Limiting]
+            NGINX[nginx alpine<br/>Strips Cloudflare CSP<br/>Applies Grafana CSP<br/>Security Headers<br/>WebSocket Support]
+            Grafana[Grafana<br/>Read-only FS<br/>CSP disabled<br/>Rate Limiting]
             Prometheus[Prometheus<br/>Label-based Discovery<br/>Resource Limits]
             Alert[Alertmanager<br/>Resource Limits]
         end
@@ -158,7 +166,8 @@ flowchart TB
     User --> CDN
     CDN --> Tunnel
     Tunnel --> NP2
-    NP2 --> Grafana
+    NP2 --> NGINX
+    NGINX --> Grafana
     Grafana --> Secret
     OP --> Secret
 
@@ -171,12 +180,15 @@ flowchart TB
 ```text
 infrastructure/
 ├── base/
-│   └── kube-prometheus-stack/
+│   └── prometheus/
 │       ├── kustomization.yaml           # Base configuration
+│       ├── namespace.yaml               # monitoring namespace
 │       ├── repository.yaml              # OCI Helm repository
 │       ├── release.yaml                 # HelmRelease v79.8.2
 │       ├── grafana-secret.yaml          # 1Password integration
-│       └── network-policies.yaml        # Security policies
+│       ├── grafana-nginx-config.yaml    # nginx ConfigMap for CSP handling
+│       ├── grafana-tunnel.yaml          # nginx reverse proxy + Cloudflare tunnel
+│       └── networkpolicies.yaml         # Security policies
 └── apps/
     └── monitoring/
         └── service-monitors/            # Application monitoring
@@ -240,7 +252,7 @@ spec:
 **Storage Allocations:**
 - **Prometheus**: 50Gi with 30-day retention
 - **Alertmanager**: 10Gi
-- **Grafana**: 10Gi
+- **Grafana**: 5Gi
 
 **Rationale:**
 - **Distributed Storage**: Longhorn provides replication across nodes, protecting against single-node failures
@@ -286,9 +298,14 @@ Prometheus 30-day retention with 50Gi storage:
 - **Recovery**: Need 1Password access to recover from disaster scenarios
 
 
-### 5. External Access: Cloudflare Tunnel
+### 5. External Access: Cloudflare Tunnel with nginx Reverse Proxy
 
-**Decision:** Expose Grafana via Cloudflare Tunnel to `grafana.from-gondor.com` instead of Ingress/Gateway API.
+**Decision:** Expose Grafana via nginx reverse proxy fronted by Cloudflare Tunnel to `grafana.from-gondor.com` instead of Ingress/Gateway API.
+
+**Architecture:**
+```
+Internet → Cloudflare CDN → Cloudflare Tunnel → nginx (alpine) → Grafana
+```
 
 **Rationale:**
 - **No Public IP Required**: Tunnel establishes outbound connections from cluster, eliminating need for port forwarding or public IP allocation
@@ -297,6 +314,7 @@ Prometheus 30-day retention with 50Gi storage:
 - **Access Control**: Cloudflare Access can enforce authentication before traffic reaches Grafana
 - **High Availability**: Cloudflare's global network provides 99.99% uptime SLA
 - **Zero Trust**: Outbound-only connections reduce attack surface
+- **CSP Header Management**: nginx reverse proxy handles Content Security Policy headers (see section 6.5)
 
 **Alternatives Considered:**
 - **Ingress + cert-manager**: Requires exposing Kubernetes cluster publicly, manual certificate management, no DDoS protection
@@ -307,6 +325,7 @@ Prometheus 30-day retention with 50Gi storage:
 **Trade-offs:**
 - **Cloudflare Dependency**: Service unavailable if Cloudflare has outages
 - **Latency**: Additional hop through Cloudflare edge (typically +20-50ms)
+- **Additional Component**: nginx reverse proxy adds operational complexity (addressed in section 6.5)
 - **Vendor Lock-in**: Tunnel configuration is Cloudflare-specific
 
 **Metrics:**
@@ -321,15 +340,15 @@ Prometheus and Alertmanager are intentionally **not** exposed externally, access
 #### 6.1 Network Policies (Zero Trust Segmentation)
 
 **Implemented Policies:**
-1. **prometheus-ingress**: Allow only ServiceMonitor targets to reach Prometheus (ports 9090, 8080)
-2. **prometheus-egress**: Allow Prometheus to scrape targets cluster-wide and access Kubernetes API
-3. **alertmanager-ingress**: Allow only Prometheus to reach Alertmanager (port 9093)
-4. **alertmanager-egress**: Allow Alertmanager webhook notifications and DNS resolution
-5. **grafana-ingress**: Allow only Cloudflare Tunnel to reach Grafana (port 3000)
-6. **grafana-egress**: Allow Grafana to query Prometheus and resolve DNS
-7. **operator-ingress**: Allow operator metrics scraping (port 8080)
-8. **operator-egress**: Allow operator to manage resources cluster-wide
-9. **default-deny**: Deny all traffic not explicitly allowed
+1. **prometheus-scraping**: Allow Prometheus to scrape targets cluster-wide and receive queries from Grafana/Alertmanager
+2. **alertmanager-ingress**: Allow only Prometheus to reach Alertmanager (port 9093)
+3. **alertmanager-egress**: Allow Alertmanager webhook notifications and DNS resolution
+4. **grafana-ingress**: Allow only nginx tunnel to reach Grafana (port 3000)
+5. **grafana-egress**: Allow Grafana to query Prometheus and resolve DNS
+6. **operator-ingress**: Allow operator metrics scraping (port 8080)
+7. **operator-egress**: Allow operator to manage resources cluster-wide
+8. **tunnel-ingress**: Allow Cloudflare tunnel to reach nginx reverse proxy
+9. **default-deny-all**: Deny all traffic not explicitly allowed
 
 **Rationale:**
 - **Lateral Movement Prevention**: Compromised monitoring component cannot pivot to other cluster resources
@@ -357,38 +376,44 @@ Prometheus and Alertmanager are intentionally **not** exposed externally, access
 #### 6.3 Grafana Application Security
 
 **Implemented Controls:**
-- **Content Security Policy (CSP)**: Restricts resource loading to prevent XSS attacks
-- **HTTP Strict Transport Security (HSTS)**: Forces HTTPS, prevents protocol downgrade attacks
-- **Rate Limiting**: 100 requests/minute per IP to mitigate brute force and DoS
-- **Session Security**: 24-hour timeout, secure cookies, SameSite strict
+- **nginx Reverse Proxy**: Manages Content Security Policy headers (see section 6.5)
+- **HTTP Strict Transport Security (HSTS)**: Forces HTTPS, prevents protocol downgrade attacks (configured in nginx)
+- **Security Headers**: X-Content-Type-Options, X-Frame-Options, Referrer-Policy (configured in nginx)
+- **Rate Limiting**: Login rate limiting in Grafana (5 failed attempts = 15 minute lockout)
+- **Session Security**: 24-hour session timeout, secure cookies, SameSite lax, token rotation
 - **Read-only Filesystem**: Immutable container filesystem prevents runtime tampering
-- **Disable Features**: Anonymous access disabled, user signup disabled, embedding restrictions
+- **Disable Features**: Anonymous access disabled, user signup disabled, external snapshots disabled
 
-**Configuration:**
+**Grafana Configuration:**
 ```yaml
 grafana.ini:
   server:
+    root_url: https://grafana.from-gondor.com
     enforce_domain: true
     enable_gzip: true
   security:
-    admin_user: ${GF_SECURITY_ADMIN_USER}
-    admin_password: ${GF_SECURITY_ADMIN_PASSWORD}
-    disable_gravatar: true
     cookie_secure: true
-    cookie_samesite: strict
+    cookie_samesite: lax
     strict_transport_security: true
-    content_security_policy: true
-  auth:
-    disable_login_form: false
-    oauth_auto_login: false
+    # CSP now handled by nginx reverse proxy
+    content_security_policy: false
+    disable_gravatar: true
+  security.login:
+    max_consecutive_failed_login_attempts: 5
+    failed_login_attempts_window: 300
+    temporary_lockout_duration: 900
   auth.anonymous:
     enabled: false
 ```
+
+**Why CSP is Disabled in Grafana:**
+Grafana's built-in CSP is disabled (`content_security_policy: false`) because the nginx reverse proxy now manages CSP headers. This architectural decision is documented in section 6.5.
 
 **Rationale:**
 - **Public Exposure**: Grafana is internet-accessible, requiring hardened security posture
 - **Sensitive Data**: Dashboards may reveal infrastructure topology and metrics
 - **Authentication Gateway**: First line of defense before cluster access
+- **Defense-in-Depth**: Multiple overlapping security controls at different layers
 
 #### 6.4 ServiceMonitor Label Restrictions
 
@@ -412,8 +437,103 @@ prometheus:
 - **Label Management**: Requires consistent labeling of all ServiceMonitors
 - **Discoverability**: Non-labeled ServiceMonitors silently ignored, requires documentation
 
+#### 6.5 nginx Reverse Proxy for Content Security Policy Management
+
+**Decision:** Deploy nginx (alpine variant) as a reverse proxy between Cloudflare Tunnel and Grafana to manage Content Security Policy headers.
+
+**Problem Statement:**
+Cloudflare Tunnel was adding a restrictive Content Security Policy header (`default-src 'self'`) that blocked Grafana's inline JavaScript and CSS, breaking dashboard functionality. Grafana requires `'unsafe-inline'` and `'unsafe-eval'` in its CSP to render dashboards properly.
+
+**Architecture:**
+```
+Cloudflare Tunnel (adds restrictive CSP)
+    ↓
+nginx Reverse Proxy (strips Cloudflare CSP, applies Grafana-compatible CSP)
+    ↓
+Grafana (CSP disabled internally)
+```
+
+**Implementation Details:**
+
+**nginx Configuration** (`grafana-nginx-config.yaml`):
+- **CSP Header Stripping**: `proxy_hide_header Content-Security-Policy` removes Cloudflare's CSP
+- **Grafana-Compatible CSP**: Applies policy allowing `'unsafe-inline'` and `'unsafe-eval'`:
+  ```
+  Content-Security-Policy: default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: https:;
+    font-src 'self' data:;
+    connect-src 'self';
+    frame-ancestors 'none';
+    base-uri 'self';
+    form-action 'self';
+  ```
+- **Additional Security Headers**:
+  - HSTS: `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: DENY`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+- **WebSocket Support**: Enables Grafana live updates via WebSocket connections
+- **Health Check**: `/health` endpoint for Kubernetes liveness/readiness probes
+- **Gzip Compression**: Reduces bandwidth for dashboard assets
+
+**nginx Security Hardening** (`grafana-tunnel.yaml`):
+- **Non-root Execution**: Runs as user 101 (nginx user)
+- **Read-only Root Filesystem**: Prevents runtime tampering
+- **Dropped Capabilities**: All capabilities dropped (`drop: [ALL]`)
+- **No Privilege Escalation**: `allowPrivilegeEscalation: false`
+- **Seccomp Profile**: Uses `RuntimeDefault` seccomp profile
+- **Resource Limits**: 100m CPU, 128Mi memory (limits); 50m CPU, 64Mi memory (requests)
+- **Temporary Directories**: EmptyDir volumes for `/tmp` and `/var/cache/nginx` (required for read-only filesystem)
+
+**Deployment Configuration:**
+- **Image**: `nginx:<version>-alpine` (version pinned for stability and security, managed by Renovate)
+- **Replicas**: 2 (high availability)
+- **Service**: ClusterIP on port 80
+- **ConfigMap**: `grafana-tunnel-nginx-config` contains complete nginx.conf
+- **Cloudflare Tunnel Target**: `http://grafana-tunnel.monitoring.svc.cluster.local:80`
+- **nginx Upstream**: `http://prometheus-grafana.monitoring.svc.cluster.local:80`
+
+**Alternatives Considered:**
+1. **Disable CSP Entirely**: Rejected due to security implications; CSP provides critical XSS protection
+2. **Modify Cloudflare Settings**: Not possible; Cloudflare Tunnel enforces CSP at edge without configuration options
+3. **Rewrite Grafana to Avoid Inline Scripts**: Not feasible; would require forking Grafana and maintaining custom build
+4. **Use Different Tunnel Provider**: Would lose Cloudflare's DDoS protection and global CDN benefits
+5. **Custom Grafana Build with External Scripts**: Rejected due to maintenance burden and complexity
+
+**Trade-offs:**
+
+**Positive:**
+- **Functional Grafana**: Dashboards render correctly with proper CSP allowing inline scripts
+- **Security Headers**: nginx provides consistent, centralized security header management
+- **WebSocket Support**: Enables Grafana's live update features
+- **Flexibility**: nginx configuration can be updated without redeploying Grafana
+- **Defense-in-Depth**: nginx adds an additional security layer with hardened container security
+
+**Negative:**
+- **Additional Component**: Increases architectural complexity, adds another service to maintain
+- **Resource Overhead**: nginx consumes ~50m CPU and 64Mi memory per replica (100m CPU, 128Mi total for 2 replicas)
+- **Network Hop**: Adds ~1-2ms latency for additional proxy hop (negligible for dashboard use case)
+- **Less Restrictive CSP**: Using `'unsafe-inline'` and `'unsafe-eval'` is less secure than strict CSP, but necessary for Grafana functionality
+- **Operational Burden**: nginx configuration updates require ConfigMap changes and pod restarts
+
+**Security Considerations:**
+- **CSP Compromise**: The CSP policy includes `'unsafe-inline'` and `'unsafe-eval'`, which are less secure than a strict CSP. However, this is the minimum required for Grafana to function and is explicitly documented in Grafana's security guidelines.
+- **XSS Risk**: While less restrictive, the CSP still provides significant XSS protection by restricting resource origins
+- **Compensating Controls**: Multiple other security layers (network policies, authentication, TLS, rate limiting) provide defense-in-depth
+- **Monitoring**: nginx access logs provide visibility into all requests passing through the proxy
+
+**Why This Approach:**
+This solution balances functionality with security. Cloudflare's restrictive CSP cannot be configured or disabled at the tunnel level, and Grafana fundamentally requires less restrictive CSP directives. The nginx reverse proxy provides the most maintainable solution that:
+1. Preserves Cloudflare's DDoS protection and global CDN
+2. Enables Grafana to function correctly
+3. Centralizes security header management
+4. Maintains strong container security posture
+5. Provides operational flexibility for future adjustments
+
 **Overall Security Philosophy:**
-Defense-in-depth with overlapping controls ensures no single security failure compromises the monitoring stack. Each layer (network, pod, application) provides independent mitigation.
+Defense-in-depth with overlapping controls ensures no single security failure compromises the monitoring stack. Each layer (network, pod, application, proxy) provides independent mitigation.
 
 ### 7. GitOps Management: FluxCD HelmRelease
 
@@ -428,13 +548,13 @@ Defense-in-depth with overlapping controls ensures no single security failure co
 
 **HelmRelease Configuration:**
 ```yaml
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: kube-prometheus-stack
   namespace: monitoring
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: kube-prometheus-stack
@@ -443,7 +563,7 @@ spec:
         kind: HelmRepository
         name: prometheus-community
   install:
-    crds: Create
+    crds: CreateReplace
   upgrade:
     crds: CreateReplace
   values:
@@ -483,7 +603,6 @@ spec:
 - **Resource Efficiency**: Avoids wasted CPU/memory on failing scrape attempts
 - **Coverage**: Enabled components provide comprehensive data plane observability
 
-
 **Trade-offs:**
 - **Incomplete Control Plane Visibility**: Cannot monitor control plane health in managed environments (acceptable for homelab)
 - **Resource Overhead**: node-exporter DaemonSet runs on every node (~50Mi memory per node)
@@ -499,34 +618,70 @@ spec:
 5. **Cost-Effective External Access**: Cloudflare Tunnel eliminates need for static IP or VPN while providing DDoS protection
 6. **Scalability**: Prometheus Operator pattern scales seamlessly as new services are added via ServiceMonitors
 7. **Integration**: Native integration with existing infrastructure (Longhorn, 1Password, FluxCD)
+8. **Functional Grafana**: nginx reverse proxy resolves CSP issues, enabling full dashboard functionality
+9. **Centralized Security Headers**: nginx provides consistent security header management for external access
 
 ### Negative
 
-1. **Resource Consumption**: Full stack consumes ~3Gi memory and ~1 CPU core under typical load
-2. **Storage Costs**: 150Gi total storage (50Gi × 3 replicas) for Prometheus data
-3. **Complexity**: Multiple operators, CRDs, and networking policies increase system complexity
+1. **Resource Consumption**: Full stack consumes ~3.1Gi memory and ~1.15 CPU cores under typical load
+   - Prometheus: ~1Gi memory, 500m CPU
+   - Grafana: ~500Mi memory, 500m CPU
+   - Alertmanager: ~128Mi memory, 100m CPU
+   - Prometheus Operator: ~128Mi memory, 100m CPU
+   - node-exporter: ~64Mi memory per node, 50m CPU per node
+   - kube-state-metrics: ~64Mi memory, 10m CPU
+   - nginx reverse proxy: ~128Mi memory (2 replicas), 100m CPU
+2. **Storage Costs**: 150Gi total storage (50Gi × 3 replicas) for Prometheus data, plus 30Gi for Alertmanager/Grafana (total: 180Gi)
+3. **Complexity**: Multiple operators, CRDs, networking policies, and proxy layers increase system complexity
 4. **External Dependencies**: Relies on Cloudflare (Grafana access) and 1Password (secrets) availability
-5. **Learning Curve**: Team members must understand Prometheus PromQL, Grafana dashboards, and operator patterns
+5. **Learning Curve**: Team members must understand Prometheus PromQL, Grafana dashboards, operator patterns, and nginx configuration
+6. **Additional Component Maintenance**: nginx reverse proxy requires ConfigMap management and version updates
+7. **Less Restrictive CSP**: nginx CSP includes `'unsafe-inline'` and `'unsafe-eval'`, which is less secure than strict CSP but necessary for Grafana
 
 ### Neutral
 
-1. **Maintenance Overhead**: Regular updates required for chart, operators, and component versions
+1. **Maintenance Overhead**: Regular updates required for chart, operators, component versions, and nginx
 2. **Backup Requirements**: Grafana dashboards and Prometheus data should be backed up (Longhorn snapshots)
 3. **Alert Tuning**: Initial alert rules require tuning to reduce false positives
 4. **Dashboard Customization**: Default dashboards may need customization for specific homelab use cases
+5. **nginx Configuration**: Changes to security headers or CSP policy require ConfigMap updates and rolling restarts
 
 ## Implementation Details
 
 ### Deployment Process
 
 1. **FluxCD applies HelmRepository**: Configures OCI registry connection
-2. **FluxCD reconciles HelmRelease**: Downloads chart v79.8.2, renders templates with values
-3. **Prometheus Operator deploys**: Creates CRDs (ServiceMonitor, PrometheusRule, Alertmanager, etc.)
-4. **Core components start**: Prometheus, Alertmanager, Grafana pods created with PVCs
-5. **ServiceMonitors discovered**: Operator configures Prometheus scrape targets based on label selectors
-6. **NetworkPolicies enforced**: Zero-trust network segmentation activated
-7. **1Password ESO syncs**: Grafana admin credentials populated from 1Password vault
-8. **Cloudflare Tunnel connects**: Grafana accessible at grafana.from-gondor.com
+2. **FluxCD applies ConfigMaps**: Creates nginx configuration for reverse proxy
+3. **FluxCD reconciles HelmRelease**: Downloads chart v79.8.2, renders templates with values
+4. **Prometheus Operator deploys**: Creates CRDs (ServiceMonitor, PrometheusRule, Alertmanager, etc.)
+5. **Core components start**: Prometheus, Alertmanager, Grafana pods created with PVCs
+6. **nginx reverse proxy starts**: Two replicas with ConfigMap-mounted nginx.conf
+7. **ServiceMonitors discovered**: Operator configures Prometheus scrape targets based on label selectors
+8. **NetworkPolicies enforced**: Zero-trust network segmentation activated
+9. **1Password ESO syncs**: Grafana admin credentials populated from 1Password vault
+10. **Cloudflare Tunnel connects**: Tunnel routes to nginx, which proxies to Grafana
+
+### Traffic Flow (External Access)
+
+```
+User Browser (HTTPS)
+    ↓
+Cloudflare CDN (TLS termination, DDoS protection)
+    ↓
+Cloudflare Tunnel (adds restrictive CSP: default-src 'self')
+    ↓
+nginx Reverse Proxy (HTTP, port 80)
+    - Strips Cloudflare CSP headers
+    - Applies Grafana-compatible CSP
+    - Adds HSTS, X-Content-Type-Options, X-Frame-Options
+    - Handles WebSocket upgrades
+    ↓
+Grafana (HTTP, port 80)
+    - Serves dashboards (CSP disabled internally)
+    - Queries Prometheus for metrics
+    ↓
+Prometheus (metrics queries)
+```
 
 ### Monitoring Coverage
 
@@ -566,12 +721,14 @@ Default alert rules cover:
 
 ### Upgrade Strategy
 
-1. **Monitor Release Notes**: Review kube-prometheus-stack and component changelogs
+1. **Monitor Release Notes**: Review kube-prometheus-stack, component changelogs, and nginx version updates
 2. **Update Chart Version**: Modify HelmRelease chart version in Git
-3. **Commit and Push**: FluxCD automatically reconciles within 30m
-4. **Validate**: Check Prometheus, Grafana, Alertmanager pods healthy
-5. **Test Queries**: Verify dashboards and alerts functional
-6. **Rollback if Needed**: Git revert triggers automatic rollback
+3. **Update nginx Image**: Update nginx image tag in grafana-tunnel.yaml if needed
+4. **Commit and Push**: FluxCD automatically reconciles within 1 hour
+5. **Validate**: Check Prometheus, Grafana, Alertmanager, nginx pods healthy
+6. **Test Queries**: Verify dashboards and alerts functional
+7. **Test External Access**: Confirm Grafana accessible via grafana.from-gondor.com with proper CSP
+8. **Rollback if Needed**: Git revert triggers automatic rollback
 
 ### Disaster Recovery
 
@@ -579,12 +736,15 @@ Default alert rules cover:
 - **Prometheus Data**: Longhorn snapshots every 6 hours, retained 7 days
 - **Grafana Dashboards**: Exported as JSON, stored in Git repository
 - **Alert Rules**: PrometheusRule CRDs in Git (source of truth)
+- **nginx Configuration**: ConfigMap in Git (declarative, version-controlled)
 
 **Recovery Process:**
 1. FluxCD redeploys HelmRelease from Git
-2. Longhorn restores PVCs from snapshots
-3. 1Password ESO re-syncs Grafana credentials
-4. Cloudflare Tunnel auto-reconnects
+2. FluxCD recreates nginx ConfigMap from Git
+3. Longhorn restores PVCs from snapshots
+4. 1Password ESO re-syncs Grafana credentials
+5. nginx reverse proxy pods restart with restored configuration
+6. Cloudflare Tunnel auto-reconnects to nginx service
 
 **RTO/RPO:**
 - Recovery Time Objective (RTO): ~15 minutes (Kubernetes pod restart time)
@@ -598,4 +758,7 @@ Default alert rules cover:
 - [CIS Kubernetes Benchmark](https://www.cisecurity.org/benchmark/kubernetes)
 - [Kubernetes Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/)
 - [Grafana Security Guide](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/)
+- [Grafana Content Security Policy](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-security-hardening/#content-security-policy)
 - [FluxCD Helm Controller Documentation](https://fluxcd.io/flux/components/helm/)
+- [nginx Security Hardening](https://nginx.org/en/docs/http/ngx_http_core_module.html#server)
+- [Content Security Policy Level 3](https://www.w3.org/TR/CSP3/)
