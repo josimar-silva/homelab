@@ -190,13 +190,13 @@ tests:
           value: 3
         documentIndex: 0
 
-  - it: should render prometheus annotations when cloudflared.prometheus.enabled is true
+  - it: should render Service and ServiceMonitor when cloudflared.prometheus.enabled is true
     set:
       cloudflared:
         enabled: true
         prometheus:
           enabled: true
-          port: 2000
+          portName: http-metrics
           path: /metrics
           interval: 30s
           scrapeTimeout: 10s
@@ -204,52 +204,38 @@ tests:
       - isKind:
           of: Deployment
         documentIndex: 0
+      - isKind:
+          of: Service
+        documentIndex: 3
       - equal:
-          path: spec.template.metadata.annotations["prometheus.io/scrape"]
-          value: "true"
-        documentIndex: 0
+          path: spec.ports[0].name
+          value: http-metrics
+        documentIndex: 3
+      - isKind:
+          of: ServiceMonitor
+        documentIndex: 4
       - equal:
-          path: spec.template.metadata.annotations["prometheus.io/port"]
-          value: "2000"
-        documentIndex: 0
+          path: spec.endpoints[0].port
+          value: http-metrics
+        documentIndex: 4
       - equal:
-          path: spec.template.metadata.annotations["prometheus.io/path"]
-          value: "/metrics"
-        documentIndex: 0
+          path: spec.endpoints[0].path
+          value: /metrics
+        documentIndex: 4
       - equal:
-          path: spec.template.metadata.annotations["prometheus.io/interval"]
-          value: "30s"
-        documentIndex: 0
-      - equal:
-          path: spec.template.metadata.annotations["prometheus.io/scrape_timeout"]
-          value: "10s"
-        documentIndex: 0
+          path: metadata.labels["prometheus"]
+          value: kube-prometheus-stack
+        documentIndex: 4
 
-  - it: should not render prometheus annotations when cloudflared.prometheus.enabled is false
+  - it: should not render Service and ServiceMonitor when cloudflared.prometheus.enabled is false
     set:
       cloudflared:
         enabled: true
         prometheus:
           enabled: false
     asserts:
-      - isKind:
-          of: Deployment
-        documentIndex: 0
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/scrape"]
-        documentIndex: 0
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/port"]
-        documentIndex: 0
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/path"]
-        documentIndex: 0
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/interval"]
-        documentIndex: 0
-      - notExists:
-          path: spec.template.metadata.annotations["prometheus.io/scrape_timeout"]
-        documentIndex: 0
+      - hasDocuments:
+          count: 3
 
   - it: should have a recreate deployment strategy by default
     set:
