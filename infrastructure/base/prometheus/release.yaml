@@ -249,9 +249,9 @@ spec:
           strict_transport_security_subdomains: true
           x_content_type_options: true
           x_xss_protection: true
-          # Temporarily disabled to test if Cloudflare is overriding CSP
+          # CSP now handled by nginx reverse proxy - keep disabled in Grafana
+          # nginx will strip any CSP headers and apply its own proper CSP policy
           content_security_policy: false
-          # content_security_policy_template: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
           # Disable admin user creation via API
           disable_initial_admin_creation: false
           # Admin password policy

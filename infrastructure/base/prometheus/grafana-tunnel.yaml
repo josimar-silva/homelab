@@ -26,14 +26,71 @@ spec:
 
     nameOverride: grafana-tunnel
 
-    # Disable main application deployment (we only want cloudflared)
-    replicaCount: 0
+    replicaCount: 2
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1
+
+    image:
+      repository: nginx
+      tag: 1.27.3-alpine  # Pinned version for security and stability
+      pullPolicy: IfNotPresent
 
     service:
       type: ClusterIP
       port: 80
 
-    # Enable Cloudflared tunnel
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 80
+
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: 80
+
+    volumes:
+      - name: nginx-config
+        configMap:
+          name: grafana-tunnel-nginx-config
+      - name: nginx-tmp
+        emptyDir: {}
+      - name: nginx-cache
+        emptyDir: {}
+
+    volumeMounts:
+      - name: nginx-config
+        mountPath: /etc/nginx/nginx.conf
+        subPath: nginx.conf
+        readOnly: true
+      - name: nginx-tmp
+        mountPath: /tmp
+      - name: nginx-cache
+        mountPath: /var/cache/nginx
+
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 101
+      runAsGroup: 101
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
     cloudflared:
       enabled: true
       replicaCount: 2
@@ -44,7 +101,7 @@ spec:
       tunnel:
         name: grafana
         publicHostname: grafana.from-gondor.com
-        localHostname: http://prometheus-grafana.monitoring.svc.cluster.local:80
+        localHostname: http://grafana-tunnel.monitoring.svc.cluster.local:80
         originRequest:
           keepAliveTimeout: 380s
           noTLSVerify: false
@@ -57,11 +114,3 @@ spec:
         path: /metrics
         interval: 30s
         scrapeTimeout: 10s
-
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
