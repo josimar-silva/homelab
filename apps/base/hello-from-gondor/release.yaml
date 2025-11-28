@@ -41,7 +41,7 @@ spec:
 
     prometheus:
       enabled: true
-      port: 9000
+      portName: management
       path: "/q/metrics"
 
     service:
@@ -128,7 +128,7 @@ spec:
 
     prometheus:
       enabled: true
-      port: 9091
+      portName: management
       path: "api/metrics"
 
     service:

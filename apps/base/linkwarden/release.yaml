@@ -146,6 +146,8 @@ spec:
       onepassword:
         vault: Homelab
         item: "[Cloudflare Tunnel] Linkwarden"
+      prometheus:
+        enabled: true
 
     resources:
       limits:

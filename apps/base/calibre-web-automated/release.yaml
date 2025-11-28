@@ -104,6 +104,8 @@ spec:
       onepassword:
         vault: Homelab
         item: "[Cloudflare Tunnel] Calibre"
+      prometheus:
+        enabled: true
 
     resources:
       limits:
