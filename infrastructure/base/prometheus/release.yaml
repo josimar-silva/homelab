@@ -9,7 +9,6 @@ spec:
   targetNamespace: monitoring
   chart:
     spec:
-      #renovate: registryUrl=oci://ghcr.io/prometheus-community/charts
       chart: kube-prometheus-stack
       version: 79.11.0
       interval: 12h # Check for new chart versions every 12 hours
