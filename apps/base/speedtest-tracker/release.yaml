@@ -72,7 +72,7 @@ spec:
           - name: SPEEDTEST_SCHEDULE
             value: "6 */2 * * *"
           - name: SPEEDTEST_SERVERS
-            value: "49459,48042,8198,70395"
+            value: "30907"
           - name: APP_URL
             value: "https://speedtest.from-gondor.com"
       fromSecret:
