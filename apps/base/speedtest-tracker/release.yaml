@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: "lscr.io/linuxserver/speedtest-tracker"
-      tag: "1.12.0"
+      tag: "1.12.2"
 
     replicaCount: 1
 
