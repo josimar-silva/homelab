@@ -30,7 +30,7 @@ spec:
 
     image:
       repository: dpage/pgadmin4
-      tag: 9.10.0
+      tag: 9.11.0
 
     replicaCount: 1
 
