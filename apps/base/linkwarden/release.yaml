@@ -71,7 +71,7 @@ spec:
 
     image:
       repository: "ghcr.io/linkwarden/linkwarden"
-      tag: "v2.13.4"
+      tag: "v2.13.5"
 
     replicaCount: 1
 
