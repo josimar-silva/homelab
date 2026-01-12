@@ -41,11 +41,6 @@
 
 - Infrastructure:
     - Monitoring:
-        - Kubernetes Dashboard:
-            icon: mdi-kubernetes
-            href: https://k8s.from-gondor.com
-            description: Kubernetes cluster dashboard
-
         - Gatus:
             icon: mdi-monitor-eye
             href: https://uptime.from-gondor.com

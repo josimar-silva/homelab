@@ -10,7 +10,6 @@ resources:
   - nginx-gateway-fabric
   - internal-dns
   - renovate
-  - k8s-dashboard
   - onepassword
   - cloudnativepg
   - gatus
