@@ -1,0 +1,116 @@
+---
+# Custom ClusterRole for Headlamp dashboard with least-privilege permissions
+# Provides read access to cluster resources and limited write permissions
+# for common management operations (deleting pods, scaling workloads, etc.)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: headlamp-dashboard
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: monitoring
+aggregationRule:
+  clusterRoleSelectors:
+    # Aggregate the built-in "view" role for broad read access
+    - matchLabels:
+        rbac.authorization.k8s.io/aggregate-to-view: "true"
+rules: []
+---
+# Additional ClusterRole for specific management operations
+# This provides write permissions for common dashboard operations
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: headlamp-management
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: monitoring
+rules:
+  # Allow deleting pods (for restarts and troubleshooting)
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["delete"]
+
+  # Allow pod/exec and pod/portforward for debugging
+  - apiGroups: [""]
+    resources: ["pods/exec", "pods/portforward"]
+    verbs: ["create"]
+
+  # Allow scaling deployments, statefulsets, and replicasets
+  - apiGroups: ["apps"]
+    resources: ["deployments/scale", "statefulsets/scale", "replicasets/scale"]
+    verbs: ["get", "update", "patch"]
+
+  # Allow updating and patching deployments for management operations
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets"]
+    verbs: ["patch", "update"]
+
+  # Allow restarting pods via pod eviction
+  - apiGroups: ["policy"]
+    resources: ["poddisruptionbudgets"]
+    verbs: ["get", "list"]
+
+  # Allow reading and managing Flux resources (for Flux plugin)
+  - apiGroups: ["source.toolkit.fluxcd.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["kustomize.toolkit.fluxcd.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["helm.toolkit.fluxcd.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["notification.toolkit.fluxcd.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["image.toolkit.fluxcd.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+  # Allow reading Cert-Manager resources (for cert-manager plugin)
+  - apiGroups: ["cert-manager.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+---
+# Bind the view-aggregated role to Headlamp ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: headlamp-view
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: monitoring
+subjects:
+  - kind: ServiceAccount
+    name: headlamp
+    namespace: headlamp
+roleRef:
+  kind: ClusterRole
+  name: headlamp-dashboard
+  apiGroup: rbac.authorization.k8s.io
+---
+# Bind the management permissions to Headlamp ServiceAccount
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: headlamp-management
+  labels:
+    middle-earth-cluster.homelab/category: infrastructure
+    middle-earth-cluster.homelab/realm: monitoring
+subjects:
+  - kind: ServiceAccount
+    name: headlamp
+    namespace: headlamp
+roleRef:
+  kind: ClusterRole
+  name: headlamp-management
+  apiGroup: rbac.authorization.k8s.io

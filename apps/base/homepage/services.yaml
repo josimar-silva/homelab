@@ -41,6 +41,11 @@
 
 - Infrastructure:
     - Monitoring:
+        - Headlamp:
+            icon: mdi-kubernetes
+            href: https://headlamp.from-gondor.com
+            description: Kubernetes cluster dashboard
+
         - Gatus:
             icon: mdi-monitor-eye
             href: https://uptime.from-gondor.com
