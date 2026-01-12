@@ -1,0 +1,100 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: headlamp
+  namespace: headlamp
+spec:
+  interval: 1h
+  releaseName: headlamp
+  targetNamespace: headlamp
+  chart:
+    spec:
+      #renovate: registryUrl=https://kubernetes-sigs.github.io/headlamp
+      chart: headlamp
+      version: 0.39.0
+      interval: 12h
+      sourceRef:
+        kind: HelmRepository
+        name: headlamp
+        namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    replicaCount: 1
+
+    config:
+      # Run in-cluster mode (use ServiceAccount token)
+      inCluster: true
+      baseURL: ""
+      # Watch plugins for automatic reload
+      watchPlugins: true
+
+    # Enable plugin manager with Flux and Cert-Manager plugins
+    pluginsManager:
+      enabled: true
+      configFile: "plugin.yml"
+      configContent: |
+        plugins:
+          - name: flux
+            source: https://artifacthub.io/packages/headlamp/headlamp-plugins/headlamp_flux
+            version: 0.5.0
+          - name: cert-manager
+            source: https://artifacthub.io/packages/headlamp/headlamp-plugins/headlamp_cert-manager
+            version: 0.1.0
+
+    # Service configuration
+    service:
+      type: ClusterIP
+      port: 80
+
+    # Use existing ServiceAccount with appropriate RBAC
+    serviceAccount:
+      create: true
+      name: headlamp
+
+    # Disable built-in ingress (using Gateway API HTTPRoute instead)
+    ingress:
+      enabled: false
+
+    # Security context
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 100
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    # Resource limits
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    # Probes
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3

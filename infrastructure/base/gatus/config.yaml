@@ -123,6 +123,10 @@ endpoints:
     <<: *internal
     url: https://pgadmin.from-gondor.com/login
 
+  - name: Headlamp
+    <<: *internal
+    url: https://headlamp.from-gondor.com
+
   - name: Gondor Homepage
     <<: *external
     url: https://hello.from-gondor.com
