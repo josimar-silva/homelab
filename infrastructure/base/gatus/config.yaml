@@ -123,10 +123,6 @@ endpoints:
     <<: *internal
     url: https://pgadmin.from-gondor.com/login
 
-  - name: K8S dashboard
-    <<: *internal
-    url: https://k8s.from-gondor.com
-
   - name: Gondor Homepage
     <<: *external
     url: https://hello.from-gondor.com

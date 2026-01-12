@@ -127,7 +127,6 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | [`gateway-api`](https://gateway-api.sigs.k8s.io/)                                                | Kubernetes Gateway API CRDs for advanced traffic routing. |
 | [`nginx-gateway-fabric`](https://docs.nginx.com/nginx-gateway-fabric/)                           | NGINX implementation of Gateway API for external access with improved separation of infrastructure and application routing. |
 | [`internal-dns`](https://github.com/kubernetes-sigs/external-dns/)                               | An instance of external-DNS acting as a local DNS using Pi-hole as the DNS server.              |
-| [`k8s-dashboard`](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) | Kubernetes dashboard for monitoring the cluster.  |
 | [`longhorn`](https://longhorn.io/docs/)                                                          | Distributed block storage for persistent volumes. |
 | [`metallb`](https://metallb.universe.tf/)                                                        | Bare-metal load balancer for Kubernetes.          |
 | [`onepassword`](https://developer.1password.com/docs/connect)                                    | 1Password integration for managing secrets.       |
