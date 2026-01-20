@@ -6,7 +6,6 @@ resources:
   - longhorn
   - cert-manager
   - gateway-api
-  - ingress-nginx
   - nginx-gateway-fabric
   - internal-dns
   - renovate
