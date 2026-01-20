@@ -244,26 +244,46 @@ function convertFilePatternToGlob(pattern) {
 }
 
 /**
+ * Check if a pattern is a glob pattern (vs regex)
+ */
+function isGlobPattern(pattern) {
+  // Glob patterns typically contain ** or don't have regex anchors like ^ or $
+  return pattern.includes('**') || pattern.includes('*') && !pattern.includes('^') && !pattern.includes('$');
+}
+
+/**
  * Find files matching a pattern in the repository
+ * Supports both glob patterns (e.g., "**\/release.yaml") and regex patterns (e.g., "/release\.ya?ml$/")
  */
 async function findMatchingFiles(filePattern) {
-
   try {
-    // Find all yaml files first
-    const yamlFiles = await glob('**/*.{yaml,yml}', {
-      cwd: REPO_ROOT,
-      ignore: ['node_modules/**', '.git/**', '**/node_modules/**'],
-      absolute: true,
-    });
+    if (isGlobPattern(filePattern)) {
+      // Use glob directly for glob patterns
+      const matchedFiles = await glob(filePattern, {
+        cwd: REPO_ROOT,
+        ignore: ['node_modules/**', '.git/**', '**/node_modules/**'],
+        absolute: true,
+      });
+      return matchedFiles;
+    } else {
+      // For regex patterns, find all yaml files first then filter
+      const yamlFiles = await glob('**/*.{yaml,yml}', {
+        cwd: REPO_ROOT,
+        ignore: ['node_modules/**', '.git/**', '**/node_modules/**'],
+        absolute: true,
+      });
 
-    // Filter based on the converted pattern
-    const regex = new RegExp(filePattern.replace(/^\//, '').replace(/\/$/, ''));
-    const matchedFiles = yamlFiles.filter(file => {
-      const relativePath = path.relative(REPO_ROOT, file);
-      return regex.test(relativePath);
-    });
+      // Strip regex delimiters if present (e.g., /pattern/ -> pattern)
+      const cleanedPattern = filePattern.replace(/^\//, '').replace(/\/$/, '');
+      const regex = new RegExp(cleanedPattern);
 
-    return matchedFiles;
+      const matchedFiles = yamlFiles.filter(file => {
+        const relativePath = path.relative(REPO_ROOT, file);
+        return regex.test(relativePath);
+      });
+
+      return matchedFiles;
+    }
   } catch (error) {
     logWarning(`Error finding files: ${error.message}`);
     return [];
