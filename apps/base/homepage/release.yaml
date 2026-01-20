@@ -133,7 +133,7 @@ spec:
     # Init container to ALWAYS copy config files from ConfigMap to PVC (source of truth)
     initContainers:
       - name: copy-config
-        image: busybox:1.36
+        image: busybox:1.37
         command:
           - sh
           - -c
