@@ -22,19 +22,19 @@
   ],
   "flux": {
     "managerFilePatterns": [
-      "(^|/)\\.ya?ml$"
+      "(^|/)[^/]*\\.ya?ml$"
     ]
   },
   "kubernetes": {
     "managerFilePatterns": [
-      "/(^|/)\\.ya?ml$/"
+      "(^|/)[^/]*\\.ya?ml$"
     ]
   },
   "customManagers": [
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/)release\\.ya?ml$/"
+        "(^|/)release\\.ya?ml$"
       ],
       "matchStrings": [
         "#renovate:\\s*registryUrl=(?<registryUrl>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
@@ -44,19 +44,18 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/)(release|chart)s?\\.ya?ml$/"
+        "(^|/)(release|chart)s?\\.ya?ml$"
       ],
       "matchStrings": [
-        "#renovate:\\s*registryUrl=oci:\/\/(?<registry>[^\/\\s]+)\/(?<namespace>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
+        "#renovate:\\s*registryUrl=oci:\\/\\/(?<registryUrl>[^\\s]+)[\\s]*?chart:\\s+(?<depName>[^\\s]+?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"\\s]+)[\"']?"
       ],
-      "registryUrlTemplate": "https://{{registry}}",
-      "packageNameTemplate": "{{namespace}}/{{depName}}",
+      "packageNameTemplate": "{{registryUrl}}/{{depName}}",
       "datasourceTemplate": "docker"
     },
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/)release\\.ya?ml$/"
+        "(^|/)release\\.ya?ml$"
       ],
       "matchStrings": [
         "repository:\\s*[\"']?(?<repository>[^\"'\\s]+)[\"']?\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
@@ -67,7 +66,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/)kustomization\\.ya?ml$/"
+        "(^|/)kustomization\\.ya?ml$"
       ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=github-releases\\s+depName=(?<depName>[^\\s]+)[\\s\\S]*?-\\s*https://github.com/[^/]+/[^/]+/releases/download/v(?<currentValue>[^/]+)/[^\\s]+"
