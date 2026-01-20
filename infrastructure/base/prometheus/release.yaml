@@ -11,7 +11,7 @@ spec:
     spec:
       #renovate: registryUrl=oci://ghcr.io/prometheus-community/charts
       chart: kube-prometheus-stack
-      version: 81.1.0
+      version: 81.2.0
       interval: 12h # Check for new chart versions every 12 hours
       sourceRef:
         kind: HelmRepository
