@@ -9,6 +9,7 @@ spec:
   targetNamespace: ingress-nginx
   chart:
     spec:
+      #renovate: registryUrl=oci://ghcr.io/nginx/charts
       chart: nginx-gateway-fabric
       version: 2.2.1
       interval: 12h
