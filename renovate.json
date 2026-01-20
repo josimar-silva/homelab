@@ -22,32 +22,42 @@
   ],
   "flux": {
     "managerFilePatterns": [
-      "(^|/)[^/]*\\.ya?ml$"
+      "**/*.yaml",
+      "**/*.yml"
     ]
   },
   "kubernetes": {
     "managerFilePatterns": [
-      "(^|/)[^/]*\\.ya?ml$"
+      "**/*.yaml",
+      "**/*.yml"
     ]
   },
   "customManagers": [
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "(^|/)release\\.ya?ml$"
+        "**/release.yaml",
+        "**/release.yml"
       ],
       "matchStrings": [
-        "#renovate:\\s*registryUrl=(?<registryUrl>[^\\s]*?)[\\s]*?chart:\\s+(?<depName>[^\\s]*?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"]*?)[\"']?(?:^|\r\n|\r|\n|$)"
+        "#\\s*renovate:\\s*registryUrl=(?<registryUrl>https?://[^\\s]+)[\\s\\S]*?chart:\\s+(?<depName>[^\\s]+)[\\s\\S]*?version:\\s+[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
       "datasourceTemplate": "helm"
     },
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "(^|/)(release|chart)s?\\.ya?ml$"
+        "**/release.yaml",
+        "**/release.yml",
+        "**/releases.yaml",
+        "**/releases.yml",
+        "**/chart.yaml",
+        "**/chart.yml",
+        "**/charts.yaml",
+        "**/charts.yml"
       ],
       "matchStrings": [
-        "#renovate:\\s*registryUrl=oci:\\/\\/(?<registryUrl>[^\\s]+)[\\s]*?chart:\\s+(?<depName>[^\\s]+?)[\\s]*?version:\\s+[\"']?(?<currentValue>[^'\"\\s]+)[\"']?"
+        "#\\s*renovate:\\s*registryUrl=oci://(?<registryUrl>[^\\s]+)[\\s\\S]*?chart:\\s+(?<depName>[^\\s]+)[\\s\\S]*?version:\\s+[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
       "packageNameTemplate": "{{registryUrl}}/{{depName}}",
       "datasourceTemplate": "docker"
@@ -55,10 +65,11 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "(^|/)release\\.ya?ml$"
+        "**/release.yaml",
+        "**/release.yml"
       ],
       "matchStrings": [
-        "repository:\\s*[\"']?(?<repository>[^\"'\\s]+)[\"']?\\s*tag:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+        "repository:\\s+[\"']?(?<repository>[^\"'\\s]+)[\"']?[\\s\\S]*?tag:\\s+[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
       "packageNameTemplate": "{{repository}}",
       "datasourceTemplate": "docker"
@@ -66,7 +77,8 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "(^|/)kustomization\\.ya?ml$"
+        "**/kustomization.yaml",
+        "**/kustomization.yml"
       ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=github-releases\\s+depName=(?<depName>[^\\s]+)[\\s\\S]*?-\\s*https://github.com/[^/]+/[^/]+/releases/download/v(?<currentValue>[^/]+)/[^\\s]+"
