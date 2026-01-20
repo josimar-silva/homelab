@@ -11,7 +11,7 @@ spec:
     spec:
       #renovate: registryUrl=https://meilisearch.github.io/meilisearch-kubernetes
       chart: meilisearch
-      version: 0.21.x
+      version: 0.23.x
       interval: 12h # for checking of a new chart
       sourceRef:
         kind: HelmRepository
