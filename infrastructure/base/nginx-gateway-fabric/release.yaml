@@ -11,7 +11,7 @@ spec:
     spec:
       #renovate: registryUrl=oci://ghcr.io/nginx/charts
       chart: nginx-gateway-fabric
-      version: 2.2.1
+      version: 2.3.0
       interval: 12h
       sourceRef:
         kind: HelmRepository
