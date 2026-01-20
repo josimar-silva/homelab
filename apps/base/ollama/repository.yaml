@@ -2,15 +2,6 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
-  name: otwld
-  namespace: flux-system
-spec:
-  interval: 1h
-  url: https://helm.otwld.com/
----
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
   name: open-webui
   namespace: flux-system
 spec:
