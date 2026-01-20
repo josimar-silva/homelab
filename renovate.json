@@ -57,9 +57,9 @@
         "**/charts.yml"
       ],
       "matchStrings": [
-        "#\\s*renovate:\\s*registryUrl=oci://(?<registryUrl>[^\\s]+)[\\s\\S]*?chart:\\s+(?<depName>[^\\s]+)[\\s\\S]*?version:\\s+[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+        "#\\s*renovate:\\s*registryUrl=oci://(?<registry>[^\\s]+)[\\s\\S]*?chart:\\s+(?<depName>[^\\s]+)[\\s\\S]*?version:\\s+[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
       ],
-      "packageNameTemplate": "{{registryUrl}}/{{depName}}",
+      "packageNameTemplate": "{{registry}}/{{depName}}",
       "datasourceTemplate": "docker"
     },
     {
