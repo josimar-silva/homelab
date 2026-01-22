@@ -25,7 +25,7 @@ spec:
   values:
     nameOverride: speedtest-tracker-db
 
-    instances: 3
+    instances: 1
 
     postgresql:
       database:
