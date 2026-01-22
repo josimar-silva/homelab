@@ -1,0 +1,218 @@
+---
+# Default deny all ingress and egress traffic in the trivy-system namespace
+# This establishes a secure baseline - all traffic must be explicitly allowed
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: trivy-system
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+
+---
+# Allow Trivy Operator to communicate with Kubernetes API and download vulnerability database
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: trivy-operator
+  namespace: trivy-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: trivy-operator
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow Prometheus to scrape operator metrics
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              middle-earth-cluster.homelab/realm: observability
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 9090
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow operator to communicate with Kubernetes API server
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              component: kube-apiserver
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 6443
+    # Allow operator to download vulnerability database from external registries
+    # (ghcr.io, registry.k8s.io, etc.) - requires external network access
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+    # Allow operator to manage scan jobs across namespaces (in-cluster only)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 8080
+
+---
+# Allow Trivy scan jobs to pull vulnerability database and scan container images
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: trivy-scan-jobs
+  namespace: trivy-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: trivy
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow scan jobs to communicate with Kubernetes API server
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              component: kube-apiserver
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 6443
+    # Allow scan jobs to download vulnerability database from external registries
+    # (ghcr.io, registry.k8s.io, docker.io, quay.io, etc.)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+    # Allow scan jobs to access in-cluster container registries
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5000  # Docker registry
+        - protocol: TCP
+          port: 5001  # Alternative registry port
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+
+---
+# Allow Trivy node collector (DaemonSet) to collect node information
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: trivy-node-collector
+  namespace: trivy-system
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: node-collector
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow Prometheus to scrape node collector metrics
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              middle-earth-cluster.homelab/realm: observability
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9115
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow node collector to communicate with Kubernetes API server
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              component: kube-apiserver
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 6443
+    # Allow node collector to communicate with Trivy operator
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: trivy-operator
+      ports:
+        - protocol: TCP
+          port: 8080

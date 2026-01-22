@@ -1,0 +1,159 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: trivy-operator
+  namespace: trivy-system
+spec:
+  interval: 1h # Check for drift every hour
+  releaseName: trivy-operator
+  targetNamespace: trivy-system
+  chart:
+    spec:
+      #renovate: registryUrl=https://aquasecurity.github.io/helm-charts/
+      chart: trivy-operator
+      version: 0.31.0
+      interval: 12h # Check for new chart versions every 12 hours
+      sourceRef:
+        kind: HelmRepository
+        name: aqua
+        namespace: flux-system
+
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+    crds: CreateReplace # Install CRDs during installation
+
+  upgrade:
+    remediation:
+      retries: 3
+    crds: CreateReplace # Update CRDs during upgrades
+    cleanupOnFail: true
+
+  uninstall:
+    keepHistory: false
+
+  values:
+    # Common labels for all resources
+    commonLabels:
+      cluster: middle-earth-cluster
+
+    # Namespace override
+    namespaceOverride: trivy-system
+
+    # ============================================
+    # Trivy Operator Configuration
+    # ============================================
+    trivy:
+      # Ignore vulnerabilities without available fixes to reduce noise
+      ignoreUnfixed: true
+
+      # Severity threshold for vulnerability detection
+      severity: CRITICAL,HIGH,MEDIUM
+
+      # Resource limits for Trivy scanner jobs
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+    # ============================================
+    # Operator Configuration
+    # ============================================
+    operator:
+      # Resource limits for the operator itself
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+
+      # Security context - run as non-root with read-only root filesystem
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+      # Replicas for HA
+      replicas: 1
+
+    # ============================================
+    # Service Monitor Configuration
+    # ============================================
+    serviceMonitor:
+      enabled: true
+      # Add label to match Prometheus ServiceMonitor selector
+      additionalLabels:
+        prometheus: kube-prometheus-stack
+      interval: 30s
+      scrapeTimeout: 10s
+
+    # ============================================
+    # Scan Job Configuration
+    # ============================================
+    scanJob:
+      # Scan interval for vulnerability reports
+      scanOnPushDisabled: false
+      # Node selector for scan jobs
+      nodeSelector: {}
+      # Tolerations for scan jobs
+      tolerations: []
+      # Security context for scan jobs
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        fsGroup: 10000
+        seccompProfile:
+          type: RuntimeDefault
+
+    # ============================================
+    # Compliance and RBAC Scanning
+    # ============================================
+    compliance:
+      enabled: true
+
+    rbacAssessment:
+      enabled: true
+
+    infraAssessment:
+      enabled: true
+
+    configAudit:
+      enabled: true
+
+    exposedSecretReport:
+      enabled: true
+
+    # ============================================
+    # Vulnerability Report Configuration
+    # ============================================
+    vulnerabilityReports:
+      scanner: Trivy
+      # Resource limits for vulnerability scanner
+      scannerReportTTL: 24h
+
+    # ============================================
+    # Node Collector (DaemonSet)
+    # ============================================
+    nodeCollector:
+      enabled: true
+      # Resource limits for node collector
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 128Mi
