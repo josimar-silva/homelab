@@ -48,7 +48,7 @@ spec:
             version: 0.1.0
           - name: trivy
             source: https://artifacthub.io/packages/headlamp/headlamp-plugins/headlamp_trivy
-            version: 0.2.0
+            version: 0.3.1
       # Security context for plugin manager - allow write access for npm operations
       securityContext:
         runAsNonRoot: true
