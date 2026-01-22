@@ -42,6 +42,36 @@ spec:
     namespaceOverride: trivy-system
 
     # ============================================
+    # Pod Security Context (root level - for operator deployment)
+    # Required for restricted PSS namespace
+    # NOTE: These settings apply to the trivy-operator deployment pod
+    # ============================================
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 10000
+      runAsGroup: 10000
+      fsGroup: 10000
+      seccompProfile:
+        type: RuntimeDefault
+
+    # ============================================
+    # Container Security Context (root level - for operator container)
+    # Required for restricted PSS namespace
+    # NOTE: These settings apply to the trivy-operator container
+    # ============================================
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 10000
+      runAsGroup: 10000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+    # ============================================
     # Trivy Operator Configuration
     # ============================================
     trivy:
@@ -73,19 +103,6 @@ spec:
           cpu: 1000m
           memory: 1Gi
 
-      # Security context - run as non-root with read-only root filesystem
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 10000
-        runAsGroup: 10000
-        allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
-        capabilities:
-          drop:
-            - ALL
-        seccompProfile:
-          type: RuntimeDefault
-
       # Replicas for HA
       replicas: 1
 
@@ -101,20 +118,27 @@ spec:
       scrapeTimeout: 10s
 
     # ============================================
-    # Scan Job Configuration
+    # Scan Job Configuration (trivyOperator section)
     # ============================================
-    scanJob:
-      # Scan interval for vulnerability reports
-      scanOnPushDisabled: false
-      # Node selector for scan jobs
-      nodeSelector: {}
-      # Tolerations for scan jobs
-      tolerations: []
-      # Security context for scan jobs
-      podSecurityContext:
+    trivyOperator:
+      # Pod security context for scan jobs
+      scanJobPodTemplatePodSecurityContext:
         runAsNonRoot: true
         runAsUser: 10000
+        runAsGroup: 10000
         fsGroup: 10000
+        seccompProfile:
+          type: RuntimeDefault
+      # Container security context for scan jobs
+      scanJobPodTemplateContainerSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
         seccompProfile:
           type: RuntimeDefault
 
