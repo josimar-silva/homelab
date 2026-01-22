@@ -616,12 +616,13 @@ async function runIntegrationTests(managers) {
   );
 
   // Test nginx-gateway-fabric (Manager #2 - OCI pattern)
+  // Note: OCI manager captures 'registry' (not 'registryUrl') for use in packageNameTemplate
   await testKnownFile(
     'nginx-gateway-fabric',
     path.join(REPO_ROOT, 'infrastructure/base/nginx-gateway-fabric/release.yaml'),
     managers,
     1,
-    ['registryUrl', 'depName', 'currentValue']
+    ['registry', 'depName', 'currentValue']
   );
 
   // Test pi-hole (Manager #3)
@@ -643,12 +644,13 @@ async function runIntegrationTests(managers) {
   );
 
   // Test kube-prometheus-stack OCI (Manager #2) - validates multi-level OCI path handling
+  // Note: OCI manager captures 'registry' (not 'registryUrl') for use in packageNameTemplate
   await testKnownFile(
     'kube-prometheus-stack (OCI)',
     path.join(REPO_ROOT, 'infrastructure/base/prometheus/release.yaml'),
     managers,
     1,
-    ['registryUrl', 'depName', 'currentValue']
+    ['registry', 'depName', 'currentValue']
   );
 
   endTestSuite();
