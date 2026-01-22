@@ -106,6 +106,20 @@ spec:
       # Replicas for HA
       replicas: 1
 
+      # ----------------------------------------
+      # Scan frequency settings (reduce cluster load)
+      # ----------------------------------------
+      # Max concurrent scan jobs (default: 10)
+      scanJobsConcurrentLimit: 3
+      # Max concurrent node collector jobs (default: 1)
+      scanNodeCollectorLimit: 1
+      # Delay between retrying failed scans (default: 30s)
+      scanJobsRetryDelay: 60s
+      # How long reports are valid before re-scanning (default: 24h)
+      scannerReportTTL: "72h"
+      # Cluster SBOM cache TTL (default: 120h)
+      cacheReportTTL: "168h"
+
     # ============================================
     # Service Monitor Configuration
     # ============================================
@@ -147,6 +161,8 @@ spec:
     # ============================================
     compliance:
       enabled: true
+      # Run compliance scans once daily at midnight (default: every 6 hours)
+      cron: "0 0 * * *"
 
     rbacAssessment:
       enabled: true
@@ -165,8 +181,6 @@ spec:
     # ============================================
     vulnerabilityReports:
       scanner: Trivy
-      # Resource limits for vulnerability scanner
-      scannerReportTTL: 24h
 
     # ============================================
     # Node Collector (DaemonSet)
