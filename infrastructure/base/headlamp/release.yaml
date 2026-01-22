@@ -34,7 +34,7 @@ spec:
       # Watch plugins for automatic reload
       watchPlugins: true
 
-    # Enable plugin manager with Flux and Cert-Manager plugins
+    # Enable plugin manager with Flux, Cert-Manager, and Trivy plugins
     pluginsManager:
       enabled: true
       configFile: "plugin.yml"
@@ -46,6 +46,9 @@ spec:
           - name: cert-manager
             source: https://artifacthub.io/packages/headlamp/headlamp-plugins/headlamp_cert-manager
             version: 0.1.0
+          - name: trivy
+            source: https://artifacthub.io/packages/headlamp/headlamp-plugins/headlamp_trivy
+            version: 0.2.0
       # Security context for plugin manager - allow write access for npm operations
       securityContext:
         runAsNonRoot: true
