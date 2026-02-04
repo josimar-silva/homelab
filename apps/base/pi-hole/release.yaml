@@ -48,11 +48,11 @@ spec:
 
     resources:
       limits:
-        cpu: 900m
+        cpu: 300m
         memory: 512Mi
       requests:
-        cpu: 600m
-        memory: 256Mi
+        cpu: 100m
+        memory: 384Mi
 
     serviceDhcp:
       enabled: false
