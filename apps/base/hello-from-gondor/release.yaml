@@ -59,10 +59,10 @@ spec:
 
     resources:
       limits:
-        cpu: 500m
-        memory: 500Mi
+        cpu: 200m
+        memory: 384Mi
       requests:
-        cpu: 100m
+        cpu: 50m
         memory: 256Mi
 
     livenessProbe:
@@ -175,11 +175,11 @@ spec:
 
     resources:
       limits:
-        cpu: 500m
-        memory: 500Mi
-      requests:
         cpu: 100m
-        memory: 256Mi
+        memory: 128Mi
+      requests:
+        cpu: 25m
+        memory: 64Mi
 
     livenessProbe:
       httpGet:
