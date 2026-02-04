@@ -26,7 +26,7 @@ spec:
     nameOverride: calibre-web-automated
 
     image:
-      repository: "crocodilestick/calibre-web-automated"
+      repository: "ghcr.io/crocodilestick/calibre-web-automated"
       tag: "V3.1.4"
 
     replicaCount: 1
