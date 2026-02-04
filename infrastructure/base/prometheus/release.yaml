@@ -50,11 +50,11 @@ spec:
       # Resource limits for the operator itself
       resources:
         requests:
-          cpu: 100m
-          memory: 128Mi
+          cpu: 25m
+          memory: 64Mi
         limits:
-          cpu: 500m
-          memory: 256Mi
+          cpu: 150m
+          memory: 128Mi
       # Add label to operator's ServiceMonitor
       serviceMonitor:
         additionalLabels:
@@ -82,11 +82,20 @@ spec:
         # Resource requests/limits
         resources:
           requests:
-            cpu: 500m
+            cpu: 200m
             memory: 1Gi
           limits:
-            cpu: 1000m
-            memory: 2Gi
+            cpu: 500m
+            memory: 1536Mi
+
+        # Config reloader sidecar resources
+        configReloaderResources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
 
         # Storage configuration - using existing PVC pattern
         storageSpec:
@@ -141,11 +150,20 @@ spec:
         # Resource requests/limits
         resources:
           requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 150m
+            memory: 128Mi
+
+        # Config reloader sidecar resources
+        configReloaderResources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
             cpu: 100m
             memory: 128Mi
-          limits:
-            cpu: 500m
-            memory: 256Mi
 
         # Storage for alertmanager
         storage:
@@ -180,11 +198,11 @@ spec:
       # Resource requests/limits
       resources:
         requests:
-          cpu: 500m
-          memory: 500Mi
+          cpu: 100m
+          memory: 256Mi
         limits:
-          cpu: 1000m
-          memory: 1Gi
+          cpu: 500m
+          memory: 512Mi
 
       # Persistence for dashboards
       persistence:
@@ -198,6 +216,25 @@ spec:
       # Default dashboards
       defaultDashboardsEnabled: true
       defaultDashboardsTimezone: Europe/Berlin
+
+      # Sidecar resource limits
+      sidecar:
+        dashboards:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 192Mi
+            limits:
+              cpu: 200m
+              memory: 384Mi
+        datasources:
+          resources:
+            requests:
+              cpu: 25m
+              memory: 192Mi
+            limits:
+              cpu: 200m
+              memory: 384Mi
 
       # Security context - run as non-root with read-only root filesystem
       containerSecurityContext:
@@ -348,11 +385,11 @@ spec:
             prometheus: kube-prometheus-stack
       resources:
         requests:
-          cpu: 50m
-          memory: 64Mi
+          cpu: 25m
+          memory: 32Mi
         limits:
-          cpu: 200m
-          memory: 128Mi
+          cpu: 100m
+          memory: 64Mi
 
     # ============================================
     # Component-Specific Service Monitors
