@@ -59,6 +59,14 @@ spec:
         capabilities:
           drop:
             - ALL
+      # Resource limits for plugin manager
+      resources:
+        requests:
+          cpu: 25m
+          memory: 96Mi
+        limits:
+          cpu: 200m
+          memory: 192Mi
 
     # Service configuration
     service:
@@ -87,11 +95,11 @@ spec:
     # Resource limits
     resources:
       requests:
-        cpu: 100m
-        memory: 128Mi
+        cpu: 25m
+        memory: 64Mi
       limits:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 150m
+        memory: 256Mi
 
     # Volume mounts for writable directories
     # Note: The chart already mounts /headlamp/plugins with an emptyDir
