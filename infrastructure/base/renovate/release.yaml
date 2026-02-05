@@ -60,11 +60,11 @@ spec:
 
     resources:
       limits:
-        cpu: 700m
-        memory: 1Gi
+        cpu: 2
+        memory: 1256Mi
       requests:
-        cpu: 500m
-        memory: 768Mi
+        cpu: 1
+        memory: 1Gi
 
     postgresql:
       enabled: true
