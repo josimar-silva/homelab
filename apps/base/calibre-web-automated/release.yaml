@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: "ghcr.io/crocodilestick/calibre-web-automated"
-      tag: "V3.1.4"
+      tag: "v4.0.0"
 
     replicaCount: 1
 
