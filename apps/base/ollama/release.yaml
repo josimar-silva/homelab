@@ -33,10 +33,10 @@ spec:
     resources:
       limits:
         cpu: 500m
-        memory: 1Gi
+        memory: 1256GMi
       requests:
         cpu: 100m
-        memory: 768Mi
+        memory: 1Gi
 
     ollama:
       enabled: false
@@ -78,7 +78,7 @@ spec:
       repository: nginxinc/nginx-unprivileged
       tag: alpine@sha256:5aea7cc516b419e3526f47dd1531be31a56a046cfe44754d94f9383e13e2ee99
 
-    replicaCount: 4
+    replicaCount: 1
 
     strategy:
       type: RollingUpdate
@@ -114,11 +114,11 @@ spec:
 
     resources:
       limits:
-        cpu: 100m
-        memory: 128Mi
+        cpu: 500m
+        memory: 500Mi
       requests:
-        cpu: 10m
-        memory: 32Mi
+        cpu: 50m
+        memory: 128Mi
 
     livenessProbe:
       httpGet:
