@@ -7,7 +7,7 @@ allowVolumeExpansion: true
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 parameters:
-  numberOfReplicas: "4"
+  numberOfReplicas: "3"
   staleReplicaTimeout: "30"
   fromBackup: ""
   fsType: "xfs"
@@ -32,7 +32,7 @@ allowVolumeExpansion: true
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 parameters:
-  numberOfReplicas: "4"
+  numberOfReplicas: "3"
   staleReplicaTimeout: "30"
   fromBackup: ""
   fsType: "xfs"
