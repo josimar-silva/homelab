@@ -17,18 +17,9 @@ spec:
 
   {{- if .Values.backup.enabled }}
   backup:
-    barmanObjectStore:
-      destinationPath: /backups/{{ .Values.backup.subPath | default (include "postgresql-cluster.fullname" .) }}
-      serverName: {{ include "postgresql-cluster.fullname" . }}
-      wal:
-        compression: gzip
-        maxParallel: 2
-      data:
-        compression: gzip
-        jobs: 2
-    retentionPolicy: {{ .Values.backup.retentionPolicy | quote }}
     volumeSnapshot:
       className: longhorn-snapshot-vsc
+    retentionPolicy: {{ .Values.backup.retentionPolicy | quote }}
   {{- end }}
 
   inheritedMetadata:

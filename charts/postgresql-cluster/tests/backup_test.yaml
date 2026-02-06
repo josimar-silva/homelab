@@ -32,7 +32,6 @@ tests:
       backup:
         enabled: true
         volumeClaimName: cnpg-backups-nfs-pvc
-        subPath: test-db
         retentionPolicy: "30d"
       postgresql:
         database:
@@ -52,16 +51,8 @@ tests:
           of: Cluster
       - template: cluster.yaml
         equal:
-          path: spec.backup.barmanObjectStore.destinationPath
-          value: /backups/test-db
-      - template: cluster.yaml
-        equal:
-          path: spec.backup.barmanObjectStore.serverName
-          value: test-release-test-db
-      - template: cluster.yaml
-        equal:
-          path: spec.backup.barmanObjectStore.wal.compression
-          value: gzip
+          path: spec.backup.volumeSnapshot.className
+          value: longhorn-snapshot-vsc
       - template: cluster.yaml
         equal:
           path: spec.backup.retentionPolicy
@@ -94,9 +85,9 @@ tests:
           path: spec.immediate
           value: true
 
-  - it: should use default subPath when not provided
+  - it: should render volumeSnapshot backup when enabled
     set:
-      nameOverride: default-test
+      nameOverride: snapshot-test
       backup:
         enabled: true
         volumeClaimName: cnpg-backups-nfs-pvc
@@ -110,5 +101,9 @@ tests:
     asserts:
       - template: cluster.yaml
         equal:
-          path: spec.backup.barmanObjectStore.destinationPath
-          value: /backups/test-release-default-test
+          path: spec.backup.volumeSnapshot.className
+          value: longhorn-snapshot-vsc
+      - template: cluster.yaml
+        equal:
+          path: spec.backup.retentionPolicy
+          value: "14d"

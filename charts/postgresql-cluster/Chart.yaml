@@ -2,7 +2,7 @@ apiVersion: v2
 name: postgresql-cluster
 description: A Helm chart for deploying PostgreSQL clusters using CloudNativePG
 type: application
-version: 0.2.0
+version: 0.2.1
 appVersion: "18.1"
 home: https://github.com/josimar-silva/homelab/tree/main/charts/postgresql-cluster
 icon: https://github.com/josimar-silva/homelab/tree/main/charts/postgresql-cluster/icon.png
