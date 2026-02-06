@@ -25,7 +25,7 @@ spec:
   values:
     nameOverride: gatus-db
 
-    instances: 3
+    instances: 1
 
     postgresql:
       database:
