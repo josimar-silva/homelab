@@ -1,0 +1,114 @@
+suite: test backup configuration
+release:
+  name: test-release
+  namespace: test-namespace
+templates:
+  - cluster.yaml
+  - scheduledbackup.yaml
+tests:
+  - it: should not render backup when disabled
+    set:
+      backup.enabled: false
+      postgresql:
+        database:
+          name: testdb
+          owner: testuser
+        onepassword:
+          secretName: test-secret
+    asserts:
+      - template: cluster.yaml
+        hasDocuments:
+          count: 1
+      - template: cluster.yaml
+        isKind:
+          of: Cluster
+      - template: cluster.yaml
+        isNull:
+          path: spec.backup
+
+  - it: should render backup configuration when enabled
+    set:
+      nameOverride: test-db
+      backup:
+        enabled: true
+        volumeClaimName: cnpg-backups-nfs-pvc
+        subPath: test-db
+        retentionPolicy: "30d"
+      postgresql:
+        database:
+          name: testdb
+          owner: testuser
+        onepassword:
+          secretName: test-secret
+    asserts:
+      - template: cluster.yaml
+        hasDocuments:
+          count: 1
+      - template: scheduledbackup.yaml
+        hasDocuments:
+          count: 1
+      - template: cluster.yaml
+        isKind:
+          of: Cluster
+      - template: cluster.yaml
+        equal:
+          path: spec.backup.barmanObjectStore.destinationPath
+          value: /backups/test-db
+      - template: cluster.yaml
+        equal:
+          path: spec.backup.barmanObjectStore.serverName
+          value: test-release-test-db
+      - template: cluster.yaml
+        equal:
+          path: spec.backup.barmanObjectStore.wal.compression
+          value: gzip
+      - template: cluster.yaml
+        equal:
+          path: spec.backup.retentionPolicy
+          value: "30d"
+      - template: cluster.yaml
+        equal:
+          path: spec.additionalVolumes[0].name
+          value: backup-volume
+      - template: cluster.yaml
+        equal:
+          path: spec.additionalVolumes[0].persistentVolumeClaim.claimName
+          value: cnpg-backups-nfs-pvc
+      - template: cluster.yaml
+        equal:
+          path: spec.additionalVolumeMounts[0].mountPath
+          value: /backups
+      - template: scheduledbackup.yaml
+        isKind:
+          of: ScheduledBackup
+      - template: scheduledbackup.yaml
+        equal:
+          path: spec.schedule
+          value: "0 2 * * *"
+      - template: scheduledbackup.yaml
+        equal:
+          path: spec.cluster.name
+          value: test-release-test-db
+      - template: scheduledbackup.yaml
+        equal:
+          path: spec.immediate
+          value: true
+
+  - it: should use default subPath when not provided
+    set:
+      nameOverride: default-test
+      backup:
+        enabled: true
+        volumeClaimName: cnpg-backups-nfs-pvc
+        retentionPolicy: "14d"
+      postgresql:
+        database:
+          name: testdb
+          owner: testuser
+        onepassword:
+          secretName: test-secret
+    asserts:
+      - template: cluster.yaml
+        equal:
+          path: spec.backup.barmanObjectStore.destinationPath
+          value: /backups/test-release-default-test

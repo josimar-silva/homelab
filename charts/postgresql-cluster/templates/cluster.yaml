@@ -15,6 +15,22 @@ spec:
     size: {{ .Values.storage.size }}
     storageClass: {{ .Values.storage.storageClass }}
 
+  {{- if .Values.backup.enabled }}
+  backup:
+    barmanObjectStore:
+      destinationPath: /backups/{{ .Values.backup.subPath | default (include "postgresql-cluster.fullname" .) }}
+      serverName: {{ include "postgresql-cluster.fullname" . }}
+      wal:
+        compression: gzip
+        maxParallel: 2
+      data:
+        compression: gzip
+        jobs: 2
+    retentionPolicy: {{ .Values.backup.retentionPolicy | quote }}
+    volumeSnapshot:
+      className: longhorn-snapshot-vsc
+  {{- end }}
+
   inheritedMetadata:
     annotations:
       {{- with .Values.extraAnnotations }}
@@ -32,11 +48,32 @@ spec:
   
   postgresql:
     parameters:
+      # Logging
       log_checkpoints: "on"
       log_lock_waits: "on"
       log_min_duration_statement: "1000"
       log_statement: "ddl"
       log_temp_files: "1024"
+
+      # Memory
+      shared_buffers: "128MB"
+      effective_cache_size: "384MB"
+      maintenance_work_mem: "64MB"
+      work_mem: "4MB"
+
+      # WAL
+      wal_buffers: "16MB"
+      min_wal_size: "1GB"
+      max_wal_size: "4GB"
+      checkpoint_completion_target: "0.9"
+
+      # Query planner
+      default_statistics_target: "100"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "200"
+
+      # Connection
+      max_connections: "100"
   
   resources:
     requests:
@@ -45,7 +82,17 @@ spec:
     limits:
       cpu: {{ .Values.resources.limits.cpu }}
       memory: {{ .Values.resources.limits.memory }}
-  
+
+  {{- if .Values.backup.enabled }}
+  additionalVolumes:
+    - name: backup-volume
+      persistentVolumeClaim:
+        claimName: {{ .Values.backup.volumeClaimName }}
+  additionalVolumeMounts:
+    - name: backup-volume
+      mountPath: /backups
+  {{- end }}
+
   # -- Define the database to be created
   bootstrap:
     initdb:

@@ -76,3 +76,14 @@ loadBalancer:
   hostname: ""
   # -- MetalLB IP pool name for the LoadBalancer service
   ipPool: ""
+
+# -- Backup configuration
+backup:
+  # -- Enable backup functionality
+  enabled: false
+  # -- PVC name for WAL archiving (must exist in the same namespace)
+  volumeClaimName: ""
+  # -- Subpath within the PVC for this cluster's backups
+  subPath: ""
+  # -- Retention policy for backups (e.g., "30d", "4w", "6m")
+  retentionPolicy: "30d"

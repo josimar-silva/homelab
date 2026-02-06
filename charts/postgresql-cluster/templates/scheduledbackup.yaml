@@ -1,0 +1,16 @@
+{{- if .Values.backup.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: {{ include "postgresql-cluster.fullname" . }}-daily
+  labels:
+    {{- include "postgresql-cluster.labels" . | nindent 4 }}
+spec:
+  schedule: "0 2 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: {{ include "postgresql-cluster.fullname" . }}
+  immediate: true
+  method: barmanObjectStore
+  target: primary
+{{- end }}

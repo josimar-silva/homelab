@@ -1,6 +1,6 @@
 # postgresql-cluster
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 17.5](https://img.shields.io/badge/AppVersion-17.5-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 18.1](https://img.shields.io/badge/AppVersion-18.1-informational?style=flat-square)
 
 A Helm chart for deploying PostgreSQL clusters using CloudNativePG
 
@@ -16,6 +16,11 @@ A Helm chart for deploying PostgreSQL clusters using CloudNativePG
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| backup | object | `{"enabled":false,"retentionPolicy":"30d","subPath":"","volumeClaimName":""}` | Backup configuration |
+| backup.enabled | bool | `false` | Enable backup functionality |
+| backup.retentionPolicy | string | `"30d"` | Retention policy for backups (e.g., "30d", "4w", "6m") |
+| backup.subPath | string | `""` | Subpath within the PVC for this cluster's backups |
+| backup.volumeClaimName | string | `""` | PVC name for WAL archiving (must exist in the same namespace) |
 | description | string | `""` | Description of the Postgresql Cluster |
 | extraAnnotations | object | `{}` | Additional annotations for the PostgreSQL pods |
 | fullnameOverride | string | `""` | Override the full resource name |

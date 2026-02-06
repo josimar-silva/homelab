@@ -18,9 +18,9 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
 | automountServiceAccountToken | bool | `false` | Automatically mount service account token. Set to true for applications that need Kubernetes API access. Default is false for security (secure by default). |
-| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2025.11.1"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"additionalLabels":{},"enabled":false,"interval":"30s","metricRelabelings":[],"path":"/metrics","portName":"http-metrics","relabelings":[],"scrapeTimeout":"10s"},"replicaCount":2,"strategy":{"type":"Recreate"},"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
+| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2026.1.2"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"additionalLabels":{},"enabled":false,"interval":"30s","metricRelabelings":[],"path":"/metrics","portName":"http-metrics","relabelings":[],"scrapeTimeout":"10s"},"replicaCount":2,"strategy":{"type":"Recreate"},"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
 | cloudflared.enabled | bool | `false` | Enable Cloudflared deployment |
-| cloudflared.image | object | `{"repository":"cloudflare/cloudflared","tag":"2025.11.1"}` | Cloudflared image repository |
+| cloudflared.image | object | `{"repository":"cloudflare/cloudflared","tag":"2026.1.2"}` | Cloudflared image repository |
 | cloudflared.onepassword | object | `{"item":"","vault":"Homelab"}` | 1Password integration settings for Cloudflared credentials |
 | cloudflared.onepassword.item | string | `""` | The name of the item within the vault containing Cloudflared credentials |
 | cloudflared.onepassword.vault | string | `"Homelab"` | The name of the 1Password vault where Cloudflared credentials are stored |
