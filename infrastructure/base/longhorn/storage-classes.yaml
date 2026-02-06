@@ -47,3 +47,31 @@ parameters:
         "isGroup": false
       }
     ]'
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-database-sc
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "3"
+  staleReplicaTimeout: "30"
+  fromBackup: ""
+  fsType: "xfs"
+  diskSelector: "default-storage"
+  dataLocality: "best-effort"
+  replicaSoftAntiAffinity: "true"
+  replicaAutoBalance: "least-effort"
+  recurringJobSelector: '[
+      {
+        "name": "daily-snapshot",
+        "isGroup": false
+      },
+      {
+        "name": "weekly-volume-backup",
+        "isGroup": false
+      }
+    ]'
