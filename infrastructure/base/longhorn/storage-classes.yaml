@@ -11,7 +11,10 @@ parameters:
   staleReplicaTimeout: "30"
   fromBackup: ""
   fsType: "xfs"
-  diskSelector: "default-storage" 
+  diskSelector: "default-storage"
+  dataLocality: "best-effort"
+  replicaSoftAntiAffinity: "true"
+  replicaAutoBalance: "least-effort" 
   recurringJobSelector: '[
       {
         "name": "daily-snapshot",
@@ -37,6 +40,9 @@ parameters:
   fromBackup: ""
   fsType: "xfs"
   diskSelector: "default-storage"
+  dataLocality: "best-effort"
+  replicaSoftAntiAffinity: "true"
+  replicaAutoBalance: "least-effort"
   recurringJobSelector: '[
       {
         "name": "daily-snapshot",
