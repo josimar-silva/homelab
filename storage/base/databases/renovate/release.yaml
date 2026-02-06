@@ -51,3 +51,8 @@ spec:
       limits:
         cpu: 750m
         memory: 1Gi
+
+    backup:
+      enabled: true
+      volumeClaimName: cnpg-backups-nfs-pvc
+      retentionPolicy: "14d"
