@@ -34,9 +34,6 @@ spec:
     strategy:
       type: Recreate
 
-    nodeSelector:
-      middle-earth-cluster.from-gondor.com/category: hobbit-sm-i3
-
     persistentVolume:
       enabled: true
       storageClass: "longhorn-default-sc"
