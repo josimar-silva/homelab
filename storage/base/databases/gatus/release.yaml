@@ -38,16 +38,16 @@ spec:
     
     storage:
       size: 10Gi
-      storageClass: "longhorn-default-sc"
-    
+      storageClass: "longhorn-database-sc"
+
     loadBalancer:
       hostname: "gatus-db.from-gondor.com"
       ipPool: "homelab-database-pool"
 
     resources:
       requests:
-        cpu: 50m
-        memory: 128Mi
-      limits:
         cpu: 150m
-        memory: 192Mi
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi

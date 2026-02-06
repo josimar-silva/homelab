@@ -38,16 +38,16 @@ spec:
     
     storage:
       size: 2Gi
-      storageClass: "longhorn-default-sc"
-    
+      storageClass: "longhorn-database-sc"
+
     loadBalancer:
       hostname: "terraform-db.from-gondor.com"
       ipPool: "homelab-database-pool"
 
     resources:
       requests:
-        cpu: 50m
-        memory: 128Mi
+        cpu: 100m
+        memory: 256Mi
       limits:
-        cpu: 150m
-        memory: 192Mi
+        cpu: 500m
+        memory: 512Mi

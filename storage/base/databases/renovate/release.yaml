@@ -38,16 +38,16 @@ spec:
     
     storage:
       size: 5Gi
-      storageClass: "longhorn-default-sc"
-    
+      storageClass: "longhorn-database-sc"
+
     loadBalancer:
       hostname: "renovate-db.from-gondor.com"
       ipPool: "homelab-database-pool"
 
     resources:
       requests:
-        cpu: 50m
-        memory: 128Mi
+        cpu: 100m
+        memory: 512Mi
       limits:
-        cpu: 150m
-        memory: 192Mi
+        cpu: 750m
+        memory: 1Gi
