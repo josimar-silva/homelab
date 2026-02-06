@@ -58,14 +58,6 @@ spec:
     podSecurityContext:
       fsGroup: 1000
 
-    resources:
-      limits:
-        cpu: 2
-        memory: 1256Mi
-      requests:
-        cpu: 1
-        memory: 1Gi
-
     postgresql:
       enabled: true
       host: renovate-db-rw.cnpg-system.svc.cluster.local
