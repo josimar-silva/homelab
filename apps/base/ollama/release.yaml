@@ -32,11 +32,11 @@ spec:
 
     resources:
       limits:
-        cpu: 500m
-        memory: 1256Mi
+        cpu: 2
+        memory: 3Gi
       requests:
-        cpu: 100m
-        memory: 1Gi
+        cpu: 900m
+        memory: 2Gi
 
     ollama:
       enabled: false
