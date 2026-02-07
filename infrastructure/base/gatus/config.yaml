@@ -30,7 +30,7 @@ ui:
 
 connectivity:
   checker:
-    target: 1.1.1.1:53
+    target: 8.8.8.8:53
     interval: 1m
 
 external-http: &external
@@ -39,7 +39,7 @@ external-http: &external
   interval: 30s
   client:
     timeout: 30s
-    dns-resolver: tcp://1.1.1.1:53
+    dns-resolver: tcp://8.8.8.8:53
   conditions:
     - "[STATUS] == 200"
     - "[CERTIFICATE_EXPIRATION] > 48h"
@@ -71,7 +71,7 @@ dns-server: &dns-server
 dns-query: &dns-query
   group: DNS
   type: dns
-  url: "1.1.1.1"
+  url: "169.254.20.10"
   interval: 5m
   conditions:
     - "[DNS_RCODE] == NOERROR"
