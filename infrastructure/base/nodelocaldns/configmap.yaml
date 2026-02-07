@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-local-dns
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: node-local-dns
+    app.kubernetes.io/component: dns
+data:
+  Corefile: |
+    # Cluster DNS zone (internal services)
+    cluster.local:53 {
+        errors
+        log {
+            class error               # Log errors for security monitoring
+            class denial              # Log NXDOMAIN for reconnaissance detection
+        }
+        cache {
+            success 9984 300          # Cache successful responses for 5 minutes
+            denial 9984 30            # Cache NXDOMAIN for 30s
+            prefetch 10 1m 10%        # Prefetch popular entries
+            serve_stale 24h           # Serve stale entries if upstream fails
+        }
+        reload
+        loop
+        bind 169.254.20.10
+        forward . 10.96.0.10 {
+            expire 10s
+            policy sequential
+            force_tcp                 # Force TCP to avoid UDP packet loss and timeouts
+        }
+        prometheus :9253
+        health 169.254.20.10:8080
+    }
+
+    # Reverse DNS zones
+    in-addr.arpa:53 {
+        errors
+        log {
+            class error
+            class denial
+        }
+        cache {
+            success 9984 300
+            denial 9984 30
+            serve_stale 24h
+        }
+        reload
+        loop
+        bind 169.254.20.10
+        forward . 10.96.0.10
+        prometheus :9253
+    }
+
+    ip6.arpa:53 {
+        errors
+        log {
+            class error
+            class denial
+        }
+        cache {
+            success 9984 300
+            denial 9984 30
+            serve_stale 24h
+        }
+        reload
+        loop
+        bind 169.254.20.10
+        forward . 10.96.0.10
+        prometheus :9253
+    }
+
+    # External DNS (catch-all for internet queries)
+    .:53 {
+        errors
+        log {
+            class error               # Log errors for security monitoring
+            class denial              # Log NXDOMAIN for reconnaissance detection
+        }
+        cache {
+            success 9984 300          # Cache for 5 minutes
+            denial 9984 30            # Cache negative responses for 30s
+            prefetch 10 1m 10%        # Prefetch to keep cache warm
+            serve_stale 24h           # Serve stale entries if upstream fails
+        }
+        reload
+        loop
+        bind 169.254.20.10
+        forward . 10.96.0.10 {
+            expire 10s
+            policy sequential
+            force_tcp                 # Force TCP to avoid UDP packet loss and timeouts
+        }
+        prometheus :9253
+    }

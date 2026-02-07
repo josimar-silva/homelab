@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: node-local-dns
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: node-local-dns
+    app.kubernetes.io/component: dns
+spec:
+  podSelector:
+    matchLabels:
+      k8s-app: node-local-dns
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow DNS queries from all pods (required for DNS functionality)
+  - ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Restrict metrics endpoint to Prometheus namespace only
+  - ports:
+    - protocol: TCP
+      port: 9253
+    from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: monitoring
+  # Allow health checks from kubelet (needed for liveness/readiness probes)
+  - ports:
+    - protocol: TCP
+      port: 8080
