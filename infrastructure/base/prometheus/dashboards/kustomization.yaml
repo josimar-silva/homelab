@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - nodelocaldns-dashboard.yaml
   - jvm-dashboard.yaml
+  - cnpg-dashboard.yaml
