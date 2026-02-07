@@ -8,4 +8,5 @@ resources:
   - grafana-nginx-config.yaml
   - grafana-tunnel.yaml
   - networkpolicies.yaml
+  - dashboards
   - release.yaml
