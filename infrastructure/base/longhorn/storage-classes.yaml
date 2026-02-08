@@ -13,7 +13,7 @@ parameters:
   fsType: "xfs"
   diskSelector: "default-storage"
   dataLocality: "best-effort"
-  replicaSoftAntiAffinity: "true"
+  replicaSoftAntiAffinity: "enabled"
   replicaAutoBalance: "least-effort" 
   recurringJobSelector: '[
       {
@@ -41,7 +41,7 @@ parameters:
   fsType: "xfs"
   diskSelector: "default-storage"
   dataLocality: "best-effort"
-  replicaSoftAntiAffinity: "true"
+  replicaSoftAntiAffinity: "enabled"
   replicaAutoBalance: "least-effort"
   recurringJobSelector: '[
       {
@@ -69,7 +69,7 @@ parameters:
   fsType: "xfs"
   diskSelector: "default-storage"
   dataLocality: "best-effort"
-  replicaSoftAntiAffinity: "true"
+  replicaSoftAntiAffinity: "enabled"
   replicaAutoBalance: "least-effort"
   recurringJobSelector: '[
       {
