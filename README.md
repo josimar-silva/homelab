@@ -112,11 +112,14 @@ The cluster runs a variety of software, from infrastructure components to user-f
 
 | Application                                                              | Description                                                                 |
 | ------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| [`flash-slothmore`](https://service.berlin.de/)                          | A bot that crawls the Berlin Service Portal to find available appointments. |
-| [`hello-from-gondor`](https://hello.from-gondor.com)                     | Simple dashboard with basic cluster metrics.                                |
 | [`calibre-web-automated`](https://github.com/crocodilestick/Calibre-Web-Automated) | A self-hosted web application for browsing, reading, and downloading ebooks from Calibre library. |
+| [`flash-slothmore`](https://service.berlin.de/)                          | A bot that crawls the Berlin Service Portal to find available appointments. |
+| [`foldingathome`](https://foldingathome.org/)                            | Distributed computing for protein folding research, contributing to disease studies. |
+| [`hello-from-gondor`](https://hello.from-gondor.com)                     | Simple dashboard with basic cluster metrics.                                |
+| [`homepage`](https://gethomepage.dev/)                                   | A modern, customizable application dashboard with service monitoring and Kubernetes integration. |
 | [`linkwarden`](https://docs.linkwarden.app/)                             | A self-hosted bookmark and link management system.                          |
-| [`pi-hole`](https://pi-hole.net/)                                        | A network-wide ad blocker doubling as the LAN DNS server                    |
+| [`ollama`](https://ollama.com/)                                          | A self-hosted LLM platform with Open WebUI for running and managing AI models locally. |
+| [`pi-hole`](https://pi-hole.net/)                                        | A network-wide ad blocker doubling as the LAN DNS server.                   |
 | [`speedtest-tracker`](https://github.com/alexjustesen/speedtest-tracker) | A tool to track internet speed over time.                                   |
 
 ### Infrastructure
@@ -125,15 +128,20 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | ------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
 | [`cert-manager`](https://cert-manager.io/docs/)                                                  | Manages TLS certificates for the cluster.         |
 | [`cloudnative-pg`](https://cloudnative-pg.io/)                                                   | Manages PostgreSQL clusters in Kubernetes.        |
+| [`core-dns`](https://coredns.io/)                                                                | Customized CoreDNS configuration with TCP forwarding and enhanced caching for cluster DNS. |
+| [`flux-system`](https://fluxcd.io/docs/)                                                         | The GitOps operator that powers the cluster.      |
+| [`gatus`](https://github.com/TwiN/gatus)                                                         | Monitoring dashboard with the status of apps.      |
 | [`gateway-api`](https://gateway-api.sigs.k8s.io/)                                                | Kubernetes Gateway API CRDs for advanced traffic routing. |
-| [`nginx-gateway-fabric`](https://docs.nginx.com/nginx-gateway-fabric/)                           | NGINX implementation of Gateway API for external access with improved separation of infrastructure and application routing. |
+| [`headlamp`](https://headlamp.dev/)                                                              | Kubernetes web UI with plugins for Flux, Cert-Manager, and Trivy integration. |
 | [`internal-dns`](https://github.com/kubernetes-sigs/external-dns/)                               | An instance of external-DNS acting as a local DNS using Pi-hole as the DNS server.              |
 | [`longhorn`](https://longhorn.io/docs/)                                                          | Distributed block storage for persistent volumes. |
 | [`metallb`](https://metallb.universe.tf/)                                                        | Bare-metal load balancer for Kubernetes.          |
+| [`nginx-gateway-fabric`](https://docs.nginx.com/nginx-gateway-fabric/)                           | NGINX implementation of Gateway API for external access with improved separation of infrastructure and application routing. |
+| [`nodelocaldns`](https://kubernetes.io/docs/tasks/administer-cluster/nodelocaldns/)              | Local DNS cache running on each node to reduce DNS query latency and improve reliability. |
 | [`onepassword`](https://developer.1password.com/docs/connect)                                    | 1Password integration for managing secrets.       |
+| [`prometheus`](https://prometheus.io/)                                                           | Monitoring stack with Prometheus, Grafana, and Alertmanager for metrics collection and visualization. |
 | [`renovate`](https://docs.renovatebot.com/)                                                      | Automated dependency updates.                     |
-| [`flux-system`](https://fluxcd.io/docs/)                                                         | The GitOps operator that powers the cluster.      |
-| [`gatus`](https://github.com/TwiN/gatus)                                                         | Monitoring dashboard with the status of apps.      |
+| [`trivy-operator`](https://aquasecurity.github.io/trivy-operator/)                               | Kubernetes security operator for vulnerability scanning, compliance checks, and configuration auditing. |
 
 #### One Chart to rule them all
 
