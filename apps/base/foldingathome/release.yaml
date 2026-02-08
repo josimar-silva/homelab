@@ -1,0 +1,104 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: foldingathome-release
+  namespace: foldingathome
+spec:
+  interval: 1h # for drifting resources
+  releaseName: foldingathome
+  targetNamespace: foldingathome
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: apps
+      realm: science
+
+    nameOverride: foldingathome
+
+    image:
+      repository: "lscr.io/linuxserver/foldingathome"
+      tag: "8.5.5"
+      pullPolicy: Always
+
+    replicaCount: 1
+
+    strategy:
+      type: Recreate
+
+    persistentVolume:
+      enabled: true
+      storageClass: "longhorn-default-sc"
+      size: "2Gi"
+      mountPath: /config
+      accessModes:
+        - ReadWriteOnce
+
+    onepassword:
+      enabled: true
+      vault: "Homelab"
+      item: "Folding@Home"
+      secretName: "foldingathome-secret"
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: TZ
+            value: "UTC"
+          - name: MACHINE_NAME
+            value: "frodo"
+          - name: CLI_ARGS
+            value: "--cpus=4"
+      fromSecret:
+        enabled: true
+        secrets:
+          - foldingathome-secret
+
+    service:
+      type: ClusterIP
+      port: 7396
+
+    nodeSelector:
+      kubernetes.io/hostname: frodo
+
+    resources:
+      limits:
+        cpu: "4"
+        memory: 2Gi
+      requests:
+        cpu: "1"
+        memory: 512Mi
+
+    # Probes to check if the application is running
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      successThreshold: 1
+      failureThreshold: 3
+
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      successThreshold: 1
+      failureThreshold: 3
