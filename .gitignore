@@ -39,3 +39,5 @@ terraform.rc
 # Helm unit test files
 charts/**/tests/__snapshot__
 node_modules/
+
+wip/

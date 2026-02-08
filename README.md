@@ -101,6 +101,7 @@ The k8s cluster consists of the following nodes:
 | `pipin`   | Worker        | EliteDesk 800 G3 Mini   | hobbit-sm-i3    | Intel i3-6100T   |  16GB  | N/A           | 500GB NVMe   |
 | `merry`   | Worker        | EliteDesk 800 G3 Mini   | hobbit-sm-i3    | Intel i3-6100T   |  16GB  | N/A           | 500GB NVMe   |
 | `gollum`  | Worker        | Lenovo G400s Laptop     | hobbit-bg-i7    | Intel i7-3612QM  |  16GB  | N/A           | 1TB Sata SSD |
+| `frodo`   | Worker        | Custom Build            | hobbit-bg-r7    | AMD Ryzen 7 5700 |  32GB  | N/A           | 500GB NVMe   |
 | `saruman` | LLM Server    | Custom Build            | N/A             | AMD Ryzen 8600G  | 128GB  | NVIDIA 3090   | 1TB NVMe     |
 
 ## Software
