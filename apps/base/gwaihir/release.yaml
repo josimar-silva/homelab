@@ -1,0 +1,116 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gwaihir-release
+  namespace: gwaihir
+spec:
+  interval: 1h
+  releaseName: gwaihir
+  targetNamespace: gwaihir
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    homelab:
+      category: infrastructure
+      realm: ai
+
+    nameOverride: gwaihir
+
+    image:
+      repository: ghcr.io/josimar-silva/gwaihir
+      tag: v0.1.0
+
+    replicaCount: 1
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 50%
+
+    hostNetwork: true
+
+    dns:
+      enabled: true
+      policy: ClusterFirstWithHostNet
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: GWAIHIR_CONFIG
+            value: /etc/gwaihir/machines.yaml
+          - name: LOG_JSON
+            value: "true"
+          - name: GIN_MODE
+            value: "release"
+          - name: GWAIHIR_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: gwaihir-api-key
+                key: API_KEY
+
+    onepassword:
+      enabled: true
+      vault: Homelab
+      item: Gwaihir API Key
+      secretName: gwaihir-api-key
+
+    volumes:
+      - name: config
+        configMap:
+          name: gwaihir-config
+
+    volumeMounts:
+      - name: config
+        mountPath: /etc/gwaihir
+
+    service:
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 8080
+          containerPort: 8080
+
+    prometheus:
+      enabled: true
+      portName: http
+      path: /metrics
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+    livenessProbe:
+      httpGet:
+        path: /live
+        port: http
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 10
+
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: http
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
+
+    securityContext:
+      privileged: false

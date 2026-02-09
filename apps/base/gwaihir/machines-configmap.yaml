@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gwaihir-config
+  namespace: gwaihir
+data:
+  machines.yaml: |
+    machines:
+      - id: saruman
+        name: "Saruman LLM Server"
+        mac: "e8:9c:25:a8:13:bc"
+        broadcast: "192.168.68.255"
