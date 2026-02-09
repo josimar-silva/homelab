@@ -209,6 +209,10 @@ dns:
   #     - name: ndots
   #       value: '5'
 
+# -- Host network configuration
+# -- Use the host's network namespace. Required for applications that need broadcast or raw socket access.
+hostNetwork: false
+
 # -- Resource requests and limits
 resources: {}
   # limits:

@@ -811,3 +811,65 @@ tests:
       - equal:
           path: spec.template.spec.automountServiceAccountToken
           value: true
+
+  - it: should not render hostNetwork when hostNetwork is false (default)
+    set:
+      image.tag: "1.16.0"
+      hostNetwork: false
+    asserts:
+      - isKind:
+          of: Deployment
+      - notExists:
+          path: spec.template.spec.hostNetwork
+
+  - it: should render hostNetwork when hostNetwork is true
+    set:
+      image.tag: "1.16.0"
+      hostNetwork: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.hostNetwork
+          value: true
+
+  - it: should render hostNetwork with dnsPolicy when both are set
+    set:
+      image.tag: "1.16.0"
+      hostNetwork: true
+      dns:
+        enabled: true
+        policy: ClusterFirstWithHostNet
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.hostNetwork
+          value: true
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: ClusterFirstWithHostNet
+
+  - it: should not render dnsPolicy when dns.enabled is false
+    set:
+      image.tag: "1.16.0"
+      dns:
+        enabled: false
+    asserts:
+      - isKind:
+          of: Deployment
+      - notExists:
+          path: spec.template.spec.dnsPolicy
+
+  - it: should render dnsPolicy when dns.enabled is true and dns.policy is set
+    set:
+      image.tag: "1.16.0"
+      dns:
+        enabled: true
+        policy: ClusterFirstWithHostNet
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: ClusterFirstWithHostNet

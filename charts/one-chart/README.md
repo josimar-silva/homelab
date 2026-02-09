@@ -1,6 +1,6 @@
 # one-chart
 
-![Version: 0.14.1](https://img.shields.io/badge/Version-0.14.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.15.0](https://img.shields.io/badge/Version-0.15.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 One chart to rule them all. One chart to pack them. One chart to bring them all and in the YAMLness bind them.
 
@@ -18,9 +18,9 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
 | automountServiceAccountToken | bool | `false` | Automatically mount service account token. Set to true for applications that need Kubernetes API access. Default is false for security (secure by default). |
-| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2026.1.2"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"additionalLabels":{},"enabled":false,"interval":"30s","metricRelabelings":[],"path":"/metrics","portName":"http-metrics","relabelings":[],"scrapeTimeout":"10s"},"replicaCount":2,"strategy":{"type":"Recreate"},"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
+| cloudflared | object | `{"enabled":false,"image":{"repository":"cloudflare/cloudflared","tag":"2026.2.0"},"onepassword":{"item":"","vault":"Homelab"},"podAnnotations":{},"podLabels":{},"prometheus":{"additionalLabels":{},"enabled":false,"interval":"30s","metricRelabelings":[],"path":"/metrics","portName":"http-metrics","relabelings":[],"scrapeTimeout":"10s"},"replicaCount":2,"strategy":{"type":"Recreate"},"tunnel":{"localHostname":"","name":"","publicHostname":""}}` | Cloudflared settings |
 | cloudflared.enabled | bool | `false` | Enable Cloudflared deployment |
-| cloudflared.image | object | `{"repository":"cloudflare/cloudflared","tag":"2026.1.2"}` | Cloudflared image repository |
+| cloudflared.image | object | `{"repository":"cloudflare/cloudflared","tag":"2026.2.0"}` | Cloudflared image repository |
 | cloudflared.onepassword | object | `{"item":"","vault":"Homelab"}` | 1Password integration settings for Cloudflared credentials |
 | cloudflared.onepassword.item | string | `""` | The name of the item within the vault containing Cloudflared credentials |
 | cloudflared.onepassword.vault | string | `"Homelab"` | The name of the 1Password vault where Cloudflared credentials are stored |
@@ -48,6 +48,7 @@ One chart to rule them all. One chart to pack them. One chart to bring them all 
 | homelab | object | `{"category":"apps","realm":"playground"}` | Homelab settings |
 | homelab.category | string | `"apps"` | Homelab category label. Defaults to "apps". |
 | homelab.realm | string | `"playground"` | Homelab realm label. Defaults to "playground". |
+| hostNetwork | bool | `false` | Use the host's network namespace. Required for applications that need broadcast or raw socket access. |
 | httpRoute | object | `{"annotations":{},"enabled":false,"hostnames":["chart-example.local"],"parentRef":{"name":"internal-gateway","namespace":"ingress-nginx"},"rules":[{"matches":[{"path":"/","pathType":"PathPrefix"}],"port":80}]}` | HTTPRoute configuration for Gateway API |
 | httpRoute.annotations | object | `{}` | Annotations for the HTTPRoute |
 | httpRoute.enabled | bool | `false` | Enable HTTPRoute (Gateway API) |
