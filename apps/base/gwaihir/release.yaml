@@ -47,6 +47,8 @@ spec:
       container:
         enabled: true
         variables:
+          - name: GWAIHIR_PRODUCTION
+            value: "true"
           - name: GWAIHIR_CONFIG
             value: /etc/gwaihir/machines.yaml
           - name: LOG_JSON
