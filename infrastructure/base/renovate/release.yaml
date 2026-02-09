@@ -22,7 +22,7 @@ spec:
       mendRnvAcceptTos: y
       mendRnvPlatform: github
       mendRnvGithubBotUserId: "215854695"
-      mendRnvAutoDiscoverFilter: "josimar-silva/homelab,josimar-silva/blog,josimar-silva/kaizen"
+      mendRnvAutoDiscoverFilter: "josimar-silva/homelab,josimar-silva/blog,josimar-silva/kaizen,josimar-silva/gwaihir,josimar-silva/smaug"
       existingSecret: mend-renovate
       logLevel: warn
       extraEnvVars:
