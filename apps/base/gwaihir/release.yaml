@@ -47,6 +47,8 @@ spec:
       container:
         enabled: true
         variables:
+          - name: PORT
+            value: "9600"
           - name: GWAIHIR_PRODUCTION
             value: "true"
           - name: GWAIHIR_CONFIG
@@ -80,8 +82,9 @@ spec:
       type: ClusterIP
       ports:
         - name: http
-          port: 49252
-          containerPort: 8080
+          port: 9600
+          containerPort: 9600
+          hostPort: 9600
 
     prometheus:
       enabled: true
