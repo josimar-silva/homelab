@@ -105,6 +105,60 @@ tests:
           path: spec.template.spec.containers[0].ports[1].containerPort
           value: 9090
 
+  - it: should render container ports with hostPort when specified
+    set:
+      service:
+        ports:
+          - name: http
+            port: 8080
+            containerPort: 8080
+            hostPort: 9600
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: http
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 8080
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].hostPort
+          value: 9600
+
+  - it: should not render hostPort when not specified
+    set:
+      service:
+        ports:
+          - name: http
+            port: 8080
+            containerPort: 8080
+    asserts:
+      - isKind:
+          of: Deployment
+      - notExists:
+          path: spec.template.spec.containers[0].ports[0].hostPort
+
+  - it: should render multiple ports with some having hostPort
+    set:
+      service:
+        ports:
+          - name: http
+            port: 8080
+            containerPort: 8080
+            hostPort: 9600
+          - name: metrics
+            port: 9090
+            containerPort: 9090
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].hostPort
+          value: 9600
+      - notExists:
+          path: spec.template.spec.containers[0].ports[1].hostPort
+
   - it: should fall back to service.port when service.ports is empty
     set:
       service:
