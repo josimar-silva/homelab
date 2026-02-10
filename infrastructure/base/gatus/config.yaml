@@ -94,6 +94,12 @@ endpoints:
     <<: *internal
     url: http://saruman.from-gondor.com:11434
 
+  - name: Gwaihir
+    <<: *internal
+    url: http://gwaihir.gwaihir.svc.cluster.local:9600/version
+    client:
+      dns-resolver: tcp://169.254.20.10:53
+
   - name: Longhorn
     <<: *internal
     url: http://longhorn.homelab.lan/
