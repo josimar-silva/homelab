@@ -6,3 +6,6 @@ metadata:
   labels:
     middle-earth-cluster.homelab/category: infrastructure
     middle-earth-cluster.homelab/realm: ai
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged

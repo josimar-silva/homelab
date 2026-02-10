@@ -80,7 +80,7 @@ spec:
       type: ClusterIP
       ports:
         - name: http
-          port: 8080
+          port: 49252
           containerPort: 8080
 
     prometheus:
