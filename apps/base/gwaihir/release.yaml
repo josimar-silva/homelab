@@ -28,7 +28,7 @@ spec:
 
     image:
       repository: ghcr.io/josimar-silva/gwaihir
-      tag: 0.1.0
+      tag: 0.2.0
 
     replicaCount: 1
 
@@ -47,16 +47,10 @@ spec:
       container:
         enabled: true
         variables:
-          - name: PORT
-            value: "9600"
-          - name: GWAIHIR_PRODUCTION
-            value: "true"
           - name: GWAIHIR_CONFIG
-            value: /etc/gwaihir/machines.yaml
-          - name: LOG_JSON
-            value: "true"
-          - name: GIN_MODE
-            value: "release"
+            value: /etc/gwaihir/gwaihir.yaml
+          - name: GWAIHIR_PORT
+            value: "9600"
           - name: GWAIHIR_API_KEY
             valueFrom:
               secretKeyRef:
