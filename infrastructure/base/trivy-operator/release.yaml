@@ -11,7 +11,7 @@ spec:
     spec:
       #renovate: registryUrl=https://aquasecurity.github.io/helm-charts/
       chart: trivy-operator
-      version: 0.31.0
+      version: 0.32.0
       interval: 12h # Check for new chart versions every 12 hours
       sourceRef:
         kind: HelmRepository
