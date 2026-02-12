@@ -185,8 +185,13 @@ spec:
     # ============================================
     # Node Collector (DaemonSet)
     # ============================================
+    # DISABLED: node-collector requires privileged access (hostPID=true, hostPath volumes)
+    # which conflicts with the restricted PodSecurity policy enforced on trivy-system namespace.
+    # This disables CIS Benchmark node-level compliance scanning but maintains all other
+    # security scanning capabilities (vulnerabilities, config audits, RBAC assessment, etc.)
+    # Re-enable only if you need node-level compliance scanning and can relax PSS to privileged.
     nodeCollector:
-      enabled: true
+      enabled: false
       # Resource limits for node collector
       resources:
         requests:
