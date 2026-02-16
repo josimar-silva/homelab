@@ -1,0 +1,187 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: smaug-release
+  namespace: ai
+  labels:
+    app.kubernetes.io/name: smaug
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  interval: 1h
+  releaseName: smaug
+  targetNamespace: smaug
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    recreate: true
+    cleanupOnFail: true
+  values:
+    homelab:
+      category: apps
+      realm: networking
+
+    nameOverride: smaug
+
+    image:
+      repository: ghcr.io/josimar-silva/smaug
+      tag: 0.1.0-SNAPSHOT
+
+    replicaCount: 1
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+
+    dns:
+      enabled: true
+      config:
+        nameservers:
+          - 192.168.68.201
+          - 192.168.68.116
+        options:
+          - name: ndots
+            value: "2"
+          - name: timeout
+            value: "5"
+          - name: attempts
+            value: "3"
+
+    environmentVariables:
+      container:
+        enabled: true
+        variables:
+          - name: SMAUG_CONFIG
+            value: /etc/smaug/smaug.yaml
+      fromSecret:
+        enabled: true
+        secrets:
+          - smaug-secret
+
+    onepassword:
+      enabled: true
+      vault: Homelab
+      item: Smaug
+      secretName: smaug-secret
+
+    volumes:
+      - name: config
+        configMap:
+          name: smaug-config
+          defaultMode: 0444
+
+    volumeMounts:
+      - name: config
+        mountPath: /etc/smaug
+        readOnly: true
+
+    service:
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 9091
+          containerPort: 9091
+          protocol: TCP
+        - name: metrics
+          port: 9090
+          containerPort: 9090
+          protocol: TCP
+        - name: ollama
+          port: 11434
+          containerPort: 11434
+          protocol: TCP
+
+    prometheus:
+      enabled: true
+      portName: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: namespace
+          action: replace
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+          action: replace
+        - sourceLabels: [__meta_kubernetes_service_name]
+          targetLabel: service
+          action: replace
+        - sourceLabels: [__meta_kubernetes_pod_ip]
+          targetLabel: instance
+          action: replace
+        - targetLabel: job
+          replacement: smaug
+          action: replace
+      metricRelabelings:
+        - targetLabel: environment
+          replacement: homelab
+          action: replace
+        - targetLabel: cluster
+          replacement: middle-earth
+          action: replace
+
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      successThreshold: 1
+      failureThreshold: 5
+      timeoutSeconds: 5
+
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: http
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+      timeoutSeconds: 5
+
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
+      runAsGroup: 65532
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+
+    podSecurityContext:
+      fsGroup: 65532
+      seccompProfile:
+        type: RuntimeDefault
+
+    podLabels:
+      app.kubernetes.io/name: smaug
+      app.kubernetes.io/component: proxy
+      middle-earth-cluster.homelab/category: apps
+      middle-earth-cluster.homelab/realm: networking
