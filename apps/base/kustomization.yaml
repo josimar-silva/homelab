@@ -10,4 +10,5 @@ resources:
   - linkwarden
   - ollama
   - pi-hole
+  - smaug
   - speedtest-tracker

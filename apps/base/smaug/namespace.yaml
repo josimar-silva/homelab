@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: smaug
+  labels:
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+    network-policy.kubernetes.io/enforce: "true"

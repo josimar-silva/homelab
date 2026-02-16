@@ -1,0 +1,235 @@
+---
+# NetworkPolicy for Smaug
+# Implements least-privilege network access
+
+# 1. Default Deny All Ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smaug-default-deny-ingress
+  namespace: smaug
+  labels:
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  # Empty ingress rules = deny all by default
+
+---
+# 2. Allow Smaug Egress to Gwaihir (WoL operations)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smaug-to-gwaihir
+  namespace: smaug
+  labels:
+    app.kubernetes.io/name: smaug
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: smaug
+  policyTypes:
+    - Egress
+  egress:
+    # Allow connection to Gwaihir service in Gwaihir namespace
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: Gwaihir
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: Gwaihir
+      ports:
+        - protocol: TCP
+          port: 9600
+
+---
+# 3. Allow Smaug Egress to DNS
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smaug-to-dns
+  namespace: smaug
+  labels:
+    app.kubernetes.io/name: smaug
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: smaug
+  policyTypes:
+    - Egress
+  egress:
+    # Allow DNS queries to kube-dns/CoreDNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow DNS queries to external resolvers (Talos nodes)
+    - to:
+        - ipBlock:
+            cidr: 192.168.68.0/24
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# 4. Allow Smaug Egress to Saruman (backend server)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smaug-to-saruman
+  namespace: smaug
+  labels:
+    app.kubernetes.io/name: smaug
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: smaug
+  policyTypes:
+    - Egress
+  egress:
+    # Allow connection to Saruman server (external, homelab network)
+    # IP range for from-gondor.com domain
+    - to:
+        - ipBlock:
+            cidr: 192.168.68.0/24
+      ports:
+        - protocol: TCP
+          port: 11434  # Ollama API
+
+---
+# 5. Allow Ingress from OpenWebUI to Smaug
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smaug-from-openwebui
+  namespace: smaug
+  labels:
+    app.kubernetes.io/name: smaug
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: smaug
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow connections from OpenWebUI in ollama namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ollama
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: open-webui
+      ports:
+        - protocol: TCP
+          port: 11434  # Ollama service port
+        - protocol: TCP
+          port: 9091   # Management port 
+
+---
+# 6. Allow Ingress from Prometheus to Smaug Metrics
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smaug-from-prometheus
+  namespace: smaug
+  labels:
+    app.kubernetes.io/name: smaug
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: smaug
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow Prometheus scraping from monitoring namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090  # Metrics port
+
+---
+# 7. Allow Ingress to Smaug for Health Checks
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smaug-health-checks
+  namespace: smaug
+  labels:
+    app.kubernetes.io/name: smaug
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: smaug
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow kubelet health checks from all nodes
+    - from:
+        - ipBlock:
+            cidr: 192.168.68.0/24  # Node network
+      ports:
+        - protocol: TCP
+          port: 9091  # Health/readiness endpoints
+
+---
+# 8. Allow Smaug Internal Communication (for multi-replica if needed)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smaug-internal
+  namespace: smaug
+  labels:
+    app.kubernetes.io/name: smaug
+    middle-earth-cluster.homelab/category: apps
+    middle-earth-cluster.homelab/realm: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: smaug
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow communication between smaug pods
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: smaug
+  egress:
+    # Allow communication between smaug pods
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: smaug
