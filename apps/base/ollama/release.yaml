@@ -11,7 +11,7 @@ spec:
     spec:
       #renovate: registryUrl=https://helm.openwebui.com
       chart: open-webui
-      version: 12.1.1
+      version: 12.2.0
       sourceRef:
         kind: HelmRepository
         name: open-webui
