@@ -50,6 +50,7 @@ data:
         
         healthCheck:
           endpoint: "http://saruman.from-gondor.com:8009/state/local"
+          authToken: "${SLEEP_ON_LAN_TOKEN}"
           interval: 10s
           timeout: 2s
 
