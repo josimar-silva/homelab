@@ -5,6 +5,33 @@ metadata:
   namespace: kube-system
 data:
   Corefile: |
+    # Stub zone: forward all *.from-gondor.com queries to PiHole.
+    # This makes local A records managed in PiHole (e.g. saruman.from-gondor.com -> 192.168.68.106)
+    # resolvable from within pods without routing ALL DNS through PiHole.
+    # PiHole endpoints: primary LoadBalancer 192.168.68.201, replica-01 192.168.68.116,
+    # replica-02 192.168.68.111. All listen on port 53 (TCP and UDP).
+    from-gondor.com:53 {
+        errors
+        log . {
+            class error
+            class denial
+        }
+        cache {
+            success 9984 300          # Cache positive answers for 5 min (matches PiHole default TTL)
+            denial 9984 30            # Cache NXDOMAIN for 30s
+        }
+        # Forward to all three PiHole instances in priority order.
+        # sequential: tries primary first, fails over to replicas only on error/timeout.
+        forward . 192.168.68.201 192.168.68.116 192.168.68.111 {
+            max_concurrent 1000
+            force_tcp                 # TCP for reliability; PiHole supports TCP on port 53
+            expire 10s
+            policy sequential
+            health_check 5s
+        }
+        reload
+    }
+
     .:53 {
         errors
         health {
