@@ -45,7 +45,7 @@ spec:
       enabled: false
       
     ollamaUrls:
-      - http://ollama-proxy.ollama.svc.cluster.local
+      - http://smaug.smaug.svc.cluster.local:11434
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
