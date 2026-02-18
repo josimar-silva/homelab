@@ -34,11 +34,10 @@ data:
 
     # Servers definitions
     servers:
-      saruman:
-        mac: "00:11:22:33:44:55"  # MAC address for WoL
-        broadcast: "192.168.68.255"  # Broadcast IP for WoL      
+      saruman:     
         wakeOnLan:
           enabled: true
+          machineId: saruman
           timeout: 60s
           debounce: 5s 
 

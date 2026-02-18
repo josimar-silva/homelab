@@ -50,7 +50,7 @@ spec:
       config:
         nameservers:
           - 192.168.68.201
-          - 192.168.68.116
+          - 169.254.20.10
         searches:
           - smaug.svc.cluster.local
           - svc.cluster.local
