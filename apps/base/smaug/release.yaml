@@ -33,7 +33,7 @@ spec:
 
     image:
       repository: ghcr.io/josimar-silva/smaug
-      tag: 0.2.0
+      tag: 0.2.1
       pullPolicy: Always
 
     replicaCount: 1
