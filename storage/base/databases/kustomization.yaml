@@ -7,3 +7,4 @@ resources:
   - linkwarden
   - terraform
   - gatus
+  - firefly-iii
