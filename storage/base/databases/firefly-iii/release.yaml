@@ -1,0 +1,58 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: firefly-iii-db
+  namespace: cnpg-system
+spec:
+  interval: 1h
+  releaseName: firefly-iii-db
+  targetNamespace: cnpg-system
+  
+  chartRef:
+    kind: HelmChart
+    name: postgresql-cluster
+    namespace: flux-system
+  
+  install:
+    createNamespace: false
+    remediation: 
+      retries: 3
+  
+  upgrade:
+    remediation:
+      retries: 3
+  
+  values:
+    nameOverride: firefly-iii-db
+
+    instances: 1
+
+    postgresql:
+      database:
+        name: firefly-iii
+        owner: firefly-iii
+      onepassword:
+        enabled: true
+        item: "[Database] Firefly III"
+        secretName: firefly-iii-db
+    
+    storage:
+      size: 10Gi
+      storageClass: "longhorn-database-sc"
+
+    loadBalancer:
+      hostname: "firefly-db.from-gondor.com"
+      ipPool: "homelab-database-pool"
+
+    resources:
+      requests:
+        cpu: 150m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+    backup:
+      enabled: true
+      volumeClaimName: cnpg-backups-nfs-pvc
+      retentionPolicy: "90d"
