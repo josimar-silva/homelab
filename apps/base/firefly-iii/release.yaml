@@ -1,0 +1,63 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: firefly-iii-release
+  namespace: firefly-iii
+spec:
+  interval: 1h # for drifting resources
+  releaseName: firefly-iii
+  targetNamespace: firefly-iii
+
+  chart:
+    spec:
+      #renovate: registryUrl=https://firefly-iii.github.io/kubernetes
+      chart: firefly-iii-stack
+      version: 0.9.x
+      interval: 12h
+      sourceRef:
+        kind: HelmRepository
+        name: firefly-iii
+        namespace: flux-system
+
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  
+  upgrade:
+    remediation:
+      retries: 3
+
+  values:
+    firefly-iii:
+      enabled: true
+      config:
+        existingSecret: firefly-credentials
+        env:
+          DB_HOST: "firefly-db.from-gondor.com"
+          DEFAULT_LANGUAGE: "en_US"
+          DEFAULT_LOCALE: "equal"
+          TZ: "Europe/Berlin"
+          TRUSTED_PROXIES: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      persistence:
+        enabled: true
+        storageClassName: default
+        size: 2Gi
+      cronjob:
+        enabled: true
+        auth:
+          existingSecret: firefly-credentials
+          secretKey: STATIC_CRON_TOKEN
+
+    firefly-db:
+      enabled: false
+
+    importer:
+      enabled: true
+      firefly-iii:
+        url: "http://firefly-iii.firefly-iii.svc.cluster.local:80"
+        vanityUrl: "https://budget.from-gondor.com"
+      config:
+        existingSecret: firefly-credentials
+        env:
+          TZ: "Europe/Berlin"
