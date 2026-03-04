@@ -57,18 +57,6 @@ tests:
         equal:
           path: spec.backup.retentionPolicy
           value: "30d"
-      - template: cluster.yaml
-        equal:
-          path: spec.additionalVolumes[0].name
-          value: backup-volume
-      - template: cluster.yaml
-        equal:
-          path: spec.additionalVolumes[0].persistentVolumeClaim.claimName
-          value: cnpg-backups-nfs-pvc
-      - template: cluster.yaml
-        equal:
-          path: spec.additionalVolumeMounts[0].mountPath
-          value: /backups
       - template: scheduledbackup.yaml
         isKind:
           of: ScheduledBackup

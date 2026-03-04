@@ -1,6 +1,6 @@
 # postgresql-cluster
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 18.1](https://img.shields.io/badge/AppVersion-18.1-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 18.1](https://img.shields.io/badge/AppVersion-18.1-informational?style=flat-square)
 
 A Helm chart for deploying PostgreSQL clusters using CloudNativePG
 
@@ -27,10 +27,10 @@ A Helm chart for deploying PostgreSQL clusters using CloudNativePG
 | homelab | object | `{"category":"database","realm":"storage"}` | Homelab settings |
 | homelab.category | string | `"database"` | Homelab category label. Defaults to "database". |
 | homelab.realm | string | `"storage"` | Homelab realm label. Defaults to "storage". |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/cloudnative-pg/postgresql","tag":18.1}` | Database image settings |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/cloudnative-pg/postgresql","tag":18.3}` | Database image settings |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/cloudnative-pg/postgresql"` | Container image repository |
-| image.tag | float | `18.1` | Overrides the image tag whose default is the chart appVersion |
+| image.tag | float | `18.3` | Overrides the image tag whose default is the chart appVersion |
 | instances | int | `1` | Number of instances in the cluster |
 | loadBalancer | object | `{"hostname":"","ipPool":""}` | LoadBalancer service settings |
 | loadBalancer.hostname | string | `""` | Hostname for the LoadBalancer service (used by ExternalDNS) |

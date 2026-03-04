@@ -35,7 +35,6 @@ spec:
 
   superuserSecret:
     name: {{ .Values.postgresql.onepassword.secretName | default (printf "%s-postgresql-onepassword" .Release.Name) }}
-    key: password
   
   postgresql:
     parameters:
@@ -73,16 +72,6 @@ spec:
     limits:
       cpu: {{ .Values.resources.limits.cpu }}
       memory: {{ .Values.resources.limits.memory }}
-
-  {{- if .Values.backup.enabled }}
-  additionalVolumes:
-    - name: backup-volume
-      persistentVolumeClaim:
-        claimName: {{ .Values.backup.volumeClaimName }}
-  additionalVolumeMounts:
-    - name: backup-volume
-      mountPath: /backups
-  {{- end }}
 
   # -- Define the database to be created
   bootstrap:
