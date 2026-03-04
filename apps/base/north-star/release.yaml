@@ -1,0 +1,100 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: north-star-release
+  namespace: north-star
+spec:
+  interval: 1h
+  releaseName: north-star
+  targetNamespace: north-star
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    recreate: true
+    cleanupOnFail: true
+  values:
+    homelab:
+      category: apps
+      realm: productivity
+
+    nameOverride: north-star
+
+    image:
+      repository: ghcr.io/josimar-silva/north-star
+      tag: 2026.03
+
+    imagePullSecrets:
+      - name: ghcr-auth
+
+    replicaCount: 1
+
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+    
+    service:
+      type: LoadBalancer
+      ports:
+        - name: http
+          port: 3000
+          containerPort: 3000
+
+    httpRoute:
+      enabled: true
+      parentRef:
+        name: internal-gateway
+        namespace: ingress-nginx
+        sectionName: https-internal
+      hostnames:
+        - north-star.internal.from-gondor.com
+      rules:
+        - matches:
+            - path: /
+          port: 3000
+
+    prometheus:
+      enabled: false
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 25m
+        memory: 64Mi
+
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      successThreshold: 1
+      failureThreshold: 5
+      timeoutSeconds: 5
+
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+      timeoutSeconds: 5

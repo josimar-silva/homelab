@@ -9,6 +9,7 @@ resources:
   - hello-from-gondor
   - homepage
   - linkwarden
+  - north-star
   - ollama
   - pi-hole
   - smaug
