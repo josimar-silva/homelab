@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "postgresql-cluster.labels" . | nindent 4 }}
 spec:
-  description: {{ .Values.description }}
+  {{- with .Values.description }}
+  description: {{ . }}
+  {{- end }}
 
   instances: {{ .Values.instances }}
   
@@ -23,10 +25,10 @@ spec:
   {{- end }}
 
   inheritedMetadata:
+    {{- with .Values.extraAnnotations }}
     annotations:
-      {{- with .Values.extraAnnotations }}
       {{- toYaml . | nindent 6 }}
-      {{- end }}
+    {{- end }}
     labels:
       {{- include "postgresql-cluster.labels" . | nindent 6 }}
 
