@@ -34,7 +34,7 @@ spec:
       onepassword:
         enabled: true
         item: "[Database] Firefly III"
-        secretName: firefly-iii-db
+        secretName: firefly-credentials
     
     storage:
       size: 10Gi
