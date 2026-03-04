@@ -25,7 +25,7 @@ spec:
   values:
     nameOverride: firefly-iii-db
 
-    instances: 1
+    instances: 2
 
     postgresql:
       database:
@@ -34,7 +34,7 @@ spec:
       onepassword:
         enabled: true
         item: "[Database] Firefly III"
-        secretName: firefly-credentials
+        secretName: firefly-iii-db
     
     storage:
       size: 10Gi
