@@ -309,7 +309,7 @@ cloudflared:
   # -- Cloudflared image repository
   image:
     repository: cloudflare/cloudflared
-    tag: 2026.2.0
+    tag: 2026.3.0
   # -- Deployment strategy
   strategy:
     type: Recreate
