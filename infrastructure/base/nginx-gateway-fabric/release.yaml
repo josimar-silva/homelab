@@ -31,6 +31,16 @@ spec:
         enable: false
     nginx:
       replicas: 2
+      pod:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: kubernetes.io/hostname
+                      operator: NotIn
+                      values:
+                        - gollum
       service:
         type: LoadBalancer
         annotations:
