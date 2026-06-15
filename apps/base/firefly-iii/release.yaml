@@ -12,7 +12,7 @@ spec:
     spec:
       #renovate: registryUrl=https://firefly-iii.github.io/kubernetes
       chart: firefly-iii-stack
-      version: 0.9.x
+      version: 0.10.x
       interval: 12h
       sourceRef:
         kind: HelmRepository
