@@ -35,7 +35,7 @@ spec:
 
     image:
       repository: nginx
-      tag: 1.31.1-alpine  # Pinned version for security and stability
+      tag: 1.31.2-alpine  # Pinned version for security and stability
       pullPolicy: IfNotPresent
 
     service:
