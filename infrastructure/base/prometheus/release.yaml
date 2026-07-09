@@ -60,7 +60,7 @@ spec:
         additionalLabels:
           prometheus: kube-prometheus-stack
       prometheusSpec:
-        retention: 30d
+        retention: 15d
 
     # ============================================
     # Prometheus Server Configuration
@@ -76,8 +76,8 @@ spec:
         maximumStartupDurationSeconds: 60
 
         # Retention and storage
-        retention: 30d
-        retentionSize: "45GB"
+        retention: 15d
+        retentionSize: "30GB"
 
         # Resource requests/limits
         resources:
