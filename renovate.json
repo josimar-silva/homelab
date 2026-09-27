@@ -85,5 +85,17 @@
       ],
       "datasourceTemplate": "github-releases"
     }
+  ],
+  "packageRules": [
+    {
+      "description": "LinuxServer images (lscr.io proxies ghcr.io) publish thousands of arch-prefixed and -lsNNN tags; track clean upstream semver only and page deep enough to reach the most recent tags",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "lscr.io/linuxserver/**"
+      ],
+      "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
+    }
   ]
 }
