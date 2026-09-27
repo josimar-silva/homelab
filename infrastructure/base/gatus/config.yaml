@@ -135,6 +135,10 @@ endpoints:
     <<: *internal
     url: https://pgadmin.from-gondor.com/login
 
+  - name: Excalidraw
+    <<: *internal
+    url: https://excalidraw.internal.from-gondor.com
+
   - name: Headlamp
     <<: *internal
     url: https://headlamp.from-gondor.com
