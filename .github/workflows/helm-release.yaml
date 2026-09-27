@@ -49,7 +49,7 @@ jobs:
       - name: "⎈ Set up Helm"
         uses: d3adb5/helm-unittest-action@985d798b675caa501251573380b5e026ff768c50 # v2
         with:
-          helm-version: '3.10.0'
+          helm-version: '3.22.0'
           github-token: ${{ secrets.GITHUB_TOKEN }}
     
       - name: "🔍 Lint chart ${{ matrix.chart }}"
