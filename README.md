@@ -113,6 +113,7 @@ The cluster runs a variety of software, from infrastructure components to user-f
 | Application                                                              | Description                                                                 |
 | ------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
 | [`calibre-web-automated`](https://github.com/crocodilestick/Calibre-Web-Automated) | A self-hosted web application for browsing, reading, and downloading ebooks from Calibre library. |
+| [`excalidraw`](https://github.com/excalidraw/excalidraw)                  | A virtual whiteboard for sketching hand-drawn-style diagrams.               |
 | [`flash-slothmore`](https://service.berlin.de/)                          | A bot that crawls the Berlin Service Portal to find available appointments. |
 | [`foldingathome`](https://foldingathome.org/)                            | Distributed computing for protein folding research, contributing to disease studies. |
 | [`hello-from-gondor`](https://hello.from-gondor.com)                     | Simple dashboard with basic cluster metrics.                                |
