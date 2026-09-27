@@ -13,6 +13,11 @@
         href: https://linkwarden.from-gondor.com/
         description: Bookmark manager
 
+    - Excalidraw:
+        icon: mdi-draw
+        href: https://excalidraw.internal.from-gondor.com
+        description: Virtual whiteboard for sketching diagrams
+
     - Home Assistant:
         icon: mdi-home-assistant
         href: http://ha.homelab.lan:8123/
