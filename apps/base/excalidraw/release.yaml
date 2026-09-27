@@ -1,0 +1,99 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: excalidraw-release
+  namespace: excalidraw
+spec:
+  interval: 1h # for drifting resources
+  releaseName: excalidraw
+  targetNamespace: excalidraw
+  chartRef:
+    kind: HelmChart
+    name: one-chart
+    namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    recreate: true
+    cleanupOnFail: true
+  values:
+    homelab:
+      category: apps
+      realm: productivity
+
+    nameOverride: excalidraw
+
+    # Upstream only publishes a moving `latest` tag (plus stale sha-* tags),
+    # so the image is pinned by its multi-arch manifest digest.
+    image:
+      repository: "excalidraw/excalidraw"
+      tag: "latest@sha256:f7ee194addd607bf831d2af0f0a34463dd4225e426cf35199ef0b12a803398e9"
+
+    replicaCount: 1
+
+    # Stateless static SPA (nginx); drawings live in the browser's
+    # local storage, so no persistent volume is needed.
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+
+    service:
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 80
+          containerPort: 80
+
+    httpRoute:
+      enabled: true
+      parentRef:
+        name: internal-gateway
+        namespace: ingress-nginx
+        sectionName: https-internal
+      hostnames:
+        - excalidraw.internal.from-gondor.com
+      rules:
+        - matches:
+            - path: /
+          port: 80
+
+    prometheus:
+      enabled: false
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 15
+      successThreshold: 1
+      failureThreshold: 5
+      timeoutSeconds: 5
+
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      failureThreshold: 3
+      timeoutSeconds: 5
