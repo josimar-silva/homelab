@@ -50,4 +50,12 @@ sm
 unittest
 Uptime
 viele
+Alertmanager
+CoreDNS
+customizable
+Grafana
+TCP
+Trivy
+UI
+WebUI
 
