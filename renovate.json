@@ -88,12 +88,12 @@
   ],
   "packageRules": [
     {
-      "description": "LinuxServer images (lscr.io proxies ghcr.io) publish thousands of arch-prefixed and -lsNNN tags; track clean upstream semver only and page deep enough to reach the most recent tags",
+      "description": "LinuxServer images (ghcr.io/linuxserver) publish thousands of arch-prefixed, -lsNNN, and version-* tags; track clean upstream semver only so Renovate ignores those variants",
       "matchDatasources": [
         "docker"
       ],
       "matchPackageNames": [
-        "lscr.io/linuxserver/**"
+        "ghcr.io/linuxserver/**"
       ],
       "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     }

@@ -27,7 +27,7 @@ spec:
     nameOverride: foldingathome
 
     image:
-      repository: "lscr.io/linuxserver/foldingathome"
+      repository: "ghcr.io/linuxserver/foldingathome"
       tag: "8.5.6"
       pullPolicy: Always
 
