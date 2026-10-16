@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: "ghcr.io/open-webui/open-webui"
-      tag: "v0.12.2"
+      tag: "v0.12.3"
 
     replicaCount: 1
 
