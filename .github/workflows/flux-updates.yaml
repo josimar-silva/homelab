@@ -23,7 +23,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Setup Flux CLI
-        uses: fluxcd/flux2/action@2f71688d462ac80a87747275ebfb292d9db017ec # main
+        uses: fluxcd/flux2/action@3fa784edd773d56630bb9f62645e08f70c2cff0a # main
       - name: Check for updates
         id: update
         run: |
